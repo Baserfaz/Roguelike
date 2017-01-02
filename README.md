@@ -7,7 +7,7 @@
 ## Introduction
 This game is a roguelike RPG, where the player dwells in randomly generated dungeons slaying monsters, gathering loot and trying to survive. It's in very early stage, where some basic stuff, such as dungeon generation, are implemented.
 
-# Current status
+## Current status
 **Several things are implemented (note: not fully):**
 * Random dungeon generation: Generates dungeon layouts automatically (width, height, openness)
 * Tilesystem: Creates seamless graphics using tilesystem.
