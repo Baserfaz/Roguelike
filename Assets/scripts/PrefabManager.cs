@@ -14,9 +14,6 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject playerPrefab;
 	public GameObject enemyPrefab;
 
-	[Header("GUI prefabs")]
-	public GameObject journalEntry;
-
 	[Header("Other prefabs")]
 	public GameObject blobShadow;
 
@@ -47,12 +44,17 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject rubySwordPrefab;
 	public GameObject emeraldSwordPrefab;
 
+	[Header("Spells")]
+	public GameObject fireballSpellPrefab;
+
+
 	// lists of single items.
 	// --> prefabs!
 	private List<GameObject> listOfArmors = new List<GameObject>();
 	private List<GameObject> listOfGold = new List<GameObject>();
 	private List<GameObject> listOfWeapons = new List<GameObject>();
 	private List<GameObject> listOfPotions = new List<GameObject>();
+	private List<GameObject> listOfSpells = new List<GameObject>();
 
 	void Awake() { instance = this; }
 	public GameObject GetPlayerInstance() { return playerInstance; }
@@ -63,6 +65,7 @@ public class PrefabManager : MonoBehaviour {
 		listOfGold.Clear();
 		listOfWeapons.Clear();
 		listOfPotions.Clear();
+		listOfSpells.Clear();
 	}
 
 	public void PopulateItemLists() {
@@ -91,6 +94,9 @@ public class PrefabManager : MonoBehaviour {
 		listOfPotions.Add(armorPotionPrefab);
 		listOfPotions.Add(awesomePotionPrefab);
 		listOfPotions.Add(hurtPotionPrefab);
+
+		// spells
+		listOfSpells.Add(fireballSpellPrefab);
 	}
 
 	public void RemovePlayer() {
@@ -222,6 +228,10 @@ public class PrefabManager : MonoBehaviour {
 
 			if(prefab == null) break;
 
+			instObj = (GameObject) Instantiate(prefab);
+			break;
+		case Item.Type.Spell:
+			prefab = listOfSpells[Random.Range(0, listOfSpells.Count)];
 			instObj = (GameObject) Instantiate(prefab);
 			break;
 		}

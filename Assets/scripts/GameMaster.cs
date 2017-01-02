@@ -6,10 +6,14 @@ public class GameMaster : MonoBehaviour {
 
 	public static GameMaster instance;
 
+	public enum MovementMode { Player, Crosshair }
+
 	[HideInInspector] public int turnCount = 0;
 	[HideInInspector] public int enemyCount = 0;
 	[HideInInspector] public int dungeonLevel = 1;
 	[HideInInspector] public string currentDungeonName = "";
+
+	[HideInInspector] public MovementMode movementMode = MovementMode.Player;
 
 	[Header("General settings")]
 	public bool spawnEnemies = false;
@@ -22,15 +26,15 @@ public class GameMaster : MonoBehaviour {
 	public int tileZLevel = 1;
 	[Range(1, 50)] public int dungeonSpaciousness = 1;
 
-	[Header("Player settings")]
+	[Header("Z-levels")]
 	public int playerZLevel = -1;
+	public int enemyZLevel = -1;
+	public int itemZLevel = 0;
+	public int worldGuiZLevel = -2;
+	public int crosshairZLevel = -2;
 
 	[Header("Enemy settings")]
-	public int enemyZLevel = -1;
 	public int maxEnemyCountPerDungeon = 15;
-
-	[Header("Item settings")]
-	public int itemZLevel = 0;
 
 	[Header("Special Levels")]
 	public Texture2D shopLevel;
@@ -81,12 +85,18 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	public void EndTurn() {
-		
+
 		HandlePlayerTurn();
 		HandleEnemyTurns();
 		UpdatePlayerLos();
 
 		turnCount++;
+
+		// decrease the cooldown of the current spell.
+		if(PrefabManager.instance.GetPlayerInstance().GetComponent<Inventory>().currentSpell != null) {
+			PrefabManager.instance.GetPlayerInstance().GetComponent<Inventory>().currentSpell.GetComponent<Spell>().DecreaseCooldown();
+		}
+
 		GUIManager.instance.UpdateAllElements();
 
 		// after all turns, check if the player is dead
@@ -96,7 +106,6 @@ public class GameMaster : MonoBehaviour {
 			GUIManager.instance.ShowMainmenu();
 			GUIManager.instance.HideGUI();
 		}
-
 	}
 
 	public void ExitDungeon() {

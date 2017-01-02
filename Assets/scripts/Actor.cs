@@ -37,22 +37,26 @@ public class Actor : MonoBehaviour {
 		bool crit = false;
 		int totalDamage = defaultDamage;
 
+		GameObject target = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().actor;
+
+		// calculate weapon damage
 		if(GetComponent<Inventory>().currentWeapon != null) {
 			Weapon weapon = GetComponent<Inventory>().currentWeapon.GetComponent<Weapon>();
 			totalDamage += Random.Range(weapon.minDamage, weapon.maxDamage);
 		}
 
+		// calculate miss
 		if(Random.Range(0, 100) > 100 - defaultMissChance) {
+			GUIManager.instance.CreatePopUpEntry("MISS", target.GetComponent<Actor>().position, GUIManager.PopUpType.Miss);
 			GUIManager.instance.CreateJournalEntry(actorName + " missed.", GUIManager.JournalType.Combat);
 			return;
 		}
 
+		// calculate critical hit
 		if(Random.Range(0, 100) > 100 - defaultCritChance) {
 			totalDamage *= defaultCritMultiplier;
 			crit = true;
 		}
-
-		GameObject target = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().actor;
 
 		target.GetComponent<Health>().TakeDamage(totalDamage, crit);
 

@@ -13,6 +13,7 @@ public class ItemDropController : MonoBehaviour {
 	public int armorDropChance = 5;
 	public int weaponDropChance = 5;
 	public int useItemDropChance = 10;
+	public int spellDropChance = 10;
 
 	[Header("Rarity chances")]
 	public int normalChance = 50;
@@ -93,6 +94,11 @@ public class ItemDropController : MonoBehaviour {
 					PrefabManager.instance.InstantiateRandomItemInCategory(Item.Type.UsableItem, pos, Item.Rarity.Legendary);
 
 				}
+
+				//spell drop
+			} else if(Random.Range(0, 100) > 100 - spellDropChance) {
+
+				PrefabManager.instance.InstantiateRandomItemInCategory(Item.Type.Spell, pos, Item.Rarity.Normal);
 
 			} else {
 

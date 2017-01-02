@@ -7,10 +7,14 @@ public class Inventory : MonoBehaviour {
 	public GameObject currentArmor;
 	public GameObject currentWeapon;
 	public GameObject currentUseItem;
+	public GameObject currentSpell;
 
 	[HideInInspector] public int currentGold = 0;
 
 	public void HandleItem(GameObject itemGo) {
+
+		// TODO
+		// refactor.
 
 		// 0.
 		itemGo.GetComponent<Item>().owner = this.gameObject;
@@ -64,6 +68,22 @@ public class Inventory : MonoBehaviour {
 				currentUseItem.GetComponent<shadowController>().Hide();
 			}
 
+		} else if(itemGo.GetComponent<Spell>() != null) {
+
+			if(currentSpell != null) {
+				// swap the two items.
+				DropCurrentItem(Item.Type.Spell);
+				currentSpell = itemGo;
+				currentSpell.GetComponent<Item>().HideItem();
+				currentSpell.GetComponent<shadowController>().Hide();
+			} else {
+				// just pick up the item.
+				DungeonGenerator.instance.UpdateTileItem(GetComponent<Actor>().position, null);
+				currentSpell = itemGo;
+				currentSpell.GetComponent<Item>().HideItem();
+				currentSpell.GetComponent<shadowController>().Hide();
+			}
+
 		} else if(itemGo.GetComponent<Gold>() != null) {
 
 			currentGold += itemGo.GetComponent<Gold>().amount;
@@ -101,6 +121,13 @@ public class Inventory : MonoBehaviour {
 			currentUseItem.transform.position = itemDropPosition;
 			DungeonGenerator.instance.UpdateTileItem(currentPosition, currentUseItem);
 			currentUseItem.GetComponent<Item>().owner = null;
+			break;
+		case Item.Type.Spell:
+			currentSpell.GetComponent<Spell>().ResetCooldown(); // reset spell's cooldown so player can't scum it.
+			currentSpell.GetComponent<Item>().ShowItem();
+			currentSpell.transform.position = itemDropPosition;
+			DungeonGenerator.instance.UpdateTileItem(currentPosition, currentSpell);
+			currentSpell.GetComponent<Item>().owner = null;
 			break;
 		}
 	}

@@ -22,18 +22,18 @@ public class Potion : Item {
 				owner.GetComponent<Health>().HealDamage(effect.amount);
 				break;
 			case Effects.PotionType.Hurt:
-					owner.GetComponent<Health>().TakeDamageSimple(effect.amount);
+				owner.GetComponent<Health>().TakeDamageSimple(effect.amount);
 				break;
 			case Effects.PotionType.Armor:
-					owner.GetComponent<Actor>().defaultArmor += effect.amount;
+				owner.GetComponent<Actor>().defaultArmor += effect.amount;
 				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " armor.", GUIManager.JournalType.Item);
 				break;
 			case Effects.PotionType.Attack:
-					owner.GetComponent<Actor>().defaultDamage += effect.amount;
+				owner.GetComponent<Actor>().defaultDamage += effect.amount;
 				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " attack.", GUIManager.JournalType.Item);
 				break;
 			case Effects.PotionType.MaxHP:
-					owner.GetComponent<Health>().maxHealth += effect.amount;
+				owner.GetComponent<Health>().maxHealth += effect.amount;
 				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " MaxHP.", GUIManager.JournalType.Item);
 				break;
 			}

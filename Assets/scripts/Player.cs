@@ -116,6 +116,19 @@ public class Player : Actor {
 				GUIManager.instance.CreateJournalEntry("You don't have any item to use.", GUIManager.JournalType.Item);
 			}
 
+		} else if(Input.GetKeyDown(KeyCode.KeypadEnter)) {
+
+			// cast spell
+			// --> crosshair state.
+			if(GetComponent<Inventory>().currentSpell != null) {
+
+				// choose tile by using crosshair.
+				// --> uses CrosshairMovement()
+				CrosshairManager.instance.CrosshairMode(position);
+
+			} else {
+				GUIManager.instance.CreateJournalEntry("You don't have a spell.", GUIManager.JournalType.Item);
+			}
 		}
 
 		// for movement.
@@ -126,6 +139,83 @@ public class Player : Actor {
 			if(myNextState == NextMoveState.Stuck) return;
 			else GameMaster.instance.EndTurn();
 		}
+	}
+
+	private void CrosshairMovement() {
+
+		bool pressed = false;
+
+		Vector2 crosshairPos = CrosshairManager.instance.GetCrosshairInstance().GetComponent<Crosshair>().position;
+
+		// crosshairmovement
+		if(Input.GetKeyDown(KeyCode.Keypad7)) {
+			moveTargetPosition = new Vector2(crosshairPos.x - 1f, crosshairPos.y + 1);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.Keypad8)) {
+			moveTargetPosition = new Vector2(crosshairPos.x, crosshairPos.y + 1);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.Keypad9)) {
+			moveTargetPosition = new Vector2(crosshairPos.x + 1f, crosshairPos.y + 1);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.Keypad4)) {
+			moveTargetPosition = new Vector2(crosshairPos.x - 1f, crosshairPos.y);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.Keypad6)) {
+			moveTargetPosition = new Vector2(crosshairPos.x + 1f, crosshairPos.y);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.Keypad1)) {
+			moveTargetPosition = new Vector2(crosshairPos.x - 1f, crosshairPos.y - 1);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.Keypad2)) {
+			moveTargetPosition = new Vector2(crosshairPos.x, crosshairPos.y - 1);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.Keypad3)) {
+			moveTargetPosition = new Vector2(crosshairPos.x + 1f, crosshairPos.y - 1);
+			pressed = true;
+		} else if(Input.GetKeyDown(KeyCode.KeypadEnter)) {
+
+			// cast spell here.
+
+			// if we can see the targeted tile.
+			if(DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().isVisible) {
+
+				GameObject spell = GetComponent<Inventory>().currentSpell;
+
+				if(spell.GetComponent<Spell>().currentCooldown == 0) {
+
+					spell.GetComponent<Spell>().Cast(moveTargetPosition);
+
+					GUIManager.instance.CreatePopUpEntry(spell.GetComponent<Item>().itemName, moveTargetPosition, GUIManager.PopUpType.Other);
+					GUIManager.instance.CreateJournalEntry("Cast spell " + "[" + spell.GetComponent<Item>().itemName + "]", GUIManager.JournalType.Item);
+
+				} else {
+					GUIManager.instance.CreatePopUpEntry("COOLDOWN", moveTargetPosition, GUIManager.PopUpType.Other);
+					GUIManager.instance.CreateJournalEntry("Can't cast yet.", GUIManager.JournalType.Combat);
+
+					CrosshairManager.instance.PlayerMode();
+					return;
+				}
+
+				CrosshairManager.instance.PlayerMode();
+				GameMaster.instance.EndTurn();
+
+			} else {
+
+				GUIManager.instance.CreatePopUpEntry("Can't see target", moveTargetPosition, GUIManager.PopUpType.Other);
+				GUIManager.instance.CreateJournalEntry("Can't see target.", GUIManager.JournalType.Combat);
+				CrosshairManager.instance.PlayerMode();
+			}
+
+		} else if(Input.GetKeyDown(KeyCode.Keypad5)) {
+			// cancel cast.
+			// -> return to player mode.
+			CrosshairManager.instance.PlayerMode();
+		}
+
+		if(pressed) {
+			CrosshairManager.instance.GetCrosshairInstance().GetComponent<Crosshair>().MoveCrosshair(moveTargetPosition);
+		}
+
 	}
 
 	private void PickUpItem(GameObject itemGo) {
@@ -151,7 +241,12 @@ public class Player : Actor {
 	}
 
 	private void ManageInputs() {
-		Movement();
+		if(GameMaster.instance.movementMode == GameMaster.MovementMode.Player) {
+			Movement();
+		} else {
+			CrosshairMovement();
+		}
+			
 		Utilities();
 	}
 }

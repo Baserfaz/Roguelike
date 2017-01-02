@@ -11,7 +11,7 @@ public class Item : MonoBehaviour {
 	 * UsableItem -> potion, magical items, etc.
 	 */
 
-	public enum Type { Armor, Weapon, Gold, UsableItem };
+	public enum Type { Armor, Weapon, Gold, UsableItem, Spell };
 	public enum Rarity { Normal, Magical, Rare, Legendary }
 
 	public string itemName = "";

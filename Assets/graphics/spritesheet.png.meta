@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: b448ac236681d624890f49bf4916695f
-timeCreated: 1483304014
+timeCreated: 1483382037
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -50,7 +50,7 @@ TextureImporter:
     21300086: blood_01
     21300088: burnt_candle
     21300090: skull_01
-    21300092: GUI_useItemSlot
+    21300092: GUI_spellSlot
     21300094: gradient_01
     21300096: potion_green
     21300098: potion_orange
@@ -58,6 +58,9 @@ TextureImporter:
     21300102: gold_pile
     21300104: potion_black
     21300106: potion_purple
+    21300108: GUI_useItemSlot
+    21300110: Cursor_01
+    21300112: spell_fireball
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -657,7 +660,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: GUI_useItemSlot
+      name: GUI_spellSlot
       rect:
         serializedVersion: 2
         x: 32
@@ -753,6 +756,45 @@ TextureImporter:
         serializedVersion: 2
         x: 128
         y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: GUI_useItemSlot
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Cursor_01
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 48
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spell_fireball
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 16
         width: 16
         height: 16
       alignment: 0

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GUIManager : MonoBehaviour {
 
 	public enum JournalType { System, Combat, Item }
+	public enum PopUpType { Damage, Crit, Miss, Other, Heal }
 
 	public static GUIManager instance;
 
@@ -25,6 +26,12 @@ public class GUIManager : MonoBehaviour {
 	public GameObject armorStatus;
 	public GameObject goldStatus;
 	public GameObject useItemStatus;
+	public GameObject spellStatus;
+	public GameObject spellCooldownStatus;
+
+	[Header("GUI prefabs")]
+	public GameObject journalEntryPrefab;
+	public GameObject popUptextPrefab;
 
 	private int maxJournalEntries = 30;
 
@@ -56,6 +63,8 @@ public class GUIManager : MonoBehaviour {
 		UpdateElement(armorStatus);
 		UpdateElement(goldStatus);
 		UpdateElement(useItemStatus);
+		UpdateElement(spellStatus);
+		UpdateElement(spellCooldownStatus);
 	}
 
 	private void DeleteOldJournalEntries() {
@@ -74,9 +83,34 @@ public class GUIManager : MonoBehaviour {
 		}
 	}
 
+	public void CreatePopUpEntry(string txt, Vector2 pos, PopUpType type) {
+		float Yoffset = 0.4f;
+		GameObject obj = (GameObject) Instantiate(popUptextPrefab);
+		obj.GetComponent<Text>().text = txt;
+		obj.transform.position = new Vector3(pos.x, pos.y + Yoffset, GameMaster.instance.worldGuiZLevel);
+
+		switch(type) {
+		case PopUpType.Damage:
+			obj.GetComponent<Text>().color = new Color32(155, 28, 17, 255); // red
+			break;
+		case PopUpType.Crit:
+			obj.GetComponent<Text>().color = new Color32(207, 209, 26, 255); // yellow
+			break;
+		case PopUpType.Miss:
+			obj.GetComponent<Text>().color = new Color32(194, 225, 194, 255); // gray/green
+			break;
+		case PopUpType.Other:
+			obj.GetComponent<Text>().color = new Color32(193, 180, 174, 255); // gray
+			break;
+		case PopUpType.Heal:
+			obj.GetComponent<Text>().color = new Color32(24, 221, 60, 255); // green
+			break;
+		}
+	}
+
 	public void CreateJournalEntry(string txt, JournalType type) {
 
-		GameObject obj = (GameObject) Instantiate(PrefabManager.instance.journalEntry);
+		GameObject obj = (GameObject) Instantiate(journalEntryPrefab);
 		obj.transform.SetParent(journalList.transform);
 
 		string totalTxt = "";
@@ -147,7 +181,22 @@ public class GUIManager : MonoBehaviour {
 				obj.GetComponentInChildren<Image>().color = Color.clear;
 			}
 			break;
-
+		case GUIElementScript.Element.Spell:
+			if(playerActor.GetComponent<Inventory>().currentSpell != null) {
+				obj.GetComponentInChildren<Image>().sprite = playerActor.GetComponent<Inventory>().currentSpell.GetComponentInChildren<SpriteRenderer>().sprite;
+				obj.GetComponentInChildren<Image>().color = Color.white;
+			} else {
+				obj.GetComponentInChildren<Image>().sprite = null;
+				obj.GetComponentInChildren<Image>().color = Color.clear;
+			}
+			break;
+		case GUIElementScript.Element.SpellCooldown:
+			if(playerActor.GetComponent<Inventory>().currentSpell != null) {
+				obj.GetComponentInChildren<Text>().text = "" + playerActor.GetComponent<Inventory>().currentSpell.GetComponent<Spell>().currentCooldown;
+			} else {
+				obj.GetComponentInChildren<Text>().text = "";
+			}
+			break;
 		}
 
 	}
