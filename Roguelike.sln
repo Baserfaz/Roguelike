@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{6F0D6A32-94BE-20CA-6EE5-FBB0F0AAAF5C}") = "Roguelike", "Assembly-CSharp-firstpass.csproj", "{EF327108-5BB7-5153-2982-DE06A8EFB570}"
+EndProject
+Project("{6F0D6A32-94BE-20CA-6EE5-FBB0F0AAAF5C}") = "Roguelike", "Assembly-CSharp.csproj", "{3B4D7A7B-B193-C7B8-731F-3F701A73DF6D}"
+EndProject
+Project("{6F0D6A32-94BE-20CA-6EE5-FBB0F0AAAF5C}") = "Roguelike", "Assembly-CSharp-Editor-firstpass.csproj", "{9EC45AF7-D913-6DD7-AA01-FB7BCD359FFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF327108-5BB7-5153-2982-DE06A8EFB570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF327108-5BB7-5153-2982-DE06A8EFB570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF327108-5BB7-5153-2982-DE06A8EFB570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF327108-5BB7-5153-2982-DE06A8EFB570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B4D7A7B-B193-C7B8-731F-3F701A73DF6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B4D7A7B-B193-C7B8-731F-3F701A73DF6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B4D7A7B-B193-C7B8-731F-3F701A73DF6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B4D7A7B-B193-C7B8-731F-3F701A73DF6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EC45AF7-D913-6DD7-AA01-FB7BCD359FFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EC45AF7-D913-6DD7-AA01-FB7BCD359FFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EC45AF7-D913-6DD7-AA01-FB7BCD359FFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EC45AF7-D913-6DD7-AA01-FB7BCD359FFA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
