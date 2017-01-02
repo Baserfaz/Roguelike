@@ -8,7 +8,7 @@ You need newest version (currently 5.5.03f) of Unity3D to run/build this project
 This project uses Unity3D and C#.
 
 ## Authors
-* **Heikki Heiskanen** - *Initial work* - [My Project Page](http://baserfaz.github.io/Projects/)
+* **Heikki Heiskanen** - *Initial work* - [My Project Page](http://baserfaz.github.io/Projects/) - [Homepage in Finnish](https://baserfaz.github.io/PortfolioPage/)
 
 
 
