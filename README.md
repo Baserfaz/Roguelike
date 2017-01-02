@@ -4,6 +4,10 @@
 ## Getting Started
 You need newest version (currently 5.5.03f) of Unity3D to run/build this project. Download project and open it with Unity3D.
 
+### Prerequisites
+* Newest version of Unity3D 
+* For graphics I use Pyxel.
+
 ## Build with
 This project uses Unity3D and C#.
 
