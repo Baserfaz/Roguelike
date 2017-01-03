@@ -116,12 +116,30 @@ public class PrefabManager : MonoBehaviour {
 
 	public void RemoveItems() {
 		foreach(GameObject item in itemInstances) {
-			if(item == null || item.GetComponent<Item>() == null || item.GetComponent<Item>().owner == null) continue;
-			if(item.GetComponent<Item>().owner.GetComponent<Player>() == null) {
+			if(item == null || item.GetComponent<Item>() == null) continue;
+			if(item.GetComponent<Item>().owner == null) {
 				Destroy(item);
 			}
 		}
 		itemInstances.Clear();
+	}
+
+	public void MoveActorToPos(Vector2 target, GameObject actor) {
+
+		int zLevel = 0;
+
+		actor.GetComponent<Actor>().position = target;
+
+		if(actor.GetComponent<Player>() != null) zLevel = GameMaster.instance.playerZLevel;
+		else if(actor.GetComponent<Enemy>() != null) zLevel = GameMaster.instance.enemyZLevel;
+
+		actor.transform.position = new Vector3(target.x, target.y, zLevel);
+
+		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(target);
+		Tile tile = tileGo.GetComponent<Tile>();
+
+		tile.actor = actor;
+
 	}
 
 	public void MovePlayerToNewStartLocation() {
@@ -150,7 +168,7 @@ public class PrefabManager : MonoBehaviour {
 		return possibleTiles[Random.Range(0, possibleTiles.Count - 1)].GetComponent<Tile>().position;
 	}
 
-	public void InstantiateRandomItemInCategory(Item.Type itemType, Vector2 pos, Item.Rarity rarity) {
+	public void InstantiateRandomItemInCategory(Item.Type itemType, Vector2 pos, Item.Rarity rarity, bool isShopItem = false) {
 
 		GameObject instObj = null;
 		GameObject prefab = null;
@@ -237,6 +255,11 @@ public class PrefabManager : MonoBehaviour {
 		}
 
 		if(instObj == null) return;
+
+		// creates item that takes money before picking up.
+		if(isShopItem) {
+			instObj.GetComponent<Item>().myState = Item.State.Shop;
+		}
 
 		GameObject tileGO = DungeonGenerator.instance.GetTileAtPos(pos);
 		Tile tile = tileGO.GetComponent<Tile>();

@@ -26,14 +26,17 @@ public class Potion : Item {
 				break;
 			case Effects.PotionType.Armor:
 				owner.GetComponent<Actor>().defaultArmor += effect.amount;
+				GUIManager.instance.CreatePopUpEntry("Armor +" + effect.amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " armor.", GUIManager.JournalType.Item);
 				break;
 			case Effects.PotionType.Attack:
 				owner.GetComponent<Actor>().defaultDamage += effect.amount;
+				GUIManager.instance.CreatePopUpEntry("Attack +" + effect.amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " attack.", GUIManager.JournalType.Item);
 				break;
 			case Effects.PotionType.MaxHP:
 				owner.GetComponent<Health>().maxHealth += effect.amount;
+				GUIManager.instance.CreatePopUpEntry("MaxHP +" + effect.amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " MaxHP.", GUIManager.JournalType.Item);
 				break;
 			}

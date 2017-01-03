@@ -89,8 +89,34 @@ public class Player : Actor {
 			Tile tile = DungeonGenerator.instance.GetTileAtPos(position).GetComponent<Tile>();
 
 			if(tile.item != null) {
-				PickUpItem(tile.item);
-				GameMaster.instance.EndTurn();
+
+				if(tile.item.GetComponent<Item>().myState == Item.State.Free) {
+					
+					// pick the item up
+
+					PickUpItem(tile.item);
+					GameMaster.instance.EndTurn();
+
+				} else if(tile.item.GetComponent<Item>().myState == Item.State.Shop) {
+					
+					Item item = tile.item.GetComponent<Item>();
+
+					// buy item.
+					if(GetComponent<Inventory>().currentGold >= item.shopPrice) {
+				
+						GetComponent<Inventory>().currentGold -= item.shopPrice;
+						item.myState = Item.State.Free;
+						PickUpItem(tile.item);
+
+					} else {
+
+						// not enough money.
+						GUIManager.instance.CreatePopUpEntry("Not enough money", position, GUIManager.PopUpType.Other);
+						GUIManager.instance.CreateJournalEntry("Not enough money to buy " + item.itemName, GUIManager.JournalType.Item);
+
+					}
+				}
+
 			} else if(tile.myType == Tile.TileType.Exit) {
 				GameMaster.instance.ExitDungeon();
 			} else {
@@ -107,8 +133,6 @@ public class Player : Actor {
 				if(item.GetComponent<Potion>() != null) {
 					item.GetComponent<Potion>().Drink();
 				}
-
-				GUIManager.instance.UpdateAllElements();
 
 				GameMaster.instance.EndTurn();
 
@@ -185,11 +209,11 @@ public class Player : Actor {
 
 					spell.GetComponent<Spell>().Cast(moveTargetPosition);
 
-					GUIManager.instance.CreatePopUpEntry(spell.GetComponent<Item>().itemName, moveTargetPosition, GUIManager.PopUpType.Other);
+					GUIManager.instance.CreatePopUpEntry(spell.GetComponent<Item>().itemName, position, GUIManager.PopUpType.Other);
 					GUIManager.instance.CreateJournalEntry("Cast spell " + "[" + spell.GetComponent<Item>().itemName + "]", GUIManager.JournalType.Item);
 
 				} else {
-					GUIManager.instance.CreatePopUpEntry("COOLDOWN", moveTargetPosition, GUIManager.PopUpType.Other);
+					GUIManager.instance.CreatePopUpEntry("COOLDOWN", position, GUIManager.PopUpType.Other);
 					GUIManager.instance.CreateJournalEntry("Can't cast yet.", GUIManager.JournalType.Combat);
 
 					CrosshairManager.instance.PlayerMode();
@@ -201,7 +225,7 @@ public class Player : Actor {
 
 			} else {
 
-				GUIManager.instance.CreatePopUpEntry("Can't see target", moveTargetPosition, GUIManager.PopUpType.Other);
+				GUIManager.instance.CreatePopUpEntry("Can't see target", position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Can't see target.", GUIManager.JournalType.Combat);
 				CrosshairManager.instance.PlayerMode();
 			}
@@ -228,7 +252,10 @@ public class Player : Actor {
 		inventory.HandleItem(itemGo);
 
 		// 2.
-		GUIManager.instance.CreateJournalEntry("Picked up " + "[" + item.itemName + "]", GUIManager.JournalType.Item);
+		if(itemGo.GetComponent<Gold>() == null) {
+			GUIManager.instance.CreateJournalEntry("Picked up " + "[" + item.itemName + "]", GUIManager.JournalType.Item);
+			GUIManager.instance.CreatePopUpEntry(item.itemName + "\n" + "<size=\"17\">" + item.itemDescription + "</size>", position, GUIManager.PopUpType.Other, 3f);
+		}
 	}
 
 	private void Utilities() {
@@ -241,6 +268,7 @@ public class Player : Actor {
 	}
 
 	private void ManageInputs() {
+		
 		if(GameMaster.instance.movementMode == GameMaster.MovementMode.Player) {
 			Movement();
 		} else {

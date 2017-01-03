@@ -9,14 +9,18 @@ public class Item : MonoBehaviour {
 	 * Weapon -> weapon
 	 * Gold -> gold
 	 * UsableItem -> potion, magical items, etc.
+	 * Spell -> spell
 	 */
 
-	public enum Type { Armor, Weapon, Gold, UsableItem, Spell };
+	public enum Type { Armor, Weapon, Gold, UsableItem, Spell }
 	public enum Rarity { Normal, Magical, Rare, Legendary }
+	public enum State { Shop, Free }
 
 	public string itemName = "";
 	public string itemDescription = "";
-	public Rarity myRarity;
+	public int shopPrice = 10;
+	public Rarity myRarity = Rarity.Normal;
+	public State myState = State.Free;
 
 	[HideInInspector] public GameObject owner;
 	[HideInInspector] public Color startColor;
@@ -28,11 +32,11 @@ public class Item : MonoBehaviour {
 
 	public void HideItem() { 
 		GetComponentInChildren<SpriteRenderer>().color = Color.clear; 
-		if(GetComponent<shadowController>() != null) GetComponent<shadowController>().enabled = false;
+		if(GetComponent<shadowController>() != null) GetComponent<shadowController>().Hide();
 	}
 	public void ShowItem() {
 		GetComponentInChildren<SpriteRenderer>().color = startColor; 
-		if(GetComponent<shadowController>() != null) GetComponent<shadowController>().enabled = true;
+		if(GetComponent<shadowController>() != null) GetComponent<shadowController>().Show();
 	}
 
 }

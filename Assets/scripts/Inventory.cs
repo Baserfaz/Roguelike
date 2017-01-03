@@ -86,7 +86,12 @@ public class Inventory : MonoBehaviour {
 
 		} else if(itemGo.GetComponent<Gold>() != null) {
 
-			currentGold += itemGo.GetComponent<Gold>().amount;
+			int amount = itemGo.GetComponent<Gold>().amount;
+
+			currentGold += amount;
+
+			GUIManager.instance.CreatePopUpEntry("GOLD " + amount, GetComponent<Actor>().position, GUIManager.PopUpType.Other);
+			GUIManager.instance.CreateJournalEntry("Picked up gold " + amount, GUIManager.JournalType.Item);
 
 			DungeonGenerator.instance.UpdateTileItem(GetComponent<Actor>().position, null);
 			Destroy(itemGo);
@@ -123,7 +128,9 @@ public class Inventory : MonoBehaviour {
 			currentUseItem.GetComponent<Item>().owner = null;
 			break;
 		case Item.Type.Spell:
-			currentSpell.GetComponent<Spell>().ResetCooldown(); // reset spell's cooldown so player can't scum it.
+			// reset spell's cooldown on drop,
+			// so player can't scum multiple spells.
+			currentSpell.GetComponent<Spell>().ResetCooldown();
 			currentSpell.GetComponent<Item>().ShowItem();
 			currentSpell.transform.position = itemDropPosition;
 			DungeonGenerator.instance.UpdateTileItem(currentPosition, currentSpell);

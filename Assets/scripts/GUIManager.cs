@@ -15,7 +15,6 @@ public class GUIManager : MonoBehaviour {
 	public GameObject topBar;
 	public GameObject turnCounter;
 	public GameObject journalList;
-	public GameObject dungeonName;
 
 	[Header("MainMenu elements")]
 	public GameObject mainmenuGUI;
@@ -32,8 +31,11 @@ public class GUIManager : MonoBehaviour {
 	[Header("GUI prefabs")]
 	public GameObject journalEntryPrefab;
 	public GameObject popUptextPrefab;
+	public GameObject OnGuiTextPrefab;
 
 	private int maxJournalEntries = 30;
+
+	[HideInInspector] public GameObject currentActiveShopGo = null;
 
 	void Awake() { instance = this; }
 
@@ -57,7 +59,6 @@ public class GUIManager : MonoBehaviour {
 
 	public void UpdateAllElements() {
 		UpdateElement(turnCounter);
-		UpdateElement(dungeonName);
 		UpdateElement(healthStatus);
 		UpdateElement(attackStatus);
 		UpdateElement(armorStatus);
@@ -83,7 +84,25 @@ public class GUIManager : MonoBehaviour {
 		}
 	}
 
-	public void CreatePopUpEntry(string txt, Vector2 pos, PopUpType type) {
+	public void CreateOnGuiText(string txt, float fadeTime = 3f) {
+		GameObject obj = (GameObject) Instantiate(OnGuiTextPrefab);
+		obj.GetComponent<Text>().text = txt;
+		obj.transform.SetParent(mainGUI.transform);
+		obj.transform.position = new Vector3(Screen.width/2, Screen.height/2, 0f);
+		obj.GetComponent<PopUpText>().StartFade(fadeTime);
+	}
+
+	/// <summary>
+	/// Create popup entry.
+	/// Returns instance.
+	/// If fadeTime <= zero, then popup entry doesn't fade away.
+	/// </summary>
+	/// <returns>The pop up entry.</returns>
+	/// <param name="txt">Text.</param>
+	/// <param name="pos">Position.</param>
+	/// <param name="type">Type.</param>
+	/// <param name="fadeTime">Fade time.</param>
+	public GameObject CreatePopUpEntry(string txt, Vector2 pos, PopUpType type, float fadeTime = 1f) {
 		float Yoffset = 0.4f;
 		GameObject obj = (GameObject) Instantiate(popUptextPrefab);
 		obj.GetComponent<Text>().text = txt;
@@ -106,6 +125,10 @@ public class GUIManager : MonoBehaviour {
 			obj.GetComponent<Text>().color = new Color32(24, 221, 60, 255); // green
 			break;
 		}
+
+		if(fadeTime > 0f) obj.GetComponent<PopUpText>().StartFadeUp(fadeTime);
+
+		return obj;
 	}
 
 	public void CreateJournalEntry(string txt, JournalType type) {
@@ -141,11 +164,9 @@ public class GUIManager : MonoBehaviour {
 		case GUIElementScript.Element.TurnCounter:
 			obj.GetComponentInChildren<Text>().text = "Turn: " + GameMaster.instance.turnCount;
 			break;
-		case GUIElementScript.Element.DungeonName:
-			obj.GetComponentInChildren<Text>().text = "[LVL " + GameMaster.instance.dungeonLevel + "] " + GameMaster.instance.currentDungeonName;
-			break;
 		case GUIElementScript.Element.Health:
-			obj.GetComponentInChildren<Text>().text = "" + PrefabManager.instance.GetPlayerInstance().GetComponent<Health>().currentHealth;
+			obj.GetComponentInChildren<Text>().text = "" + PrefabManager.instance.GetPlayerInstance().GetComponent<Health>().currentHealth +
+				"(" + PrefabManager.instance.GetPlayerInstance().GetComponent<Health>().maxHealth + ")";
 			break;
 		case GUIElementScript.Element.Armor:
 
@@ -183,16 +204,32 @@ public class GUIManager : MonoBehaviour {
 			break;
 		case GUIElementScript.Element.Spell:
 			if(playerActor.GetComponent<Inventory>().currentSpell != null) {
-				obj.GetComponentInChildren<Image>().sprite = playerActor.GetComponent<Inventory>().currentSpell.GetComponentInChildren<SpriteRenderer>().sprite;
-				obj.GetComponentInChildren<Image>().color = Color.white;
+
+				GameObject currentSpell = playerActor.GetComponent<Inventory>().currentSpell;
+
+				obj.GetComponentInChildren<Image>().sprite = currentSpell.GetComponentInChildren<SpriteRenderer>().sprite;
+
+				if(currentSpell.GetComponent<Spell>().currentCooldown > 0) {
+					obj.GetComponentInChildren<Image>().color = new Color(1f, 1f, 1f, 0.5f);
+				} else {
+					obj.GetComponentInChildren<Image>().color = Color.white;
+				}
+
 			} else {
 				obj.GetComponentInChildren<Image>().sprite = null;
 				obj.GetComponentInChildren<Image>().color = Color.clear;
 			}
 			break;
 		case GUIElementScript.Element.SpellCooldown:
+			
 			if(playerActor.GetComponent<Inventory>().currentSpell != null) {
-				obj.GetComponentInChildren<Text>().text = "" + playerActor.GetComponent<Inventory>().currentSpell.GetComponent<Spell>().currentCooldown;
+
+				if(playerActor.GetComponent<Inventory>().currentSpell.GetComponent<Spell>().currentCooldown > 0) {
+					obj.GetComponentInChildren<Text>().text = "" + playerActor.GetComponent<Inventory>().currentSpell.GetComponent<Spell>().currentCooldown;
+				} else {
+					obj.GetComponentInChildren<Text>().text = "rdy";
+				}
+			
 			} else {
 				obj.GetComponentInChildren<Text>().text = "";
 			}

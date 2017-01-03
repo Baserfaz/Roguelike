@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LineOfSightManager : MonoBehaviour {
 
-	private void ActivateEnemy(GameObject tileGo) {
+	private void TryActivateEnemy(GameObject tileGo) {
 		Tile tile = tileGo.GetComponent<Tile>();
 
 		if(tile.actor != null) {
@@ -28,7 +28,7 @@ public class LineOfSightManager : MonoBehaviour {
 			t.isDiscovered = true;
 			t.isVisible = true;
 
-			ActivateEnemy(tile);
+			TryActivateEnemy(tile);
 
 		}
 

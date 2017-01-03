@@ -72,6 +72,7 @@ public class Actor : MonoBehaviour {
 		// first reset the tile actor field.
 		DungeonGenerator.instance.UpdateTileActor(position, null);
 
+		// calculate z-level.
 		int zLevel = 0;
 		if(GetComponent<Player>() != null) zLevel = GameMaster.instance.playerZLevel;
 		else if(GetComponent<Enemy>() != null) zLevel = GameMaster.instance.enemyZLevel;
@@ -85,5 +86,6 @@ public class Actor : MonoBehaviour {
 		// update next tile's actor field.
 		DungeonGenerator.instance.UpdateTileActor(moveTargetPosition, this.gameObject);
 	}
+
 
 }

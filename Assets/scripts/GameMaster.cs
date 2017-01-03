@@ -46,7 +46,7 @@ public class GameMaster : MonoBehaviour {
 		DungeonGenerator.instance.UpdateTileColorVisibility();
 	}
 
-	// GAME STARTS HERE!!!
+	// PROGRAM START
 	void Start () {
 		GUIManager.instance.ShowMainmenu();
 		GUIManager.instance.HideGUI();
@@ -75,6 +75,7 @@ public class GameMaster : MonoBehaviour {
 
 		// GUI & other stuff
 		CreateNewRandomDungeonName();
+		GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
 		GUIManager.instance.CreateJournalEntry("Welcome to the dungeon!", GUIManager.JournalType.System);
 		GUIManager.instance.UpdateAllElements();
 	}
@@ -128,8 +129,9 @@ public class GameMaster : MonoBehaviour {
 			// create shop
 			MapReader.instance.GenerateDungeonFromImage(shopLevel);
 
-			currentDungeonName = "Gerald's super shop";
+			currentDungeonName = "Gerald's awesome shop";
 
+			GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
 			GUIManager.instance.CreateJournalEntry("Dungeon level: " + currentDungeonName, GUIManager.JournalType.System);
 
 		} else {
@@ -141,11 +143,12 @@ public class GameMaster : MonoBehaviour {
 			PrefabManager.instance.InstantiateEnemies();
 
 			CreateNewRandomDungeonName();
+			GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
 			GUIManager.instance.CreateJournalEntry("Dungeon level: " + dungeonLevel, GUIManager.JournalType.System);
+		
+			// move player to new location
+			PrefabManager.instance.MovePlayerToNewStartLocation();
 		}
-			
-		// move player to new location
-		PrefabManager.instance.MovePlayerToNewStartLocation();
 
 		UpdatePlayerLos();
 
@@ -161,12 +164,38 @@ public class GameMaster : MonoBehaviour {
 		}
 	}
 
+	private void HandleTileItemInfo(Player player) {
+		// get tile info
+		GameObject tileGO = DungeonGenerator.instance.GetTileAtPos(player.position);
+		Tile tile = tileGO.GetComponent<Tile>();
+
+		// if there is a shop text delete it.
+		if(GUIManager.instance.currentActiveShopGo != null) Destroy(GUIManager.instance.currentActiveShopGo);
+
+		// Show item information if 
+		// we are standing on top of the 
+		// item and it's in shop state.
+		if(tile.item != null) {
+
+			Item item = tile.item.GetComponent<Item>();
+
+			if(item.myState == Item.State.Shop) {
+				// create new info text
+				GUIManager.instance.currentActiveShopGo = GUIManager.instance.CreatePopUpEntry(item.itemName + "\n" + item.itemDescription + "\n" + "Price: " + item.shopPrice,
+					player.position, GUIManager.PopUpType.Other, 0f);
+			}
+		}
+
+	}
+
 	private void HandlePlayerTurn() {
 		GameObject playerGo = PrefabManager.instance.GetPlayerInstance();
 		Player player = playerGo.GetComponent<Player>();
 
 		if(player.myNextState == Player.NextMoveState.Move) {
 			player.Move();
+			HandleTileItemInfo(player);
+
 		} else if(player.myNextState == Player.NextMoveState.Attack) {
 			player.Attack();
 		} else if(player.myNextState == Player.NextMoveState.Pass || player.myNextState == Player.NextMoveState.Stuck) {
