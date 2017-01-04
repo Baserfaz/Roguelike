@@ -71,6 +71,7 @@
      <Compile Include="Assets\scripts\PopUpText.cs" />
      <Compile Include="Assets\scripts\PrefabManager.cs" />
      <Compile Include="Assets\scripts\Spell.cs" />
+     <Compile Include="Assets\scripts\SpriteManager.cs" />
      <Compile Include="Assets\scripts\Tile.cs" />
      <Compile Include="Assets\scripts\shadowController.cs" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />

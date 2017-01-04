@@ -84,7 +84,7 @@ public class GUIManager : MonoBehaviour {
 		}
 	}
 
-	public void CreateOnGuiText(string txt, float fadeTime = 3f) {
+	public void CreateOnGuiText(string txt, float fadeTime = 5f) {
 		GameObject obj = (GameObject) Instantiate(OnGuiTextPrefab);
 		obj.GetComponent<Text>().text = txt;
 		obj.transform.SetParent(mainGUI.transform);

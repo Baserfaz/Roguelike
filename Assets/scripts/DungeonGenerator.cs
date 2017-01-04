@@ -17,41 +17,7 @@ public class DungeonGenerator : MonoBehaviour {
 	[Header("Dungeon colors")]
 	public Color overallTint;
 
-	[Header("floor sprite")]
-	public Sprite s_floor;
-
-	[Header("Corners")]
-	public Sprite s_wall_corner_top_left;
-	public Sprite s_wall_corner_top_right;
-	public Sprite s_wall_corner_bottom_left;
-	public Sprite s_wall_corner_bottom_right;
-
-	[Header("Deadends")]
-	public Sprite s_wall_deadend_bottom;
-	public Sprite s_wall_deadend_top;
-	public Sprite s_wall_deadend_right;
-	public Sprite s_wall_deadend_left;
-
-	[Header("Junctions")]
-	public Sprite s_wall_junction_bottom;
-	public Sprite s_wall_junction_top;
-	public Sprite s_wall_junction_left;
-	public Sprite s_wall_junction_right;
-
-	[Header("Straight")]
-	public Sprite s_wall_horizontal;
-	public Sprite s_wall_vertical;
-
-	[Header("Middle")]
-	public Sprite s_wall_full_middle;
-
-	[Header("Single")]
-	public Sprite s_wall_single;
-
-	[Header("Other")]
-	public Sprite s_exit;
-
-	[Header("Tile prefabs")]
+	[Header("Tile prefab")]
 	public GameObject tilePrefab;
 
 	public List<GameObject> GetTiles() { return tiles; }
@@ -213,7 +179,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 		if(type == Tile.TileType.Floor) {
 			
-			currentTile.GetComponentInChildren<SpriteRenderer>().sprite = s_floor;
+			currentTile.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.simple_floor;
 			currentTile.GetComponent<Tile>().myType = Tile.TileType.Floor;
 
 		} else if(type == Tile.TileType.Wall) {
@@ -222,7 +188,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 		} else if(type == Tile.TileType.Exit) {
 
-			currentTile.GetComponentInChildren<SpriteRenderer>().sprite = s_exit;
+			currentTile.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.s_exit;
 			currentTile.GetComponent<Tile>().myType = Tile.TileType.Exit;
 
 		} else if(type == Tile.TileType.OuterWall) {
@@ -272,68 +238,68 @@ public class DungeonGenerator : MonoBehaviour {
 				}
 
 				if(isTopWall && isBottomWall && isLeftWall && isRightWall) {
-					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_full_middle;
+
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.Middle);
 
 				} else if(isTopWall && isLeftWall && isBottomWall) { 
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_junction_left;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.JunctionL);
 
 				} else if(isTopWall && isRightWall && isBottomWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_junction_right;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.JunctionR);
 
 				} else if(isLeftWall && isTopWall && isRightWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_junction_top;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.JunctionT);
 
 				} else if(isLeftWall && isBottomWall && isRightWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_junction_bottom;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.JunctionB);
 
 				} else if(isTopWall && isBottomWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_vertical;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.Vertical);
 
 				} else if(isLeftWall && isRightWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_horizontal;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.Horizontal);
 
 				} else if(isTopWall && isRightWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_corner_bottom_left;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.CornerBL);
 
 				} else if(isRightWall && isBottomWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_corner_top_left;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.CornerTL);
 
 				} else if(isBottomWall && isLeftWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_corner_top_right;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.CornerTR);
 
 				} else if(isLeftWall && isTopWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_corner_bottom_right;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.CornerBR);
 
 				} else if(isTopWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_deadend_bottom;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.DeadendB);
 
 				} else if(isRightWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_deadend_left;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.DeadendL);
 
 				} else if(isBottomWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_deadend_top;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.DeadendT);
 
 				} else if(isLeftWall) {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_deadend_right;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.DeadendR);
 
 				} else {
 					
-					current.GetComponentInChildren<SpriteRenderer>().sprite = s_wall_single;
+					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.GetSprite(SpriteManager.SpriteType.Single);
 
 				}
 			}
