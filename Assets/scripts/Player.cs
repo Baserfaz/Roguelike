@@ -104,6 +104,9 @@ public class Player : Actor {
 					// buy item.
 					if(GetComponent<Inventory>().currentGold >= item.shopPrice) {
 				
+						// destroy guitext.
+						Destroy(GUIManager.instance.currentActiveShopGo);
+
 						GetComponent<Inventory>().currentGold -= item.shopPrice;
 						item.myState = Item.State.Free;
 						PickUpItem(tile.item);

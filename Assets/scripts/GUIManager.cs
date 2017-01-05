@@ -84,11 +84,16 @@ public class GUIManager : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Instantiates a GUI text element that is bind to the main gui.
+	/// </summary>
+	/// <param name="txt">Text.</param>
+	/// <param name="fadeTime">Fade time.</param>
 	public void CreateOnGuiText(string txt, float fadeTime = 5f) {
 		GameObject obj = (GameObject) Instantiate(OnGuiTextPrefab);
 		obj.GetComponent<Text>().text = txt;
 		obj.transform.SetParent(mainGUI.transform);
-		obj.transform.position = new Vector3(Screen.width/2, Screen.height/2, 0f);
+		obj.transform.position = new Vector3(Screen.width/2, Screen.height/2 + Screen.height/4, 0f);
 		obj.GetComponent<PopUpText>().StartFade(fadeTime);
 	}
 

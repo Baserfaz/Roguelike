@@ -53,7 +53,9 @@ public class Enemy : Actor {
 	}
 
 	private void CalculateNextStep() {
-		moveTargetPosition = PathFindNextTile().GetComponent<Tile>().position;
+		GameObject bestTile = PathFindNextTile();
+		if(bestTile != null) moveTargetPosition = bestTile.GetComponent<Tile>().position;
+		else myNextState = NextMoveState.Pass;
 	}
 
 	public void DecideNextStep() {
@@ -63,6 +65,8 @@ public class Enemy : Actor {
 			Attack();
 		} else if(myNextState == NextMoveState.Move) {
 			Move();
+		} else if(myNextState == NextMoveState.Pass) {
+			// pass the turn.
 		}
 	}
 

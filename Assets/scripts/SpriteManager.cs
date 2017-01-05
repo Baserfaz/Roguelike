@@ -4,151 +4,335 @@ using UnityEngine;
 
 public class SpriteManager : MonoBehaviour {
 
+	/*
+	 * Tiles are 16x16 pixels.
+	 * 
+	 * 
+	 */
+
 	public static SpriteManager instance;
 
-	public enum TileSet { Simple, Shop }
+	public Texture2D spriteSheet;
+	public TileSet currentTileSet = TileSet.Concrete;
+
+	public enum TileSet { Concrete, Shop, Sewer }
 	public enum SpriteType { CornerTL, CornerTR, CornerBL, CornerBR, Floor, DeadendB, DeadendT, DeadendL, DeadendR, JunctionT, JunctionB,
-		JunctionL, JunctionR, Horizontal, Vertical, Middle, Single }
+		JunctionL, JunctionR, Horizontal, Vertical, Middle, Single, Exit, FloorSpecialItem }
 
-	// set this to get correct tileset.
-	public TileSet currentTileSet = TileSet.Simple;
+	private Color32[] pixels;
 
-	[Header("Common tiles")]
-	public Sprite s_exit;
-
-	[Space(25)]
-
-	[Header("Simple Tileset Sprites")]
-	[Header("Floor sprite")]
-	public Sprite simple_floor;
-	[Header("Corners")]
-	public Sprite simple_wall_corner_top_left;
-	public Sprite simple_wall_corner_top_right;
-	public Sprite simple_wall_corner_bottom_left;
-	public Sprite simple_wall_corner_bottom_right;
-	[Header("Deadends")]
-	public Sprite simple_wall_deadend_bottom;
-	public Sprite simple_wall_deadend_top;
-	public Sprite simple_wall_deadend_right;
-	public Sprite simple_wall_deadend_left;
-	[Header("Junctions")]
-	public Sprite simple_wall_junction_bottom;
-	public Sprite simple_wall_junction_top;
-	public Sprite simple_wall_junction_left;
-	public Sprite simple_wall_junction_right;
-	[Header("Straight")]
-	public Sprite simple_wall_horizontal;
-	public Sprite simple_wall_vertical;
-	[Header("Middle")]
-	public Sprite simple_wall_full_middle;
-	[Header("Single")]
-	public Sprite simple_wall_single;
-
-	[Space(25)]
-
-	[Header("Shop Tileset Sprites")]
-	[Header("Floor sprite")]
-	public Sprite shop_floor;
-	[Header("Corners")]
-	public Sprite shop_wall_corner_top_left;
-	public Sprite shop_wall_corner_top_right;
-	public Sprite shop_wall_corner_bottom_left;
-	public Sprite shop_wall_corner_bottom_right;
-	[Header("Deadends")]
-	public Sprite shop_wall_deadend_bottom;
-	public Sprite shop_wall_deadend_top;
-	public Sprite shop_wall_deadend_right;
-	public Sprite shop_wall_deadend_left;
-	[Header("Junctions")]
-	public Sprite shop_wall_junction_bottom;
-	public Sprite shop_wall_junction_top;
-	public Sprite shop_wall_junction_left;
-	public Sprite shop_wall_junction_right;
-	[Header("Straight")]
-	public Sprite shop_wall_horizontal;
-	public Sprite shop_wall_vertical;
-	[Header("Middle")]
-	public Sprite shop_wall_full_middle;
-	[Header("Single")]
-	public Sprite shop_wall_single;
+	// base spritesheet is 16 x 16 tiles
+	// if we add more tiles this will keep the old 
+	// tiles not shifting down.
+	// This is because for loop starts from bottom. (origin 0,0)
+	private int spriteSheetTileCountStandard = 16;
 
 	void Awake() { instance = this; } 
+	void Start() { pixels = spriteSheet.GetPixels32(); }
 
-	public Sprite GetSprite(SpriteType sType) {
-		
-		switch(sType) {
+	private int GetTileCountHeight() { return spriteSheet.height / 16; }
+	private int GetTileCountWidth() { return spriteSheet.width / 16; }
+
+	public void RandomizeTileSet() {
+
+		System.Array values = System.Enum.GetValues(typeof(TileSet));
+		System.Random random = new System.Random();
+		TileSet randomTileSet = (TileSet)values.GetValue(random.Next(values.Length));
+
+		currentTileSet = randomTileSet;
+	}
+
+
+	private Sprite ReadSpriteSheet(int row, int column) {
+		List<Color32> spriteColors = new List<Color32>();
+
+		// reads the spritesheet from bottom left corner to top right corner.
+		// row = 0 && column = 0 is bottom left corner.
+
+		for(int y = row * 16; y < (row + 1) * 16; y++) {
+			for(int x = column * 16; x < (column + 1) * 16; x++) {
+
+				Color32 currentPixel = pixels[(y * spriteSheet.width) + x];
+				spriteColors.Add(currentPixel);
+
+			}
+		}
+
+		// create texture
+		Color32[] spriteData = spriteColors.ToArray();
+		Texture2D spriteTex = new Texture2D(16, 16);
+
+		spriteTex.SetPixels32(spriteData);
+		spriteTex.Apply();
+
+		// set filter mode
+		spriteTex.filterMode = FilterMode.Point;
+
+		// return new sprite.
+		return Sprite.Create(spriteTex, new Rect(0, 0, spriteTex.width, spriteTex.height), new Vector2(0.5f, 0.5f), 16f);
+
+	}
+
+	/// <summary>
+	/// Reads the spritesheet from given row and column and creates texture2D and converts it to sprite.
+	/// rows and columns example can be found in the project files.
+	/// </summary>
+	/// <returns>The texture.</returns>
+	/// <param name="type">Type.</param>
+	public Sprite CreateTexture(SpriteType type) {
+
+		int topTilePos = 0;
+
+		switch(type) {
 		case SpriteType.CornerBL:
-			if(currentTileSet == TileSet.Simple) return simple_wall_corner_bottom_left;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_corner_bottom_left;
+
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 0);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 0);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 0);
+			}
+
 			break;
 		case SpriteType.CornerBR:
-			if(currentTileSet == TileSet.Simple) return simple_wall_corner_bottom_right;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_corner_bottom_right;
+
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 2);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 2);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 2);
+			}
+
 			break;
 		case SpriteType.CornerTL:
-			if(currentTileSet == TileSet.Simple) return simple_wall_corner_top_left;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_corner_top_left;
+
+			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 0);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 0);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 0);
+			}
+
 			break;
 		case SpriteType.CornerTR:
-			if(currentTileSet == TileSet.Simple) return simple_wall_corner_top_right;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_corner_top_right;
+
+			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 2);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 2);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 2);
+			}
+
 			break;
 		case SpriteType.DeadendB:
-			if(currentTileSet == TileSet.Simple) return simple_wall_deadend_bottom;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_deadend_bottom;
+
+			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 3);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 3);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 3);
+			}
+
 			break;
 		case SpriteType.DeadendL:
-			if(currentTileSet == TileSet.Simple) return simple_wall_deadend_left;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_deadend_left;
+
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 3);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 3);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 3);
+			}
+
 			break;
 		case SpriteType.DeadendR:
-			if(currentTileSet == TileSet.Simple) return simple_wall_deadend_right;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_deadend_right;
+
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 4);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 4);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 4);
+			}
+
 			break;
 		case SpriteType.DeadendT:
-			if(currentTileSet == TileSet.Simple) return simple_wall_deadend_top;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_deadend_top;
+
+			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 3);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 3);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 3);
+			}
+
 			break;
 		case SpriteType.Floor:
-			if(currentTileSet == TileSet.Simple) return simple_floor;
-			else if(currentTileSet == TileSet.Shop) return shop_floor;
+
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 5);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 5);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 5);
+			}
+
 			break;
 		case SpriteType.Horizontal:
-			if(currentTileSet == TileSet.Simple) return simple_wall_horizontal;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_horizontal;
+
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 1);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 1);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 1);
+			}
+
 			break;
 		case SpriteType.Vertical:
-			if(currentTileSet == TileSet.Simple) return simple_wall_vertical;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_vertical;
+
+			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 0);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 0);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 0);
+			}
+
 			break;
 		case SpriteType.Single:
-			if(currentTileSet == TileSet.Simple) return simple_wall_single;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_single;
+
+			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 4);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 4);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 4);
+			}
+
 			break;
 		case SpriteType.Middle:
-			if(currentTileSet == TileSet.Simple) return simple_wall_full_middle;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_single;
+
+			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 1);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 1);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 1);
+			}
+
 			break;
 		case SpriteType.JunctionB:
-			if(currentTileSet == TileSet.Simple) return simple_wall_junction_bottom;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_junction_bottom;
+
+			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 6);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 6);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 6);
+			}
+
 			break;
 		case SpriteType.JunctionL:
-			if(currentTileSet == TileSet.Simple) return simple_wall_junction_left;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_junction_left;
+
+			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 6);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 6);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 6);
+			}
+
 			break;
 		case SpriteType.JunctionR:
-			if(currentTileSet == TileSet.Simple) return simple_wall_junction_right;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_junction_right;
+
+			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 5);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 5);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 5);
+			}
+
 			break;
 		case SpriteType.JunctionT:
-			if(currentTileSet == TileSet.Simple) return simple_wall_junction_top;
-			else if(currentTileSet == TileSet.Shop) return shop_wall_junction_top;
+
+			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 5);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 5);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 5);
+			}
+
+			break;
+		case SpriteType.Exit:
+
+			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 4);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 4);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 4);
+			}
+			break;
+		case SpriteType.FloorSpecialItem:
+
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 7);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 7);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 7);
+			}
 			break;
 		}
 
-		return null;
 
+		return null;
 	}
 
 

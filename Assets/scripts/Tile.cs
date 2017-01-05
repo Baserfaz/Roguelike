@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour {
 
-	public enum TileType { Floor, Wall, Empty, Exit, OuterWall }
+	public enum TileType { Floor, Wall, Empty, Exit, OuterWall, FloorSpecialItem }
 
 	public Vector2 position;
 	public TileType myType;
 
 	public GameObject actor = null;
 	public GameObject item = null;
+	public GameObject vanityItem = null;
 
 	public bool isDiscovered = false;
 	public bool isVisible = false;

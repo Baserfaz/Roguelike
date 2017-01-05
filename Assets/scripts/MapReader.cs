@@ -10,7 +10,7 @@ public struct ColorToTileType {
 
 public class MapReader : MonoBehaviour {
 
-	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem }
+	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy }
 	public enum State { Tile, ItemActor }
 
 	private State myState = State.Tile;
@@ -68,7 +68,10 @@ public class MapReader : MonoBehaviour {
 					case PngTileType.Floor:
 						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Floor);
 						break;
-					
+					case PngTileType.ShopItem:
+						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.FloorSpecialItem);
+						break;
+
 						// all other cases create floor also.
 					default:
 						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Floor);
@@ -93,6 +96,12 @@ public class MapReader : MonoBehaviour {
 						Item.Type randomType = (Item.Type) arr.GetValue(Random.Range(0, arr.Length));
 
 						PrefabManager.instance.InstantiateRandomItemInCategory(randomType, new Vector2(x, y), Item.Rarity.Normal, true);
+						break;
+					case PngTileType.LightSource:
+						DungeonVanityManager.instance.SpawnVanityItem(DungeonVanityManager.VanityItem.Lantern, new Vector2(x, y));
+						break;
+					case PngTileType.RandomEnemy:
+						PrefabManager.instance.InstantiateEnemyAtPos(x, y);
 						break;
 					default:
 						break;

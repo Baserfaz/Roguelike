@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: b448ac236681d624890f49bf4916695f
-timeCreated: 1483382037
+timeCreated: 1483634969
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -61,6 +61,8 @@ TextureImporter:
     21300108: GUI_useItemSlot
     21300110: Cursor_01
     21300112: spell_fireball
+    21300114: lantern_01
+    21300116: light_ball_01
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -76,7 +78,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -127,63 +129,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_deadend_top
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 32
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_single
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 32
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: floor
-      rect:
-        serializedVersion: 2
-        x: 112
-        y: 32
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_full_middle
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 32
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
       name: player_01
       rect:
         serializedVersion: 2
         x: 0
-        y: 80
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -196,7 +146,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 80
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -209,7 +159,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 80
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -222,7 +172,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 80
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -235,7 +185,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -248,7 +198,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 64
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -261,7 +211,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 64
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -274,7 +224,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 64
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -287,7 +237,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 48
+        y: 256
         width: 16
         height: 16
       alignment: 0
@@ -299,8 +249,8 @@ TextureImporter:
       name: GUI_health
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 208
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -312,8 +262,8 @@ TextureImporter:
       name: GUI_attack
       rect:
         serializedVersion: 2
-        x: 16
-        y: 0
+        x: 224
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -325,177 +275,8 @@ TextureImporter:
       name: GUI_defence
       rect:
         serializedVersion: 2
-        x: 32
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_deadend_bottom
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 16
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_deadend_left
-      rect:
-        serializedVersion: 2
-        x: 48
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_deadend_right
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_corner_bottom_left
-      rect:
-        serializedVersion: 2
-        x: 48
-        y: 16
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_corner_bottom_right
-      rect:
-        serializedVersion: 2
-        x: 80
-        y: 16
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_horizontal
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 16
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_vertical
-      rect:
-        serializedVersion: 2
-        x: 48
-        y: 32
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_corner_top_left
-      rect:
-        serializedVersion: 2
-        x: 48
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_corner_top_right
-      rect:
-        serializedVersion: 2
-        x: 80
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_junction_top
-      rect:
-        serializedVersion: 2
-        x: 96
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_junction_bottom
-      rect:
-        serializedVersion: 2
-        x: 112
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_junction_right
-      rect:
-        serializedVersion: 2
-        x: 96
-        y: 64
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: wall_junction_left
-      rect:
-        serializedVersion: 2
-        x: 112
-        y: 64
+        x: 240
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -507,8 +288,8 @@ TextureImporter:
       name: GUI_gold
       rect:
         serializedVersion: 2
-        x: 16
-        y: 16
+        x: 208
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -520,8 +301,8 @@ TextureImporter:
       name: gold_coin
       rect:
         serializedVersion: 2
-        x: 128
-        y: 80
+        x: 80
+        y: 224
         width: 16
         height: 16
       alignment: 0
@@ -534,7 +315,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 80
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -547,7 +328,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 64
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -560,7 +341,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 80
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -573,20 +354,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 64
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: hole
-      rect:
-        serializedVersion: 2
-        x: 144
-        y: 0
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -598,8 +366,8 @@ TextureImporter:
       name: potion_red
       rect:
         serializedVersion: 2
-        x: 112
-        y: 16
+        x: 32
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -611,8 +379,8 @@ TextureImporter:
       name: potion_blue
       rect:
         serializedVersion: 2
-        x: 96
-        y: 16
+        x: 16
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -624,8 +392,8 @@ TextureImporter:
       name: blood_01
       rect:
         serializedVersion: 2
-        x: 128
-        y: 64
+        x: 16
+        y: 208
         width: 16
         height: 16
       alignment: 0
@@ -637,8 +405,8 @@ TextureImporter:
       name: burnt_candle
       rect:
         serializedVersion: 2
-        x: 128
-        y: 48
+        x: 48
+        y: 208
         width: 16
         height: 16
       alignment: 0
@@ -650,8 +418,8 @@ TextureImporter:
       name: skull_01
       rect:
         serializedVersion: 2
-        x: 144
-        y: 64
+        x: 32
+        y: 208
         width: 16
         height: 16
       alignment: 0
@@ -663,21 +431,8 @@ TextureImporter:
       name: GUI_spellSlot
       rect:
         serializedVersion: 2
-        x: 32
-        y: 16
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: gradient_01
-      rect:
-        serializedVersion: 2
-        x: 96
-        y: 32
+        x: 224
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -689,8 +444,8 @@ TextureImporter:
       name: potion_green
       rect:
         serializedVersion: 2
-        x: 96
-        y: 0
+        x: 64
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -702,8 +457,8 @@ TextureImporter:
       name: potion_orange
       rect:
         serializedVersion: 2
-        x: 112
-        y: 0
+        x: 80
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -715,8 +470,8 @@ TextureImporter:
       name: chest_giolden
       rect:
         serializedVersion: 2
-        x: 144
-        y: 48
+        x: 16
+        y: 224
         width: 16
         height: 16
       alignment: 0
@@ -728,8 +483,8 @@ TextureImporter:
       name: gold_pile
       rect:
         serializedVersion: 2
-        x: 144
-        y: 80
+        x: 96
+        y: 224
         width: 16
         height: 16
       alignment: 0
@@ -741,8 +496,8 @@ TextureImporter:
       name: potion_black
       rect:
         serializedVersion: 2
-        x: 128
-        y: 16
+        x: 48
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -754,8 +509,8 @@ TextureImporter:
       name: potion_purple
       rect:
         serializedVersion: 2
-        x: 128
-        y: 0
+        x: 96
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -767,8 +522,8 @@ TextureImporter:
       name: GUI_useItemSlot
       rect:
         serializedVersion: 2
-        x: 32
-        y: 32
+        x: 240
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -780,8 +535,8 @@ TextureImporter:
       name: Cursor_01
       rect:
         serializedVersion: 2
-        x: 32
-        y: 48
+        x: 208
+        y: 256
         width: 16
         height: 16
       alignment: 0
@@ -793,8 +548,34 @@ TextureImporter:
       name: spell_fireball
       rect:
         serializedVersion: 2
-        x: 208
-        y: 16
+        x: 16
+        y: 256
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: lantern_01
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 208
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: light_ball_01
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 240
         width: 16
         height: 16
       alignment: 0

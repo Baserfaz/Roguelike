@@ -32,12 +32,15 @@ public class GameMaster : MonoBehaviour {
 	public int itemZLevel = 0;
 	public int worldGuiZLevel = -2;
 	public int crosshairZLevel = -2;
+	public int vanityitemsZLevel = 0;
+	public int lightZLevel = -3;
 
 	[Header("Enemy settings")]
 	public int maxEnemyCountPerDungeon = 15;
 
 	[Header("Special Levels")]
 	public Texture2D shopLevel;
+	public Texture2D mobCabinetlevel01;
 
 	void Awake() { instance = this; }
 
@@ -59,9 +62,13 @@ public class GameMaster : MonoBehaviour {
 		DungeonGenerator.instance.DestroyDungeon();
 		GUIManager.instance.ClearJournal();
 		PrefabManager.instance.RemovePlayer();
+		DungeonVanityManager.instance.RemoveVanityItems();
 	}
 
 	public void StartNewGame() {
+
+		SpriteManager.instance.RandomizeTileSet();
+
 		// create & populate
 		DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
 		PrefabManager.instance.PopulateItemLists();
@@ -117,14 +124,18 @@ public class GameMaster : MonoBehaviour {
 		PrefabManager.instance.RemoveEnemies();
 		PrefabManager.instance.RemoveItems();
 		DungeonGenerator.instance.DestroyDungeon();
+		DungeonVanityManager.instance.RemoveVanityItems();
 
 		// TODO:
 		// randomize if next level is special room or random dungeon floor.
 
-		if(dungeonLevel % 2 == 0) {
+		if(dungeonLevel % 3 == 0) {
 
 			// TODO:
 			// randomize special rooms
+
+			// change tileset
+			SpriteManager.instance.currentTileSet = SpriteManager.TileSet.Shop;
 
 			// create shop
 			MapReader.instance.GenerateDungeonFromImage(shopLevel);
@@ -134,7 +145,21 @@ public class GameMaster : MonoBehaviour {
 			GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
 			GUIManager.instance.CreateJournalEntry("Dungeon level: " + currentDungeonName, GUIManager.JournalType.System);
 
+		} else if(dungeonLevel % 2 == 0) {
+
+			SpriteManager.instance.RandomizeTileSet();
+
+			// create shop
+			MapReader.instance.GenerateDungeonFromImage(mobCabinetlevel01);
+
+			currentDungeonName = "Epic loot...";
+
+			GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
+			GUIManager.instance.CreateJournalEntry("Dungeon level: " + currentDungeonName, GUIManager.JournalType.System);
+
 		} else {
+			
+			SpriteManager.instance.RandomizeTileSet();
 
 			// create new stuff
 			DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);

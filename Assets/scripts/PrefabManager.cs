@@ -16,6 +16,7 @@ public class PrefabManager : MonoBehaviour {
 
 	[Header("Other prefabs")]
 	public GameObject blobShadow;
+	public GameObject lightCircle;
 
 	[Header("Item prefabs")]
 	[Header("Armor")]
@@ -273,39 +274,62 @@ public class PrefabManager : MonoBehaviour {
 
 	}
 
+	public void InstantiateEnemyAtPos(int x, int y) {
+		Vector2 spawnPos = new Vector2(x, y);
+
+		GameObject enemyInst = (GameObject) Instantiate(enemyPrefab, new Vector3(spawnPos.x, spawnPos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
+
+		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(spawnPos);
+		Tile tile = tileGo.GetComponent<Tile>();
+
+		tile.actor = enemyInst;
+
+		enemyInst.GetComponent<Enemy>().position = tile.position;
+		enemyInstances.Add(enemyInst);
+
+		// 3. health
+		//enemyInst.GetComponent<Health>().maxHealth = GameMaster.instance.dungeonLevel;
+		//enemyInst.GetComponent<Health>().UpdateCurrentHealth();
+
+		GameMaster.instance.enemyCount++;
+	}
+
+	public void InstantiateEnemy() {
+		Vector2 spawnPos = GetFreeInstPosition();
+
+		// TODO: 
+		// 1. failsafe if spawnpos cant be found.
+
+		GameObject enemyInst = (GameObject) Instantiate(enemyPrefab, new Vector3(spawnPos.x, spawnPos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
+
+		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(spawnPos);
+		Tile tile = tileGo.GetComponent<Tile>();
+
+		tile.actor = enemyInst;
+
+		enemyInst.GetComponent<Enemy>().position = tile.position;
+		enemyInstances.Add(enemyInst);
+
+		// TODO:
+		// 1. balancing shit
+
+		// 1. damage
+		//enemyActor.defaultDamage = GameMaster.instance.dungeonLevel;
+
+		// 2. armor
+		//enemyActor.defaultArmor = GameMaster.instance.dungeonLevel;
+
+		// 3. health
+		//enemyInst.GetComponent<Health>().maxHealth = GameMaster.instance.dungeonLevel;
+		//enemyInst.GetComponent<Health>().UpdateCurrentHealth();
+
+		GameMaster.instance.enemyCount++;
+	}
+
 	public void InstantiateEnemies() {
 		for(int i = 0; i < GameMaster.instance.maxEnemyCountPerDungeon; i++) {
-			Vector2 spawnPos = GetFreeInstPosition();
-
-			// TODO: 
-			// 1. failsafe if spawnpos cant be found.
-
-			GameObject enemyInst = (GameObject) Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-
-			GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(spawnPos);
-			Tile tile = tileGo.GetComponent<Tile>();
-
-			tile.actor = enemyInst;
-
-			enemyInst.GetComponent<Enemy>().position = tile.position;
-			enemyInstances.Add(enemyInst);
-
-			// TODO:
-			// 1. balancing shit
-
-			// 1. damage
-			//enemyActor.defaultDamage = GameMaster.instance.dungeonLevel;
-
-			// 2. armor
-			//enemyActor.defaultArmor = GameMaster.instance.dungeonLevel;
-
-			// 3. health
-			enemyInst.GetComponent<Health>().maxHealth = GameMaster.instance.dungeonLevel;
-			enemyInst.GetComponent<Health>().UpdateCurrentHealth();
-
+			InstantiateEnemy();
 		}
-		// the count of enemies actually (successfully) instantiated.
-		GameMaster.instance.enemyCount = enemyInstances.Count;
 	}
 
 	public void InstantiatePlayer() {
