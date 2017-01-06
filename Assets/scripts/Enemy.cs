@@ -21,7 +21,7 @@ public class Enemy : Actor {
 			Tile tile = tileGo.GetComponent<Tile>();
 
 			// tile is walkable
-			if(tile.myType == Tile.TileType.Floor) {
+			if(tile.myType == Tile.TileType.Floor || tile.myType == Tile.TileType.DoorOpen) {
 
 				// tile is not occupied.
 				if(tile.actor == null) {

@@ -12,8 +12,6 @@ public class GUIManager : MonoBehaviour {
 
 	[Header("GUI elements")]
 	public GameObject mainGUI;
-	public GameObject topBar;
-	public GameObject turnCounter;
 	public GameObject journalList;
 
 	[Header("MainMenu elements")]
@@ -32,6 +30,7 @@ public class GUIManager : MonoBehaviour {
 	public GameObject journalEntryPrefab;
 	public GameObject popUptextPrefab;
 	public GameObject OnGuiTextPrefab;
+	public GameObject OnGuiBackground_dungeonName;
 
 	private int maxJournalEntries = 30;
 
@@ -57,8 +56,17 @@ public class GUIManager : MonoBehaviour {
 	public void HideMainmenu() { Hide(mainmenuGUI); }
 	public void ShowMainmenu() { Show(mainmenuGUI); }
 
+	public string ExtractPlayerName(GameObject settings) { 
+		string pname = settings.GetComponent<InputField>().text;
+
+		if(pname == "" || pname == null) {
+			pname = "Nameless";
+		}
+
+		return pname;
+	}
+
 	public void UpdateAllElements() {
-		UpdateElement(turnCounter);
 		UpdateElement(healthStatus);
 		UpdateElement(attackStatus);
 		UpdateElement(armorStatus);
@@ -89,12 +97,42 @@ public class GUIManager : MonoBehaviour {
 	/// </summary>
 	/// <param name="txt">Text.</param>
 	/// <param name="fadeTime">Fade time.</param>
-	public void CreateOnGuiText(string txt, float fadeTime = 5f) {
+	public void CreateOnGuiText(string txt, float fadeTime = 5f, bool useBackground = true) {
 		GameObject obj = (GameObject) Instantiate(OnGuiTextPrefab);
+		GameObject background = null;
+
+		if(useBackground) {
+			background = (GameObject) Instantiate(OnGuiBackground_dungeonName);
+			background.transform.position = Vector3.zero;
+			background.transform.SetParent(obj.transform);
+
+			// set the anchors.
+			RectTransform rt = background.GetComponent<RectTransform>();
+			rt.anchorMin = new Vector2(0, 0);
+			rt.anchorMax = new Vector2(1, 1);
+			rt.pivot = new Vector2(0.5f, 0.5f);
+		}
+
+		// set text
 		obj.GetComponent<Text>().text = txt;
-		obj.transform.SetParent(mainGUI.transform);
-		obj.transform.position = new Vector3(Screen.width/2, Screen.height/2 + Screen.height/4, 0f);
-		obj.GetComponent<PopUpText>().StartFade(fadeTime);
+
+		// position text.
+		obj.transform.position = new Vector3(Screen.width/2, Screen.height/2 + Screen.height/3.5f, 0f);
+
+		// change the parents so the text is in front of background.
+		if(background != null) {
+			background.transform.SetParent(mainGUI.transform);
+			obj.transform.SetParent(background.transform);
+		} else {
+			obj.transform.SetParent(mainGUI.transform);
+		}
+
+		// scale the object down.
+		background.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+
+		// fade background.
+		if(background != null) background.GetComponent<PopUpText>().StartFade(fadeTime);
+		else obj.GetComponent<PopUpText>().StartFade(fadeTime);
 	}
 
 	/// <summary>
@@ -108,10 +146,12 @@ public class GUIManager : MonoBehaviour {
 	/// <param name="type">Type.</param>
 	/// <param name="fadeTime">Fade time.</param>
 	public GameObject CreatePopUpEntry(string txt, Vector2 pos, PopUpType type, float fadeTime = 1f) {
-		float Yoffset = 0.4f;
 		GameObject obj = (GameObject) Instantiate(popUptextPrefab);
 		obj.GetComponent<Text>().text = txt;
-		obj.transform.position = new Vector3(pos.x, pos.y + Yoffset, GameMaster.instance.worldGuiZLevel);
+
+		Vector2 offset = new Vector2(Random.Range(-0.5f, 0.5f), 0.4f);
+
+		obj.transform.position = new Vector3(pos.x + offset.x, pos.y + offset.y, GameMaster.instance.worldGuiZLevel);
 
 		switch(type) {
 		case PopUpType.Damage:
@@ -124,7 +164,7 @@ public class GUIManager : MonoBehaviour {
 			obj.GetComponent<Text>().color = new Color32(194, 225, 194, 255); // gray/green
 			break;
 		case PopUpType.Other:
-			obj.GetComponent<Text>().color = new Color32(193, 180, 174, 255); // gray
+			obj.GetComponent<Text>().color = new Color32(193, 193, 193, 255); // gray
 			break;
 		case PopUpType.Heal:
 			obj.GetComponent<Text>().color = new Color32(24, 221, 60, 255); // green
@@ -165,9 +205,6 @@ public class GUIManager : MonoBehaviour {
 
 		switch(obj.GetComponent<GUIElementScript>().myElement) {
 		case GUIElementScript.Element.NotUpdatable:
-			break;
-		case GUIElementScript.Element.TurnCounter:
-			obj.GetComponentInChildren<Text>().text = "Turn: " + GameMaster.instance.turnCount;
 			break;
 		case GUIElementScript.Element.Health:
 			obj.GetComponentInChildren<Text>().text = "" + PrefabManager.instance.GetPlayerInstance().GetComponent<Health>().currentHealth +

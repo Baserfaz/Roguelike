@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class LineOfSightManager : MonoBehaviour {
 
+	private List<GameObject> allTiles = new List<GameObject>();
+
 	private void TryActivateEnemy(GameObject tileGo) {
 		Tile tile = tileGo.GetComponent<Tile>();
 
-		if(tile.actor != null) {
+		if(tile.isVisible && tile.actor != null) {
 			if(tile.actor.GetComponent<Enemy>() != null) {
 				tile.actor.GetComponent<Enemy>().isActive = true;
 				tile.actor.GetComponent<Enemy>().targetPosition = GetComponent<Player>().position;
@@ -18,7 +20,7 @@ public class LineOfSightManager : MonoBehaviour {
 	public void CalculateLoS() {
 
 		List<GameObject> tilesAroundPlayer = DungeonGenerator.instance.GetTilesAroundPosition(GetComponent<Actor>().position, GetComponent<Player>().seeRadius);
-		List<GameObject> allTiles = DungeonGenerator.instance.GetTiles();
+		allTiles = DungeonGenerator.instance.GetTiles();
 
 		// flag tiles that are next to player
 		// as discovered and visible.
@@ -27,9 +29,6 @@ public class LineOfSightManager : MonoBehaviour {
 			Tile t = tile.GetComponent<Tile>();
 			t.isDiscovered = true;
 			t.isVisible = true;
-
-			TryActivateEnemy(tile);
-
 		}
 
 		// flag tiles that are not in the radius of
@@ -40,8 +39,17 @@ public class LineOfSightManager : MonoBehaviour {
 			}
 		}
 
+		// calculates blocked LOS.
 		if(GameMaster.instance.wallsBlockLos) CalculateWalls();
 
+		EnemyActivation();
+
+	}
+
+	private void EnemyActivation() {
+		foreach(GameObject tile in allTiles) {
+			TryActivateEnemy(tile);
+		}
 	}
 
 	private void CalculateWalls() {
@@ -65,7 +73,7 @@ public class LineOfSightManager : MonoBehaviour {
 		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 1, myPos.y + 1));
 		Tile tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 2, myPos.y + 1));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 2, myPos.y + 2));
@@ -78,7 +86,7 @@ public class LineOfSightManager : MonoBehaviour {
 		tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x, myPos.y + 1));
 		tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x, myPos.y + 2));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 		}
@@ -87,7 +95,7 @@ public class LineOfSightManager : MonoBehaviour {
 		tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 1, myPos.y + 1));
 		tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 1, myPos.y + 2));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 2, myPos.y + 2));
@@ -100,7 +108,7 @@ public class LineOfSightManager : MonoBehaviour {
 		tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 1, myPos.y));
 		tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 2, myPos.y));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 		}
@@ -109,7 +117,7 @@ public class LineOfSightManager : MonoBehaviour {
 		tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 1, myPos.y));
 		tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 2, myPos.y));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 		}
@@ -118,7 +126,7 @@ public class LineOfSightManager : MonoBehaviour {
 		tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 1, myPos.y - 1));
 		tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 1, myPos.y - 2));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x - 2, myPos.y - 2));
@@ -131,7 +139,7 @@ public class LineOfSightManager : MonoBehaviour {
 		tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x, myPos.y - 1));
 		tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x, myPos.y - 2));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 		}
@@ -140,7 +148,7 @@ public class LineOfSightManager : MonoBehaviour {
 		tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 1, myPos.y - 1));
 		tile = tileGo.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
+		if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 1, myPos.y - 2));
 			if(hiddenTile != null) hiddenTiles.Add(hiddenTile);
 			hiddenTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(myPos.x + 2, myPos.y - 2));

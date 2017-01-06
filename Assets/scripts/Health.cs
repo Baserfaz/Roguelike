@@ -25,8 +25,12 @@ public class Health : MonoBehaviour {
 		// and simply subtract damage from it.
 		int actualDmg = amount;
 
-		if(GetComponent<Inventory>().currentArmor != null) {
-			actualDmg -= GetComponent<Inventory>().currentArmor.GetComponent<Armor>().GetArmorRating();
+		if(GetComponent<Inventory>() != null) {
+			if(GetComponent<Inventory>().currentArmor != null) {
+				actualDmg -= GetComponent<Inventory>().currentArmor.GetComponent<Armor>().GetArmorRating();
+			} else {
+				actualDmg -= GetComponent<Actor>().defaultArmor;
+			}
 		} else {
 			actualDmg -= GetComponent<Actor>().defaultArmor;
 		}

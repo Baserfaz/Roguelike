@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Actor : MonoBehaviour {
 
+	// Attack state is basically melee attack.
+	// -> when the player moves towards enemy.
+	// --> spells/and use items doesn't use states.
 	public enum NextMoveState { Move, Attack, Pass, Stuck, None };
 
 	public string actorName = "";
@@ -40,9 +43,13 @@ public class Actor : MonoBehaviour {
 		GameObject target = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().actor;
 
 		// calculate weapon damage
-		if(GetComponent<Inventory>().currentWeapon != null) {
-			Weapon weapon = GetComponent<Inventory>().currentWeapon.GetComponent<Weapon>();
-			totalDamage += Random.Range(weapon.minDamage, weapon.maxDamage);
+		if(GetComponent<Inventory>() != null) {
+			if(GetComponent<Inventory>().currentWeapon != null) {
+				Weapon weapon = GetComponent<Inventory>().currentWeapon.GetComponent<Weapon>();
+				totalDamage += Random.Range(weapon.minDamage, weapon.maxDamage);
+			}
+		} else {
+			// use default damage.
 		}
 
 		// calculate miss
@@ -60,9 +67,14 @@ public class Actor : MonoBehaviour {
 
 		target.GetComponent<Health>().TakeDamage(totalDamage, crit);
 
-		if(target.GetComponent<Inventory>().currentArmor != null) {
-			target.GetComponent<Inventory>().currentArmor.GetComponent<Armor>().SubtractArmor();
-		} else if(target.GetComponent<Actor>().defaultArmor > 0) {
+		// degenerate armor.
+		if(target.GetComponent<Inventory>() != null) {
+			if(target.GetComponent<Inventory>().currentArmor != null) {
+				target.GetComponent<Inventory>().currentArmor.GetComponent<Armor>().SubtractArmor();
+			} else if(target.GetComponent<Actor>().defaultArmor > 0) {
+				if(GameMaster.instance.attacksSubtractDefaultArmor) target.GetComponent<Actor>().defaultArmor --;
+			}
+		} else {
 			if(GameMaster.instance.attacksSubtractDefaultArmor) target.GetComponent<Actor>().defaultArmor --;
 		}
 

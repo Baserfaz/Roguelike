@@ -52,6 +52,7 @@
      <Compile Include="Assets\scripts\Crosshair.cs" />
      <Compile Include="Assets\scripts\CrosshairManager.cs" />
      <Compile Include="Assets\scripts\DungeonGenerator.cs" />
+     <Compile Include="Assets\scripts\DungeonItemManager.cs" />
      <Compile Include="Assets\scripts\DungeonVanityManager.cs" />
      <Compile Include="Assets\scripts\Enemy.cs" />
      <Compile Include="Assets\scripts\Experience.cs" />

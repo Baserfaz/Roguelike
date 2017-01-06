@@ -25,6 +25,11 @@ public class GameMaster : MonoBehaviour {
 	public int dungeonWidth = 5;
 	public int tileZLevel = 1;
 	[Range(1, 50)] public int dungeonSpaciousness = 1;
+	[Range(1, 100)] public int doorSpawnChance = 10;
+
+	[Header("Special level chance to spawn")]
+	[Range(1, 100)] public int ShopChance = 10;
+	[Range(1, 100)] public int mobCabinet01Chance = 15;
 
 	[Header("Z-levels")]
 	public int playerZLevel = -1;
@@ -53,6 +58,9 @@ public class GameMaster : MonoBehaviour {
 	void Start () {
 		GUIManager.instance.ShowMainmenu();
 		GUIManager.instance.HideGUI();
+
+		// CONTINUES -> PLAY BUTTON OnClick
+		// --> StartNewGame()
 	}
 
 	public void ResetEverything() {
@@ -65,7 +73,7 @@ public class GameMaster : MonoBehaviour {
 		DungeonVanityManager.instance.RemoveVanityItems();
 	}
 
-	public void StartNewGame() {
+	public void StartNewGame(GameObject gameSettings) {
 
 		SpriteManager.instance.RandomizeTileSet();
 
@@ -75,7 +83,12 @@ public class GameMaster : MonoBehaviour {
 
 		// instantiate actors
 		PrefabManager.instance.InstantiateEnemies();
-		PrefabManager.instance.InstantiatePlayer();
+
+		// get the settings from gameSettings
+		// using GuiManager.
+		string playerName = GUIManager.instance.ExtractPlayerName(gameSettings);
+
+		PrefabManager.instance.InstantiatePlayer(playerName);
 
 		// update player line of sight
 		UpdatePlayerLos();
@@ -83,7 +96,7 @@ public class GameMaster : MonoBehaviour {
 		// GUI & other stuff
 		CreateNewRandomDungeonName();
 		GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
-		GUIManager.instance.CreateJournalEntry("Welcome to the dungeon!", GUIManager.JournalType.System);
+		GUIManager.instance.CreateJournalEntry("Welcome to the dungeon, " + playerName, GUIManager.JournalType.System);
 		GUIManager.instance.UpdateAllElements();
 	}
 
@@ -126,54 +139,47 @@ public class GameMaster : MonoBehaviour {
 		DungeonGenerator.instance.DestroyDungeon();
 		DungeonVanityManager.instance.RemoveVanityItems();
 
-		// TODO:
-		// randomize if next level is special room or random dungeon floor.
+		if(Random.Range(0, 100) > 100 - ShopChance) {
 
-		if(dungeonLevel % 3 == 0) {
-
-			// TODO:
-			// randomize special rooms
-
-			// change tileset
+			// change tileset to use shop tiles.
 			SpriteManager.instance.currentTileSet = SpriteManager.TileSet.Shop;
 
 			// create shop
 			MapReader.instance.GenerateDungeonFromImage(shopLevel);
 
-			currentDungeonName = "Gerald's awesome shop";
+			// name
+			currentDungeonName = "Shop a holic";
 
-			GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
-			GUIManager.instance.CreateJournalEntry("Dungeon level: " + currentDungeonName, GUIManager.JournalType.System);
+		} else if(Random.Range(0, 100) > 100 - mobCabinet01Chance) {
 
-		} else if(dungeonLevel % 2 == 0) {
-
+			// randomize tileset
 			SpriteManager.instance.RandomizeTileSet();
 
 			// create shop
 			MapReader.instance.GenerateDungeonFromImage(mobCabinetlevel01);
 
-			currentDungeonName = "Epic loot...";
-
-			GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
-			GUIManager.instance.CreateJournalEntry("Dungeon level: " + currentDungeonName, GUIManager.JournalType.System);
+			currentDungeonName = "It's not a trap.";
 
 		} else {
-			
+
+			// randomize tileset once again.
 			SpriteManager.instance.RandomizeTileSet();
 
-			// create new stuff
+			// create new randomized dungeon.
 			DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
 
-			// instantiate enemies
+			// instantiate enemies.
 			PrefabManager.instance.InstantiateEnemies();
 
+			// name it.
 			CreateNewRandomDungeonName();
-			GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
-			GUIManager.instance.CreateJournalEntry("Dungeon level: " + dungeonLevel, GUIManager.JournalType.System);
 		
 			// move player to new location
 			PrefabManager.instance.MovePlayerToNewStartLocation();
 		}
+
+		GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
+		GUIManager.instance.CreateJournalEntry("Dungeon level: " + currentDungeonName, GUIManager.JournalType.System);
 
 		UpdatePlayerLos();
 
@@ -223,7 +229,7 @@ public class GameMaster : MonoBehaviour {
 
 		} else if(player.myNextState == Player.NextMoveState.Attack) {
 			player.Attack();
-		} else if(player.myNextState == Player.NextMoveState.Pass || player.myNextState == Player.NextMoveState.Stuck) {
+		} else if(player.myNextState == Player.NextMoveState.Pass) {
 			// do nothing.
 		}
 	}

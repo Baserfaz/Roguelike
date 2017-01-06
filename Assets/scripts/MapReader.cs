@@ -10,7 +10,7 @@ public struct ColorToTileType {
 
 public class MapReader : MonoBehaviour {
 
-	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy }
+	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy, Door }
 	public enum State { Tile, ItemActor }
 
 	private State myState = State.Tile;
@@ -43,9 +43,9 @@ public class MapReader : MonoBehaviour {
 			// change the state to items and actors 
 			// after first loop.
 			myState = State.ItemActor;
-		}
 
-		DungeonGenerator.instance.CalculateWallTileSprites();
+			if(i == 0) DungeonGenerator.instance.CalculateWallTileSprites();
+		}
 	}
 
 	private void CreateTile(int x, int y, Color32 color) {
@@ -71,8 +71,14 @@ public class MapReader : MonoBehaviour {
 					case PngTileType.ShopItem:
 						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.FloorSpecialItem);
 						break;
+					case PngTileType.Door:
+						// 1. create a wall 
+						// 2. calculate wall sprites
+						// 3. create walls.
+						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Wall);
+						break;
 
-						// all other cases create floor also.
+						// all other cases creates floor tile.
 					default:
 						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Floor);
 						break;
@@ -102,6 +108,10 @@ public class MapReader : MonoBehaviour {
 						break;
 					case PngTileType.RandomEnemy:
 						PrefabManager.instance.InstantiateEnemyAtPos(x, y);
+						break;
+					case PngTileType.Door:
+						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.DoorClosed);
+						DungeonGenerator.instance.CalculateDoorSprite(DungeonGenerator.instance.GetTileAtPos(new Vector2(x, y)));
 						break;
 					default:
 						break;

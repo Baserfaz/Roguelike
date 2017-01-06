@@ -16,10 +16,18 @@ public class Player : Actor {
 		GameObject targetTile = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition);
 		Tile tile = targetTile.GetComponent<Tile>();
 
-		if(tile.myType == Tile.TileType.Floor || tile.myType == Tile.TileType.Exit) {
+		if(tile.myType == Tile.TileType.Floor || tile.myType == Tile.TileType.Exit || tile.myType == Tile.TileType.DoorOpen) {
 			myNextState = NextMoveState.Move;
-		} else if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall) {
-			myNextState = NextMoveState.Stuck;
+		} else if(tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed) {
+			
+			// when player moves toward door it opens and player their passes turn.
+
+			if(tile.myType == Tile.TileType.DoorClosed) {
+				tile.OpenDoor();
+				myNextState = NextMoveState.Pass;
+			} else {
+				myNextState = NextMoveState.Stuck;
+			}
 		}
 	}
 

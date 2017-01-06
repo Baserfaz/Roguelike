@@ -332,11 +332,14 @@ public class PrefabManager : MonoBehaviour {
 		}
 	}
 
-	public void InstantiatePlayer() {
+	public void InstantiatePlayer(string pname) {
 		Vector2 spawnPos = GetFreeInstPosition();
 	
 		playerInstance = (GameObject) Instantiate(playerPrefab, new Vector3(spawnPos.x, spawnPos.y, GameMaster.instance.playerZLevel), Quaternion.identity);
 		playerInstance.GetComponent<Player>().position = spawnPos;
+
+		playerInstance.name = pname;
+		playerInstance.GetComponent<Actor>().actorName = pname;
 
 		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(spawnPos);
 		Tile tile = tileGo.GetComponent<Tile>();

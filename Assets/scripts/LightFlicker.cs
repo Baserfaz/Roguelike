@@ -11,13 +11,12 @@ public class LightFlicker : MonoBehaviour {
 
 	void Awake() {
 		lightPrefab = PrefabManager.instance.lightCircle;
+		CreateLightInstance();
 	}
 
-	void Start () {
+	private void CreateLightInstance() {
 		lightInstance = (GameObject) Instantiate(lightPrefab);
-
 		float randomScale = Random.Range(1f, 1.5f);
-
 		lightInstance.transform.localScale = new Vector3(randomScale, randomScale, lightInstance.transform.localScale.z);
 		lightInstance.transform.position = new Vector3(transform.position.x, transform.position.y, GameMaster.instance.lightZLevel);
 		lightInstance.transform.SetParent(this.transform);
@@ -40,7 +39,7 @@ public class LightFlicker : MonoBehaviour {
 		if(lightInstance == null) return;
 		lightInstance.GetComponent<SpriteRenderer>().color = startColor;
 		CancelInvoke();
-		InvokeRepeating("Flicker", 0f, Random.Range(0.2f, 0.75f));
+		InvokeRepeating("Flicker", 0f, Random.Range(0.2f, 0.35f));
 	}
 
 }

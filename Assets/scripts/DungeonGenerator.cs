@@ -29,7 +29,7 @@ public class DungeonGenerator : MonoBehaviour {
 		tiles.Clear();
 	}
 
-	public List<tileData> GetAdjacentTileDataAroundPosition(Vector2 pos) {
+	public List<tileData> GetAdjacentTileDataAroundPosition(Vector2 pos, bool includeOuterWalls = true) {
 		List<tileData> tiles = new List<tileData>();
 
 		GameObject current = null;
@@ -38,36 +38,68 @@ public class DungeonGenerator : MonoBehaviour {
 		// TOP
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x, pos.y + 1));
 		if(current != null) {
-			if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-				currentTileData.mypos = tileData.MYPOS.Top;
-		 		tiles.Add(currentTileData);
+
+			if(includeOuterWalls) {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
+					currentTileData.mypos = tileData.MYPOS.Top;
+					tiles.Add(currentTileData);
+				}
+			} else {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
+					currentTileData.mypos = tileData.MYPOS.Top;
+					tiles.Add(currentTileData);
+				}
 			}
 		}
 
 		// LEFT
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x - 1, pos.y));
 		if(current != null) {
-			if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-				currentTileData.mypos = tileData.MYPOS.Left;
-				tiles.Add(currentTileData);
+
+			if(includeOuterWalls) {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
+					currentTileData.mypos = tileData.MYPOS.Left;
+					tiles.Add(currentTileData);
+				}
+			} else {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
+					currentTileData.mypos = tileData.MYPOS.Left;
+					tiles.Add(currentTileData);
+				}
 			}
 		}
 
 		// BOTTOM
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x, pos.y - 1));
 		if(current != null) {
-			if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-				currentTileData.mypos = tileData.MYPOS.Bottom;
-				tiles.Add(currentTileData);
+
+			if(includeOuterWalls) {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
+					currentTileData.mypos = tileData.MYPOS.Bottom;
+					tiles.Add(currentTileData);
+				}
+			} else {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
+					currentTileData.mypos = tileData.MYPOS.Bottom;
+					tiles.Add(currentTileData);
+				}
 			}
 		}
 
 		// RIGHT
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x + 1, pos.y));
 		if(current != null) {
-			if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-				currentTileData.mypos = tileData.MYPOS.Right;
-				tiles.Add(currentTileData);
+
+			if(includeOuterWalls) {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
+					currentTileData.mypos = tileData.MYPOS.Right;
+					tiles.Add(currentTileData);
+				}
+			} else {
+				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
+					currentTileData.mypos = tileData.MYPOS.Right;
+					tiles.Add(currentTileData);
+				}
 			}
 		}
 
@@ -204,6 +236,13 @@ public class DungeonGenerator : MonoBehaviour {
 			currentTile.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.FloorSpecialItem);
 			currentTile.GetComponent<Tile>().myType = Tile.TileType.Floor;
 
+		} else if(type == Tile.TileType.DoorClosed) {
+			
+			currentTile.GetComponent<Tile>().myType = Tile.TileType.DoorClosed;
+
+		} else if(type == Tile.TileType.DoorOpen) {
+			
+			currentTile.GetComponent<Tile>().myType = Tile.TileType.DoorOpen;
 		}
 
 		currentTile.transform.position = new Vector3(x, y, GameMaster.instance.tileZLevel);
@@ -249,66 +288,82 @@ public class DungeonGenerator : MonoBehaviour {
 
 				if(isTopWall && isBottomWall && isLeftWall && isRightWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.Middle;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.Middle);
 
 				} else if(isTopWall && isLeftWall && isBottomWall) { 
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.JunctionL;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.JunctionL);
 
 				} else if(isTopWall && isRightWall && isBottomWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.JunctionR;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.JunctionR);
 
 				} else if(isLeftWall && isTopWall && isRightWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.JunctionT;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.JunctionT);
 
 				} else if(isLeftWall && isBottomWall && isRightWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.JunctionB;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.JunctionB);
 
 				} else if(isTopWall && isBottomWall) {
-
+					
+					currentTile.mySpriteType = SpriteManager.SpriteType.Vertical;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.Vertical);
 
 				} else if(isLeftWall && isRightWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.Horizontal;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.Horizontal);
-
+		
 				} else if(isTopWall && isRightWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.CornerBL;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.CornerBL);
 
 				} else if(isRightWall && isBottomWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.CornerTL;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.CornerTL);
 
 				} else if(isBottomWall && isLeftWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.CornerTR;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.CornerTR);
 
 				} else if(isLeftWall && isTopWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.CornerBR;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.CornerBR);
 
 				} else if(isTopWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.DeadendB;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DeadendB);
 
 				} else if(isRightWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.DeadendL;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DeadendL);
 
 				} else if(isBottomWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.DeadendT;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DeadendT);
 
 				} else if(isLeftWall) {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.DeadendR;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DeadendR);
 
 				} else {
 
+					currentTile.mySpriteType = SpriteManager.SpriteType.Single;
 					current.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.Single);
 
 				}
@@ -337,30 +392,100 @@ public class DungeonGenerator : MonoBehaviour {
 		CreateTile(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y), Tile.TileType.Exit);
 	}
 
+	/// <summary>
+	/// Generates a door to a tile.
+	/// To get the door/wall sprites right:
+	/// 1. generate walls
+	/// 2. calculate wall sprites
+	/// 3. generate doors from walls.
+	/// </summary>
+	/// <param name="tile">Tile.</param>
+	public void CalculateDoorSprite(GameObject tile) {
+		Tile current = tile.GetComponent<Tile>();
+
+		tileData[] tds = GetAdjacentTileDataAroundPosition(current.position).ToArray();
+
+		bool isTopWall = false;
+		bool isBottomWall = false;
+		bool isLeftWall = false;
+		bool isRightWall = false;
+
+		foreach(tileData td in tds) {
+			switch(td.mypos) {
+			case tileData.MYPOS.Bottom:
+				isBottomWall = true;
+				break;
+			case  tileData.MYPOS.Top:
+				isTopWall = true;
+				break;
+			case tileData.MYPOS.Left:
+				isLeftWall = true;
+				break;
+			case tileData.MYPOS.Right:
+				isRightWall = true;
+				break;
+			}
+		}
+
+		if(isTopWall && isBottomWall && isLeftWall == false && isRightWall == false) {
+			tile.GetComponent<Tile>().myType = Tile.TileType.DoorClosed;
+			tile.GetComponent<Tile>().mySpriteType = SpriteManager.SpriteType.DoorVerticalClosed;
+			tile.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DoorVerticalClosed);
+		} else if(isLeftWall && isRightWall && isTopWall == false && isBottomWall == false) {
+			tile.GetComponent<Tile>().myType = Tile.TileType.DoorClosed;
+			tile.GetComponent<Tile>().mySpriteType = SpriteManager.SpriteType.DoorHorizontalClosed;
+			tile.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DoorHorizontalClosed);
+		}
+	}
+
+	/// <summary>
+	/// Generates doors from random walls.
+	/// To get the door/wall sprites right:
+	/// 1. generate walls
+	/// 2. calculate wall sprites
+	/// 3. generate doors from walls.
+	/// </summary>
+	private void GenerateDoors() {
+
+		foreach(GameObject tile in tiles) {
+			Tile current = tile.GetComponent<Tile>();
+
+			if(current.myType == Tile.TileType.Wall) {
+
+				// only sometimes create a door.
+				if(Random.Range(0, 100) > 100 - GameMaster.instance.doorSpawnChance) {
+					CalculateDoorSprite(tile);
+				}
+			}
+		}
+	}
+
 	public void Generate(int dungeonWidth, int dungeonHeight) {
 
 		for(int y = 0; y < dungeonHeight; y++) {
 			for(int x = 0; x < dungeonWidth; x++) {
 
-				// outer walls
+				// outer walls.
 				if(y == 0 || y == dungeonHeight - 1 || x == 0 || x == dungeonWidth - 1) {
 					CreateTile(x, y, Tile.TileType.OuterWall);
 					continue;
 				}
 					
+				// create walls.
 				int rand = Random.Range(1, GameMaster.instance.dungeonSpaciousness);
-
 				if(x % rand == 0 || y % rand == 0) {
 					CreateTile(x, y, Tile.TileType.Wall);
 					continue;
 				}
 
+				// create floor.
 				CreateTile(x, y, Tile.TileType.Floor);
 			}
 		}
 
 		GenerateExit();
 		CalculateWallTileSprites();
+		GenerateDoors();
 		DungeonVanityManager.instance.SpawnVanityItems();
 	}
 }

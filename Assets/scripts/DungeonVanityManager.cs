@@ -78,7 +78,9 @@ public class DungeonVanityManager : MonoBehaviour {
 				if(Random.Range(0, 100) > 100 - vanityitemCoverage) {
 
 					if(tile.vanityItem == null) {
-						
+
+						// TODO:
+						// randomize item.
 						SpawnVanityItem(VanityItem.Candle, tile.position);
 
 					}
