@@ -1,12 +1,12 @@
-﻿using System.Collections;
+﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour {
 
-	public enum JournalType { System, Combat, Item }
-	public enum PopUpType { Damage, Crit, Miss, Other, Heal }
+	public enum JournalType { System, Combat, Item, LevelUp }
+	public enum PopUpType { Damage, Crit, Miss, Other, Heal, Gold, LevelUp }
 
 	public static GUIManager instance;
 
@@ -25,12 +25,14 @@ public class GUIManager : MonoBehaviour {
 	public GameObject useItemStatus;
 	public GameObject spellStatus;
 	public GameObject spellCooldownStatus;
+	public GameObject expBarStatus;
 
 	[Header("GUI prefabs")]
 	public GameObject journalEntryPrefab;
 	public GameObject popUptextPrefab;
 	public GameObject OnGuiTextPrefab;
-	public GameObject OnGuiBackground_dungeonName;
+	public GameObject OnGuiBackground_dungeonNamePrefab;
+	public GameObject healthBarPrefab;
 
 	private int maxJournalEntries = 30;
 
@@ -55,6 +57,35 @@ public class GUIManager : MonoBehaviour {
 
 	public void HideMainmenu() { Hide(mainmenuGUI); }
 	public void ShowMainmenu() { Show(mainmenuGUI); }
+
+	public void UpdateExpBar(int currentExp, int maxExp) {
+		Slider slider = expBarStatus.GetComponent<Slider>();
+		slider.maxValue = maxExp;
+		//slider.value = currentExp;
+
+		StartCoroutine(UpdateExpBarGraphics(Mathf.FloorToInt(slider.value), currentExp));
+	}
+
+	private IEnumerator UpdateExpBarGraphics(int currentValue, int targetValue) {
+
+		Slider slider = expBarStatus.GetComponent<Slider>();
+
+		float currentTime = 0f;
+		float maxTime = 1f;
+
+		while(currentTime < maxTime) {
+
+			currentTime += Time.deltaTime;
+
+			slider.value = Mathf.Lerp(currentValue, targetValue, currentTime/maxTime);
+
+			yield return null;
+		}
+
+		// to make sure value is correct in the end.
+		slider.value = targetValue;
+
+	}
 
 	public string ExtractPlayerName(GameObject settings) { 
 		string pname = settings.GetComponent<InputField>().text;
@@ -102,7 +133,7 @@ public class GUIManager : MonoBehaviour {
 		GameObject background = null;
 
 		if(useBackground) {
-			background = (GameObject) Instantiate(OnGuiBackground_dungeonName);
+			background = (GameObject) Instantiate(OnGuiBackground_dungeonNamePrefab);
 			background.transform.position = Vector3.zero;
 			background.transform.SetParent(obj.transform);
 
@@ -169,6 +200,12 @@ public class GUIManager : MonoBehaviour {
 		case PopUpType.Heal:
 			obj.GetComponent<Text>().color = new Color32(24, 221, 60, 255); // green
 			break;
+		case PopUpType.Gold:
+			obj.GetComponent<Text>().color = new Color32(254, 198, 1, 255); // yellow
+			break;
+		case PopUpType.LevelUp:
+			obj.GetComponent<Text>().color = new Color32(254, 198, 1, 255); // yellow
+			break;
 		}
 
 		if(fadeTime > 0f) obj.GetComponent<PopUpText>().StartFadeUp(fadeTime);
@@ -192,6 +229,9 @@ public class GUIManager : MonoBehaviour {
 			break;
 		case JournalType.Item:
 			totalTxt = "<color=#2E354C>[Item] </color>";
+			break;
+		case JournalType.LevelUp:
+			totalTxt = "<color=#FEC601>[LVLUP] </color>";
 			break;
 		}
 

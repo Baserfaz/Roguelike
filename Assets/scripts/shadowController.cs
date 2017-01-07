@@ -11,10 +11,7 @@ public class shadowController : MonoBehaviour {
 
 	public void Hide() { shadowGo.GetComponent<SpriteRenderer>().color = Color.clear; }
 	public void Show() { shadowGo.GetComponent<SpriteRenderer>().color = startColor; }
-
-	public void Move() {
-		shadowGo.transform.position = transform.position + offset;
-	}
+	public void Move() { shadowGo.transform.position = new Vector3(transform.position.x + offset.x, transform.position.y + offset.y, transform.position.z + 0.1f); }
 
 	void Awake() {
 		shadowGo = (GameObject) Instantiate(PrefabManager.instance.blobShadow);

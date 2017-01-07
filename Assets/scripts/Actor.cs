@@ -22,8 +22,9 @@ public class Actor : MonoBehaviour {
 	public int defaultDamage = 1;
 	public int defaultArmor = 0;
 	public int defaultCritChance = 5;
-	public int defaultCritMultiplier = 2;
+	public float defaultCritMultiplier = 2f;
 	public int defaultMissChance = 25;
+	public int expAmount = 15;
 
 	void Awake() { startColor = GetComponentInChildren<SpriteRenderer>().color; }
 
@@ -61,7 +62,7 @@ public class Actor : MonoBehaviour {
 
 		// calculate critical hit
 		if(Random.Range(0, 100) > 100 - defaultCritChance) {
-			totalDamage *= defaultCritMultiplier;
+			totalDamage = Mathf.FloorToInt(totalDamage * defaultCritMultiplier);
 			crit = true;
 		}
 

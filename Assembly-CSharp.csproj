@@ -60,6 +60,7 @@
      <Compile Include="Assets\scripts\GUIManager.cs" />
      <Compile Include="Assets\scripts\GameMaster.cs" />
      <Compile Include="Assets\scripts\Health.cs" />
+     <Compile Include="Assets\scripts\HealthBar.cs" />
      <Compile Include="Assets\scripts\Inventory.cs" />
      <Compile Include="Assets\scripts\ItemBounce.cs" />
      <Compile Include="Assets\scripts\ItemDropController.cs" />

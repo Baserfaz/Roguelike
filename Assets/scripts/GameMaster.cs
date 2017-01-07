@@ -75,6 +75,7 @@ public class GameMaster : MonoBehaviour {
 
 	public void StartNewGame(GameObject gameSettings) {
 
+		// randomize tile set.
 		SpriteManager.instance.RandomizeTileSet();
 
 		// create & populate
@@ -88,6 +89,7 @@ public class GameMaster : MonoBehaviour {
 		// using GuiManager.
 		string playerName = GUIManager.instance.ExtractPlayerName(gameSettings);
 
+		// instantiate player.
 		PrefabManager.instance.InstantiatePlayer(playerName);
 
 		// update player line of sight
@@ -95,14 +97,22 @@ public class GameMaster : MonoBehaviour {
 
 		// GUI & other stuff
 		CreateNewRandomDungeonName();
-		GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
-		GUIManager.instance.CreateJournalEntry("Welcome to the dungeon, " + playerName, GUIManager.JournalType.System);
+		GUIManager.instance.CreateOnGuiText("[level " + dungeonLevel + "]\n" + currentDungeonName);
+		GUIManager.instance.CreateJournalEntry("Welcome to the dungeon, " + playerName + ".", GUIManager.JournalType.System);
 		GUIManager.instance.UpdateAllElements();
 	}
 
 	public void CreateNewRandomDungeonName() {
-		// TODO: random name gen.
-		currentDungeonName = "Awesome Dungeon";
+
+		// TODO:
+		// 1. positive, neutral, evil names
+		// 2. decide name from used tileset.
+
+		string[] prefixes = { "Dark", "Damp", "Moldy", "Old", "Hellish", "Agonizing", "Screaming", "Echoing", "Silencing" };
+		string [] places = { "Cellar", "Lair", "Sewer", "Catacombs" };
+		//string[] suffixes = { "" };
+
+		currentDungeonName = prefixes[Random.Range(0, prefixes.Length)] + " " + places[Random.Range(0, places.Length)];
 	}
 
 	public void EndTurn() {

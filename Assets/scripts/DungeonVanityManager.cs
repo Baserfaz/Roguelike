@@ -20,9 +20,11 @@ public class DungeonVanityManager : MonoBehaviour {
 	public GameObject burntCandlePrefab;
 
 	private GameObject parentGo;
-	private List<GameObject> vanityItems = new List<GameObject>();
+	private List<GameObject> InstantiatedVanityItems = new List<GameObject>();
 
-	void Awake() { instance = this; }
+	void Awake() { 
+		instance = this; 
+	}
 
 	public void SpawnVanityItem(VanityItem item, Vector2 pos) {
 
@@ -56,15 +58,15 @@ public class DungeonVanityManager : MonoBehaviour {
 
 		DungeonGenerator.instance.GetTileAtPos(pos).GetComponent<Tile>().vanityItem = inst;
 
-		vanityItems.Add(inst);
+		InstantiatedVanityItems.Add(inst);
 
 	}
 
 	public void RemoveVanityItems() {
-		foreach(GameObject item in vanityItems) {
+		foreach(GameObject item in InstantiatedVanityItems) {
 			Destroy(item);
 		}
-		vanityItems.Clear();
+		InstantiatedVanityItems.Clear();
 	}
 
 	public void SpawnVanityItems() {
@@ -79,9 +81,10 @@ public class DungeonVanityManager : MonoBehaviour {
 
 					if(tile.vanityItem == null) {
 
-						// TODO:
-						// randomize item.
-						SpawnVanityItem(VanityItem.Candle, tile.position);
+						System.Array values = System.Enum.GetValues(typeof(VanityItem));
+						VanityItem item = (VanityItem) values.GetValue(Random.Range(0, values.Length));
+
+						SpawnVanityItem(item, tile.position);
 
 					}
 				}

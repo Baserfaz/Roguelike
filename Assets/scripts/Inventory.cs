@@ -90,8 +90,8 @@ public class Inventory : MonoBehaviour {
 
 			currentGold += amount;
 
-			GUIManager.instance.CreatePopUpEntry("GOLD " + amount, GetComponent<Actor>().position, GUIManager.PopUpType.Other);
-			GUIManager.instance.CreateJournalEntry("Picked up gold " + amount, GUIManager.JournalType.Item);
+			GUIManager.instance.CreatePopUpEntry("+" + amount + "g", GetComponent<Actor>().position, GUIManager.PopUpType.Gold);
+			GUIManager.instance.CreateJournalEntry("Picked up " + amount + " gold.", GUIManager.JournalType.Item);
 
 			DungeonGenerator.instance.UpdateTileItem(GetComponent<Actor>().position, null);
 			Destroy(itemGo);

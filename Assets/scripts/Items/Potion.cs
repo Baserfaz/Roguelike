@@ -6,7 +6,8 @@ using UnityEngine;
 public struct Effects {
 	public enum PotionType { Heal, Hurt, Attack, Armor, MaxHP };
 	public PotionType type;
-	public int amount;
+	public int minAmount;
+	public int maxAmount;
 }
 
 public class Potion : Item {
@@ -16,28 +17,39 @@ public class Potion : Item {
 
 	public void Drink() {
 
+		int amount = 0;
+
 		foreach(Effects effect in potionEffects) {
 			switch(effect.type) {
 			case Effects.PotionType.Heal:
-				owner.GetComponent<Health>().HealDamage(effect.amount);
+				owner.GetComponent<Health>().HealDamage(Random.Range(effect.minAmount, effect.maxAmount));
 				break;
 			case Effects.PotionType.Hurt:
-				owner.GetComponent<Health>().TakeDamageSimple(effect.amount);
+				owner.GetComponent<Health>().TakeDamageSimple(Random.Range(effect.minAmount, effect.maxAmount));
 				break;
 			case Effects.PotionType.Armor:
-				owner.GetComponent<Actor>().defaultArmor += effect.amount;
-				GUIManager.instance.CreatePopUpEntry("Armor +" + effect.amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
-				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " armor.", GUIManager.JournalType.Item);
+
+				amount = Random.Range(effect.minAmount, effect.maxAmount);
+
+				owner.GetComponent<Actor>().defaultArmor += amount;
+				GUIManager.instance.CreatePopUpEntry("Armor +" + amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
+				GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " armor.", GUIManager.JournalType.Item);
 				break;
 			case Effects.PotionType.Attack:
-				owner.GetComponent<Actor>().defaultDamage += effect.amount;
-				GUIManager.instance.CreatePopUpEntry("Attack +" + effect.amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
-				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " attack.", GUIManager.JournalType.Item);
+
+				amount = Random.Range(effect.minAmount, effect.maxAmount);
+
+				owner.GetComponent<Actor>().defaultDamage += amount;
+				GUIManager.instance.CreatePopUpEntry("Attack +" + amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
+				GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " attack.", GUIManager.JournalType.Item);
 				break;
 			case Effects.PotionType.MaxHP:
-				owner.GetComponent<Health>().maxHealth += effect.amount;
-				GUIManager.instance.CreatePopUpEntry("MaxHP +" + effect.amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
-				GUIManager.instance.CreateJournalEntry("Potion gave " + effect.amount + " MaxHP.", GUIManager.JournalType.Item);
+
+				amount = Random.Range(effect.minAmount, effect.maxAmount);
+
+				owner.GetComponent<Health>().maxHealth += amount;
+				GUIManager.instance.CreatePopUpEntry("MaxHP +" + amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
+				GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " MaxHP.", GUIManager.JournalType.Item);
 				break;
 			}
 		}

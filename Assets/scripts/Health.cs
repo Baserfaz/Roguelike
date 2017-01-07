@@ -25,28 +25,37 @@ public class Health : MonoBehaviour {
 		// and simply subtract damage from it.
 		int actualDmg = amount;
 
+		/* Damage is reduced by:
+		 * 1. current armor rating
+		 * 2. default armor.
+		 */
 		if(GetComponent<Inventory>() != null) {
 			if(GetComponent<Inventory>().currentArmor != null) {
 				actualDmg -= GetComponent<Inventory>().currentArmor.GetComponent<Armor>().GetArmorRating();
-			} else {
-				actualDmg -= GetComponent<Actor>().defaultArmor;
-			}
-		} else {
-			actualDmg -= GetComponent<Actor>().defaultArmor;
+			} 
 		}
+		actualDmg -= GetComponent<Actor>().defaultArmor;
 
+		// safety
 		if(actualDmg <= 0) actualDmg = 0;
 
+		// damage.
 		currentHealth -= actualDmg;
 
 		if(isCrit) {
-			GUIManager.instance.CreatePopUpEntry("CRIT: " + actualDmg, GetComponent<Actor>().position, GUIManager.PopUpType.Crit);
+			GUIManager.instance.CreatePopUpEntry(actualDmg + "!", GetComponent<Actor>().position, GUIManager.PopUpType.Crit);
 			GUIManager.instance.CreateJournalEntry("Critical hit! " + GetComponent<Actor>().actorName + " took " + actualDmg + " damage.", GUIManager.JournalType.Combat);
 		} else {
-			GUIManager.instance.CreatePopUpEntry("HIT: " + actualDmg, GetComponent<Actor>().position, GUIManager.PopUpType.Damage);
+			GUIManager.instance.CreatePopUpEntry(actualDmg + "", GetComponent<Actor>().position, GUIManager.PopUpType.Damage);
 			GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " took " + actualDmg + " damage.", GUIManager.JournalType.Combat);
 		}
 
+		// update healthbar if it exists.
+		if(GetComponent<HealthBar>() != null) {
+			GetComponent<HealthBar>().UpdateHPBar();
+		}
+
+		// update player's GUI.
 		if(GetComponent<Player>() != null) {
 			GUIManager.instance.UpdateAllElements();
 		}
@@ -65,8 +74,13 @@ public class Health : MonoBehaviour {
 
 		currentHealth -= amount;
 
-		GUIManager.instance.CreatePopUpEntry("DMG: " + amount, GetComponent<Actor>().position, GUIManager.PopUpType.Damage);
+		GUIManager.instance.CreatePopUpEntry(amount + "", GetComponent<Actor>().position, GUIManager.PopUpType.Damage);
 		GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " took " + amount + " damage.", GUIManager.JournalType.Combat);
+
+		// update healthbar if it exists.
+		if(GetComponent<HealthBar>() != null) {
+			GetComponent<HealthBar>().UpdateHPBar();
+		}
 
 		if(GetComponent<Player>() != null) {
 			GUIManager.instance.UpdateAllElements();
@@ -82,10 +96,15 @@ public class Health : MonoBehaviour {
 		currentHealth += amount;
 		if(currentHealth > maxHealth) currentHealth = maxHealth;
 
+		// update healthbar if it exists.
+		if(GetComponent<HealthBar>() != null) {
+			GetComponent<HealthBar>().UpdateHPBar();
+		}
+
 		if(GetComponent<Player>() != null) {
 			GUIManager.instance.UpdateAllElements();
 		}
-		GUIManager.instance.CreatePopUpEntry("HEAL: " + amount, GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
+		GUIManager.instance.CreatePopUpEntry(amount + "", GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
 		GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " healed " + amount + " health.", GUIManager.JournalType.Combat);
 	}
 
@@ -96,9 +115,18 @@ public class Health : MonoBehaviour {
 		// update tile's actor = null;
 		DungeonGenerator.instance.UpdateTileActor(GetComponent<Actor>().position, null);
 
+		// hide healthbar if it exists.
+		if(GetComponent<HealthBar>() != null) {
+			GetComponent<HealthBar>().Hide();
+		}
+
 		// if its enemy.. drop loot.
 		if(GetComponent<Enemy>() != null) {
 
+			// player gains experience.
+			PrefabManager.instance.GetPlayerInstance().GetComponent<Experience>().AddExp(GetComponent<Actor>().expAmount);
+
+			// get target tile.
 			GameObject targetTile = DungeonGenerator.instance.GetTileAtPos(GetComponent<Actor>().position);
 
 			// drop item under the 

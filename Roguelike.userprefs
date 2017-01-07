@@ -1,35 +1,36 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\GUIManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Experience.cs">
     <Files>
-      <File FileName="Assets\scripts\Tile.cs" Line="41" Column="4" />
-      <File FileName="Assets\scripts\GameMaster.cs" Line="214" Column="28" />
+      <File FileName="Assets\scripts\Tile.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\GameMaster.cs" Line="118" Column="25" />
       <File FileName="Assets\scripts\PrefabManager.cs" Line="342" Column="58" />
-      <File FileName="Assets\scripts\GUIManager.cs" Line="224" Column="40" />
-      <File FileName="Assets\scripts\GUIElementScript.cs" Line="7" Column="27" />
-      <File FileName="Assets\scripts\Enemy.cs" Line="26" Column="29" />
-      <File FileName="Assets\scripts\LineOfSightManager.cs" Line="42" Column="29" />
-      <File FileName="Assets\scripts\Inventory.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\shadowController.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Experience.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Items\Potion.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Health.cs" Line="36" Column="4" />
+      <File FileName="Assets\scripts\GUIManager.cs" Line="219" Column="50" />
+      <File FileName="Assets\scripts\GUIElementScript.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Enemy.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\LineOfSightManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Inventory.cs" Line="111" Column="17" />
+      <File FileName="Assets\scripts\shadowController.cs" Line="13" Column="84" />
+      <File FileName="Assets\scripts\Items\Potion.cs" Line="30" Column="34" />
+      <File FileName="Assets\scripts\Health.cs" Line="127" Column="112" />
       <File FileName="Assets\scripts\ItemDropController.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Container.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\PopUpText.cs" Line="20" Column="2" />
+      <File FileName="Assets\scripts\PopUpText.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Spell.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Items\Item.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Actor.cs" Line="52" Column="26" />
-      <File FileName="Assets\scripts\Player.cs" Line="41" Column="37" />
+      <File FileName="Assets\scripts\Items\Item.cs" Line="18" Column="2" />
+      <File FileName="Assets\scripts\Actor.cs" Line="29" Column="53" />
+      <File FileName="Assets\scripts\Player.cs" Line="263" Column="20" />
       <File FileName="Assets\scripts\CrosshairManager.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Crosshair.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\SpriteManager.cs" Line="83" Column="2" />
-      <File FileName="Assets\scripts\DungeonVanityManager.cs" Line="27" Column="2" />
-      <File FileName="Assets\scripts\VanityItem.cs" Line="17" Column="75" />
-      <File FileName="Assets\scripts\LightFlicker.cs" Line="29" Column="17" />
+      <File FileName="Assets\scripts\SpriteManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\DungeonVanityManager.cs" Line="86" Column="7" />
+      <File FileName="Assets\scripts\VanityItem.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\LightFlicker.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\DungeonGenerator.cs" Line="463" Column="28" NotebookId="1" />
-      <File FileName="Assets\scripts\DungeonItemManager.cs" Line="12" Column="2" NotebookId="1" />
-      <File FileName="Assets\scripts\MapReader.cs" Line="57" Column="9" NotebookId="1" />
+      <File FileName="Assets\scripts\DungeonItemManager.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\MapReader.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\HealthBar.cs" Line="25" Column="3" NotebookId="1" />
+      <File FileName="Assets\scripts\Experience.cs" Line="22" Column="24" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
