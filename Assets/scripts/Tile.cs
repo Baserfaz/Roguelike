@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour {
 
-	public enum TileType { Floor, Wall, Empty, Exit, OuterWall, FloorSpecialItem, DoorOpen, DoorClosed }
+	public enum TileType { Floor, Wall, Empty, Exit, OuterWall, FloorSpecialItem, DoorOpen, DoorClosed, Trap }
 
 	public Vector2 position;
 	public TileType myType;
@@ -26,19 +26,4 @@ public class Tile : MonoBehaviour {
 	public void Show() { GetComponentInChildren<SpriteRenderer>().color = startColor; }
 	public void Hide() { GetComponentInChildren<SpriteRenderer>().color = Color.clear; }
 
-	// TODO
-	// Refactor door methods.
-	// Door : Tile perhaps??
-
-	public void OpenDoor() {
-		
-		myType = TileType.DoorOpen;
-
-		if(mySpriteType == SpriteManager.SpriteType.DoorHorizontalClosed) {
-			GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DoorHorizontalOpen);
-		} else if(mySpriteType == SpriteManager.SpriteType.DoorVerticalClosed) {
-			GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DoorVerticalOpen);
-		}
-
-	}
 }

@@ -10,7 +10,7 @@ public struct ColorToTileType {
 
 public class MapReader : MonoBehaviour {
 
-	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy, Door }
+	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy, Door, Trap }
 	public enum State { Tile, ItemActor }
 
 	private State myState = State.Tile;
@@ -77,6 +77,18 @@ public class MapReader : MonoBehaviour {
 						// 3. create walls.
 						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Wall);
 						break;
+					case PngTileType.Trap:
+
+						// 1. create tile
+						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Floor);
+
+						// 2. get that tile
+						GameObject myTile = DungeonGenerator.instance.GetTileAtPos(new Vector2(x, y));
+
+						// 3. convert tile to trap.
+						DungeonGenerator.instance.GenerateTrap(myTile);
+
+						break;
 
 						// all other cases creates floor tile.
 					default:
@@ -111,7 +123,7 @@ public class MapReader : MonoBehaviour {
 						break;
 					case PngTileType.Door:
 						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.DoorClosed);
-						DungeonGenerator.instance.CalculateDoorSprite(DungeonGenerator.instance.GetTileAtPos(new Vector2(x, y)));
+						DungeonGenerator.instance.GenerateDoor(DungeonGenerator.instance.GetTileAtPos(new Vector2(x, y)));
 						break;
 					default:
 						break;

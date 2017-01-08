@@ -23,7 +23,7 @@ public class Player : Actor {
 			// when player moves toward door it opens and player their passes turn.
 
 			if(tile.myType == Tile.TileType.DoorClosed) {
-				tile.OpenDoor();
+				tile.GetComponent<Door>().OpenDoor();
 				myNextState = NextMoveState.Pass;
 			} else {
 				myNextState = NextMoveState.Stuck;

@@ -25,7 +25,15 @@ public class GameMaster : MonoBehaviour {
 	public int dungeonWidth = 5;
 	public int tileZLevel = 1;
 	[Range(1, 50)] public int dungeonSpaciousness = 1;
+
+	[Header("Door settings")]
 	[Range(1, 100)] public int doorSpawnChance = 10;
+
+	[Header("Trap settings")]
+	public bool GenerateTraps = true;
+	[Range(0, 100)] public int trapSpawnChance = 10;
+	public int trapDamage = 1;
+	public int trapDelayInTurns = 1;
 
 	[Header("Special level chance to spawn")]
 	[Range(1, 100)] public int ShopChance = 10;
@@ -119,6 +127,9 @@ public class GameMaster : MonoBehaviour {
 
 		HandlePlayerTurn();
 		HandleEnemyTurns();
+
+		HandleTraps();
+
 		UpdatePlayerLos();
 
 		turnCount++;
@@ -195,6 +206,44 @@ public class GameMaster : MonoBehaviour {
 
 		// update GUI
 		GUIManager.instance.UpdateAllElements();
+	}
+
+	private void HandleTraps() {
+		foreach(GameObject tile in DungeonGenerator.instance.GetTiles()) {
+			if(tile.GetComponent<Trap>() != null) {
+				Trap trap = tile.GetComponent<Trap>();
+
+				// if the trap is activated on this turn.
+				if(trap.GetActiveStatus() == Trap.State.Active) {
+
+					if(trap.activatedOnTurn + trapDelayInTurns == turnCount) {
+
+						// open spikes
+						trap.UpdateGraphics();
+
+						// on next turn this trap will be inactive.
+						trap.Deactivate();
+
+						Tile t = tile.GetComponent<Tile>();
+
+						// damage whoever is on the tile.
+						if(t.actor != null) { t.actor.GetComponent<Health>().TakeDamageSimple(trapDamage); }
+
+						// turn the tile to a wall
+						// -> actors can't step on spikes after their have popped out.
+						t.myType = Tile.TileType.Wall;
+
+					}
+
+				} else if(trap.GetActiveStatus() == Trap.State.Inactive) {
+					// close the spikes
+					trap.UpdateGraphics();
+
+					// turn the tile to a floor again.
+					tile.GetComponent<Tile>().myType = Tile.TileType.Floor;
+				}
+			}
+		}
 	}
 
 	private void HandleEnemyTurns() {

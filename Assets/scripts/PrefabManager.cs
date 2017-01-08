@@ -287,18 +287,11 @@ public class PrefabManager : MonoBehaviour {
 		enemyInst.GetComponent<Enemy>().position = tile.position;
 		enemyInstances.Add(enemyInst);
 
-		// 3. health
-		//enemyInst.GetComponent<Health>().maxHealth = GameMaster.instance.dungeonLevel;
-		//enemyInst.GetComponent<Health>().UpdateCurrentHealth();
-
 		GameMaster.instance.enemyCount++;
 	}
 
 	public void InstantiateEnemy() {
 		Vector2 spawnPos = GetFreeInstPosition();
-
-		// TODO: 
-		// 1. failsafe if spawnpos cant be found.
 
 		GameObject enemyInst = (GameObject) Instantiate(enemyPrefab, new Vector3(spawnPos.x, spawnPos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
 

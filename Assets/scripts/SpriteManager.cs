@@ -18,7 +18,7 @@ public class SpriteManager : MonoBehaviour {
 	public enum TileSet { Concrete, Shop, Sewer }
 	public enum SpriteType { CornerTL, CornerTR, CornerBL, CornerBR, Floor, DeadendB, DeadendT, DeadendL, DeadendR, JunctionT, JunctionB,
 		JunctionL, JunctionR, Horizontal, Vertical, Middle, Single, Exit, FloorSpecialItem, DoorHorizontalClosed, DoorVerticalClosed,
-		DoorHorizontalOpen, DoorVerticalOpen}
+		DoorHorizontalOpen, DoorVerticalOpen, TrapOff, TrapOn }
 
 	private Color32[] pixels;
 
@@ -335,11 +335,11 @@ public class SpriteManager : MonoBehaviour {
 			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 
 			if(currentTileSet == TileSet.Concrete) {
-				return ReadSpriteSheet(topTilePos, 9);
+				return ReadSpriteSheet(topTilePos, 7);
 			} else if(currentTileSet == TileSet.Shop) {
-				return ReadSpriteSheet(topTilePos - 3, 9);
+				return ReadSpriteSheet(topTilePos - 3, 7);
 			} else if(currentTileSet == TileSet.Sewer) {
-				return ReadSpriteSheet(topTilePos - 6, 9);
+				return ReadSpriteSheet(topTilePos - 6, 7);
 			}
 			break;
 
@@ -348,16 +348,50 @@ public class SpriteManager : MonoBehaviour {
 			topTilePos = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 
 			if(currentTileSet == TileSet.Concrete) {
-				return ReadSpriteSheet(topTilePos, 10);
+				return ReadSpriteSheet(topTilePos, 8);
 			} else if(currentTileSet == TileSet.Shop) {
-				return ReadSpriteSheet(topTilePos - 3, 10);
+				return ReadSpriteSheet(topTilePos - 3, 8);
 			} else if(currentTileSet == TileSet.Sewer) {
-				return ReadSpriteSheet(topTilePos - 6, 10);
+				return ReadSpriteSheet(topTilePos - 6, 8);
 			}
 			break;
 		case SpriteType.DoorHorizontalOpen:
 			
 			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 7);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 7);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 7);
+			}
+			break;
+		case SpriteType.DoorVerticalOpen:
+
+			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 8);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 8);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 8);
+			}
+			break;
+		case SpriteType.TrapOff:
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+
+			if(currentTileSet == TileSet.Concrete) {
+				return ReadSpriteSheet(topTilePos, 8);
+			} else if(currentTileSet == TileSet.Shop) {
+				return ReadSpriteSheet(topTilePos - 3, 8);
+			} else if(currentTileSet == TileSet.Sewer) {
+				return ReadSpriteSheet(topTilePos - 6, 8);
+			}
+			break;
+		case SpriteType.TrapOn:
+			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 
 			if(currentTileSet == TileSet.Concrete) {
 				return ReadSpriteSheet(topTilePos, 9);
@@ -367,21 +401,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 6, 9);
 			}
 			break;
-		case SpriteType.DoorVerticalOpen:
-
-			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
-
-			if(currentTileSet == TileSet.Concrete) {
-				return ReadSpriteSheet(topTilePos, 10);
-			} else if(currentTileSet == TileSet.Shop) {
-				return ReadSpriteSheet(topTilePos - 3, 10);
-			} else if(currentTileSet == TileSet.Sewer) {
-				return ReadSpriteSheet(topTilePos - 6, 10);
-			}
-			break;
 		}
 
-
+		// should never get here.
 		return null;
 	}
 

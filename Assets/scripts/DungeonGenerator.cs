@@ -243,6 +243,11 @@ public class DungeonGenerator : MonoBehaviour {
 		} else if(type == Tile.TileType.DoorOpen) {
 			
 			currentTile.GetComponent<Tile>().myType = Tile.TileType.DoorOpen;
+
+		} else if(type == Tile.TileType.Trap) {
+
+			GenerateTrap(currentTile);
+
 		}
 
 		currentTile.transform.position = new Vector3(x, y, GameMaster.instance.tileZLevel);
@@ -400,7 +405,10 @@ public class DungeonGenerator : MonoBehaviour {
 	/// 3. generate doors from walls.
 	/// </summary>
 	/// <param name="tile">Tile.</param>
-	public void CalculateDoorSprite(GameObject tile) {
+	public void GenerateDoor(GameObject tile) {
+		
+		tile.AddComponent<Door>();
+
 		Tile current = tile.GetComponent<Tile>();
 
 		tileData[] tds = GetAdjacentTileDataAroundPosition(current.position).ToArray();
@@ -449,17 +457,55 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach(GameObject tile in tiles) {
 			Tile current = tile.GetComponent<Tile>();
-
 			if(current.myType == Tile.TileType.Wall) {
-
 				// only sometimes create a door.
 				if(Random.Range(0, 100) > 100 - GameMaster.instance.doorSpawnChance) {
-					CalculateDoorSprite(tile);
+					GenerateDoor(tile);
 				}
 			}
 		}
 	}
 
+	/// <summary>
+	/// Generates the trap. 
+	/// MORE LIKE A CONVERT FLOOR TO TRAP -FUNCTION!
+	/// </summary>
+	/// <param name="tile">Tile.</param>
+	public void GenerateTrap(GameObject tile) {
+
+		// tile is floor tile that will be turned into a trap.
+
+		// add trap component.
+		tile.AddComponent<Trap>();
+
+		// actors can walk on it.
+		// -> so leave type to floor.
+		tile.GetComponent<Tile>().myType = Tile.TileType.Floor;
+
+		// set it's graphics
+		tile.GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(
+			SpriteManager.SpriteType.TrapOff);
+	}
+
+	private void GenerateTraps() {
+		if(GameMaster.instance.GenerateTraps) {
+			foreach(GameObject go in tiles) {
+				Tile current = go.GetComponent<Tile>();
+				if(current.myType == Tile.TileType.Floor) {
+					if(Random.Range(0, 100) > 100 - GameMaster.instance.trapSpawnChance) {
+						GenerateTrap(go);
+					}
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Generate the specified dungeonWidth and dungeonHeight.
+	/// Main function.
+	/// </summary>
+	/// <param name="dungeonWidth">Dungeon width.</param>
+	/// <param name="dungeonHeight">Dungeon height.</param>
 	public void Generate(int dungeonWidth, int dungeonHeight) {
 
 		for(int y = 0; y < dungeonHeight; y++) {
@@ -484,6 +530,7 @@ public class DungeonGenerator : MonoBehaviour {
 		}
 
 		GenerateExit();
+		GenerateTraps();
 		CalculateWallTileSprites();
 		GenerateDoors();
 		DungeonVanityManager.instance.SpawnVanityItems();

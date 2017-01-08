@@ -96,6 +96,13 @@ public class Actor : MonoBehaviour {
 
 		position = new Vector2(transform.position.x, transform.position.y);
 
+		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(position);
+
+		// if we stepped on a trap.
+		if(tileGo.GetComponent<Trap>() != null) {
+			tileGo.GetComponent<Trap>().Activate();
+		}
+
 		// update next tile's actor field.
 		DungeonGenerator.instance.UpdateTileActor(moveTargetPosition, this.gameObject);
 	}
