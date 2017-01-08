@@ -6,8 +6,6 @@ public class SpriteManager : MonoBehaviour {
 
 	/*
 	 * Tiles are 16x16 pixels.
-	 * 
-	 * 
 	 */
 
 	public static SpriteManager instance;
@@ -18,7 +16,7 @@ public class SpriteManager : MonoBehaviour {
 	public enum TileSet { Concrete, Shop, Sewer }
 	public enum SpriteType { CornerTL, CornerTR, CornerBL, CornerBR, Floor, DeadendB, DeadendT, DeadendL, DeadendR, JunctionT, JunctionB,
 		JunctionL, JunctionR, Horizontal, Vertical, Middle, Single, Exit, FloorSpecialItem, DoorHorizontalClosed, DoorVerticalClosed,
-		DoorHorizontalOpen, DoorVerticalOpen, TrapOff, TrapOn }
+		DoorHorizontalOpen, DoorVerticalOpen, TrapOff, TrapOn, ChestOpen, GUIStatusBleeding, GUIStatusHealing }
 
 	private Color32[] pixels;
 
@@ -401,6 +399,15 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 6, 9);
 			}
 			break;
+		case SpriteType.ChestOpen:
+			topTilePos = 11 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 2);
+		case SpriteType.GUIStatusBleeding:
+			topTilePos = 15 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 10);
+		case SpriteType.GUIStatusHealing:
+			topTilePos = 15 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 11);
 		}
 
 		// should never get here.

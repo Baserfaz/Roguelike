@@ -12,7 +12,7 @@ public class Item : MonoBehaviour {
 	 * Spell -> spell
 	 */
 
-	public enum Type { Armor, Weapon, Gold, UsableItem, Spell }
+	public enum Type { Armor, Weapon, Gold, UsableItem, Spell, Container }
 	public enum Rarity { Normal, Magical, Rare, Legendary }
 	public enum State { Shop, Free }
 
@@ -21,6 +21,7 @@ public class Item : MonoBehaviour {
 	public int shopPrice = 10;
 	public Rarity myRarity = Rarity.Normal;
 	public State myState = State.Free;
+	public Vector2 position;
 
 	[HideInInspector] public GameObject owner;
 	[HideInInspector] public Color startColor;

@@ -4,10 +4,11 @@ using UnityEngine;
 
 [System.Serializable]
 public struct Effects {
-	public enum PotionType { Heal, Hurt, Attack, Armor, MaxHP };
+	public enum PotionType { Heal, Hurt, Attack, Armor, MaxHP, HoT, DoT };
 	public PotionType type;
 	public int minAmount;
 	public int maxAmount;
+	public int effectDuration;
 }
 
 public class Potion : Item {
@@ -18,6 +19,7 @@ public class Potion : Item {
 	public void Drink() {
 
 		int amount = 0;
+		StatusEffect myEffect = new StatusEffect();
 
 		foreach(Effects effect in potionEffects) {
 			switch(effect.type) {
@@ -51,11 +53,47 @@ public class Potion : Item {
 				GUIManager.instance.CreatePopUpEntry("MaxHP +" + amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " MaxHP.", GUIManager.JournalType.Item);
 				break;
+			case Effects.PotionType.HoT:
+				
+				myEffect = StatusEffect.CreateEffect(
+					StatusEffect.EffectType.Healing,
+					Random.Range(effect.minAmount, effect.maxAmount),
+					effect.effectDuration);
+				
+				owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
+
+				// Update GUI
+				GUIManager.instance.CreatePopUpEntry("HoT", owner.GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
+				GUIManager.instance.CreateJournalEntry(owner.GetComponent<Actor>().actorName + " started healing.", GUIManager.JournalType.Status);
+
+				GUIManager.instance.CreateStatusBarElement(myEffect);
+
+				break;
+
+			case Effects.PotionType.DoT:
+				
+				myEffect = StatusEffect.CreateEffect(
+					StatusEffect.EffectType.Bleeding,
+					Random.Range(effect.minAmount, effect.maxAmount),
+					effect.effectDuration);
+				
+				owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
+
+				// Update GUI
+				GUIManager.instance.CreatePopUpEntry("DoT", owner.GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
+				GUIManager.instance.CreateJournalEntry(owner.GetComponent<Actor>().actorName + " started bleeding.", GUIManager.JournalType.Status);
+
+
+				GUIManager.instance.CreateStatusBarElement(myEffect);
+				
+
+				break;
+
 			}
 		}
 
 		owner.GetComponent<Inventory>().currentUseItem = null;
-
 		DestroyItem();
+		GUIManager.instance.UpdateAllElements();
 	}
 }

@@ -15,10 +15,15 @@ public class GameMaster : MonoBehaviour {
 
 	[HideInInspector] public MovementMode movementMode = MovementMode.Player;
 
+	[HideInInspector] public bool isGameRunning = false;
+
 	[Header("General settings")]
 	public bool spawnEnemies = false;
 	public bool wallsBlockLos = true;
 	public bool attacksSubtractDefaultArmor = true;
+
+	[Header("Fonts")]
+	public Font pixelFont;
 
 	[Header("Dungeon settings")]
 	public int dungeonHeight = 5;
@@ -32,8 +37,11 @@ public class GameMaster : MonoBehaviour {
 	[Header("Trap settings")]
 	public bool GenerateTraps = true;
 	[Range(0, 100)] public int trapSpawnChance = 10;
-	public int trapDamage = 1;
+	public int trapInitialDamage = 1;
+	public int trapDoTDamage = 1;
+	public int trapDoTDuration = 2;
 	public int trapDelayInTurns = 1;
+	public bool trapsCauseBleedEffect = true;
 
 	[Header("Special level chance to spawn")]
 	[Range(1, 100)] public int ShopChance = 10;
@@ -72,6 +80,16 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	public void ResetEverything() {
+
+		// reset dungeon level
+		dungeonLevel = 1;
+
+		// reset player level
+		PrefabManager.instance.GetPlayerInstance().GetComponent<Experience>().currentLevel = 1;
+
+		// reset status elements GUI
+		GUIManager.instance.RemoveAllStatusElements();
+
 		PrefabManager.instance.ClearItemLists();
 		PrefabManager.instance.RemoveEnemies();
 		PrefabManager.instance.RemoveItems();
@@ -83,12 +101,16 @@ public class GameMaster : MonoBehaviour {
 
 	public void StartNewGame(GameObject gameSettings) {
 
+		isGameRunning = true;
+
 		// randomize tile set.
 		SpriteManager.instance.RandomizeTileSet();
 
-		// create & populate
-		DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
+		// populate item lists.
 		PrefabManager.instance.PopulateItemLists();
+
+		// create dungeon.
+		DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
 
 		// instantiate actors
 		PrefabManager.instance.InstantiateEnemies();
@@ -102,6 +124,11 @@ public class GameMaster : MonoBehaviour {
 
 		// update player line of sight
 		UpdatePlayerLos();
+
+		// update exp bar
+		GUIManager.instance.UpdateExpBar(
+			PrefabManager.instance.GetPlayerInstance().GetComponent<Experience>().currentExp,
+			PrefabManager.instance.GetPlayerInstance().GetComponent<Experience>().GetLevelRequirementExp(2));
 
 		// GUI & other stuff
 		CreateNewRandomDungeonName();
@@ -125,28 +152,35 @@ public class GameMaster : MonoBehaviour {
 
 	public void EndTurn() {
 
+		// update status elements GUI
+		GUIManager.instance.UpdateStatusElements();
+
 		HandlePlayerTurn();
 		HandleEnemyTurns();
-
 		HandleTraps();
-
 		UpdatePlayerLos();
 
 		turnCount++;
 
 		// decrease the cooldown of the current spell.
 		if(PrefabManager.instance.GetPlayerInstance().GetComponent<Inventory>().currentSpell != null) {
-			PrefabManager.instance.GetPlayerInstance().GetComponent<Inventory>().currentSpell.GetComponent<Spell>().DecreaseCooldown();
+			PrefabManager.instance.GetPlayerInstance().
+			GetComponent<Inventory>().
+			currentSpell.GetComponent<Spell>().
+			DecreaseCooldown();
 		}
 
+		// update player info
 		GUIManager.instance.UpdateAllElements();
 
 		// after all turns, check if the player is dead
 		// -> if it is just end the game.
+		// TODO: death screen.
 		if(PrefabManager.instance.GetPlayerInstance().GetComponent<Health>().isDead) {
 			GameMaster.instance.ResetEverything();
 			GUIManager.instance.ShowMainmenu();
 			GUIManager.instance.HideGUI();
+			isGameRunning = false;
 		}
 	}
 
@@ -227,7 +261,35 @@ public class GameMaster : MonoBehaviour {
 						Tile t = tile.GetComponent<Tile>();
 
 						// damage whoever is on the tile.
-						if(t.actor != null) { t.actor.GetComponent<Health>().TakeDamageSimple(trapDamage); }
+						if(t.actor != null) {
+
+							// set bleed effect.
+							if(trapsCauseBleedEffect) {
+								
+								// create effect
+								StatusEffect bleed = StatusEffect.CreateEffect(
+									StatusEffect.EffectType.Bleeding, trapDoTDamage, trapDoTDuration);
+
+								// add effect to the actor.
+								t.actor.GetComponent<Actor>().myStatusEffects.Add(bleed);
+
+								// gui stuff
+								GUIManager.instance.CreatePopUpEntry("BLEEDING", t.position, GUIManager.PopUpType.Damage);
+								GUIManager.instance.CreateJournalEntry(
+									t.actor.GetComponent<Actor>().actorName + " started to bleed.",
+									GUIManager.JournalType.Status);
+
+								// if its a player.
+								if(t.actor.GetComponent<Player>() != null) {
+									GUIManager.instance.CreateStatusBarElement(bleed);
+								}
+
+							}
+
+							// initial damage
+							t.actor.GetComponent<Health>().TakeDamageSimple(trapInitialDamage);
+
+						}
 
 						// turn the tile to a wall
 						// -> actors can't step on spikes after their have popped out.
@@ -248,8 +310,10 @@ public class GameMaster : MonoBehaviour {
 
 	private void HandleEnemyTurns() {
 		foreach(GameObject enemy in PrefabManager.instance.GetEnemyInstances()) {
-			if(enemy.GetComponent<Enemy>().isActive && enemy.GetComponent<Health>().isDead == false) {
-				enemy.GetComponent<Enemy>().DecideNextStep();
+			Enemy e = enemy.GetComponent<Enemy>();
+			if(e.isActive && enemy.GetComponent<Health>().isDead == false) {
+				HandleStatusEffects(e);
+				e.DecideNextStep();
 			}
 		}
 	}
@@ -275,6 +339,35 @@ public class GameMaster : MonoBehaviour {
 					player.position, GUIManager.PopUpType.Other, 0f);
 			}
 		}
+	}
+
+	private void HandleStatusEffects(Actor actor) {
+
+		// Apply each status effect on actor.
+		foreach(StatusEffect e in actor.myStatusEffects) {
+
+			if(e.duration <= 0) {
+				actor.myStatusEffects.Remove(e);
+				continue;
+			}
+
+			switch(e.type) {
+			case StatusEffect.EffectType.Bleeding:
+				actor.GetComponent<Health>().TakeDamageSimple(e.amount);
+				break;
+			case StatusEffect.EffectType.Healing:
+				actor.GetComponent<Health>().HealDamage(e.amount);
+				break;
+			}
+
+			e.duration --;
+		}
+
+		// remove old status effects
+		for(int i = actor.myStatusEffects.Count - 1; i >= 0; i--) {
+			StatusEffect e = actor.myStatusEffects[i];
+			if(e.duration <= 0) actor.myStatusEffects.Remove(e);
+		}
 
 	}
 
@@ -282,10 +375,13 @@ public class GameMaster : MonoBehaviour {
 		GameObject playerGo = PrefabManager.instance.GetPlayerInstance();
 		Player player = playerGo.GetComponent<Player>();
 
+		// handle status effects.
+		HandleStatusEffects(player);
+
+		// move states.
 		if(player.myNextState == Player.NextMoveState.Move) {
 			player.Move();
 			HandleTileItemInfo(player);
-
 		} else if(player.myNextState == Player.NextMoveState.Attack) {
 			player.Attack();
 		} else if(player.myNextState == Player.NextMoveState.Pass) {

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour {
 
-	public enum JournalType { System, Combat, Item, LevelUp }
+	public enum JournalType { System, Combat, Item, LevelUp, Status }
 	public enum PopUpType { Damage, Crit, Miss, Other, Heal, Gold, LevelUp }
 
 	public static GUIManager instance;
@@ -13,11 +13,12 @@ public class GUIManager : MonoBehaviour {
 	[Header("GUI elements")]
 	public GameObject mainGUI;
 	public GameObject journalList;
+	public GameObject statusBar;
 
 	[Header("MainMenu elements")]
 	public GameObject mainmenuGUI;
 
-	[Header("Statusbar elements")]
+	[Header("Player info elements")]
 	public GameObject healthStatus;
 	public GameObject attackStatus;
 	public GameObject armorStatus;
@@ -26,6 +27,7 @@ public class GUIManager : MonoBehaviour {
 	public GameObject spellStatus;
 	public GameObject spellCooldownStatus;
 	public GameObject expBarStatus;
+	public GameObject expBarText;
 
 	[Header("GUI prefabs")]
 	public GameObject journalEntryPrefab;
@@ -33,10 +35,14 @@ public class GUIManager : MonoBehaviour {
 	public GameObject OnGuiTextPrefab;
 	public GameObject OnGuiBackground_dungeonNamePrefab;
 	public GameObject healthBarPrefab;
+	public GameObject effectStatusPrefab;
+	public GameObject hoverTextPrefab;
 
 	private int maxJournalEntries = 30;
 
 	[HideInInspector] public GameObject currentActiveShopGo = null;
+
+	private List<GameObject> listOfStatusElements = new List<GameObject>();
 
 	void Awake() { instance = this; }
 
@@ -89,11 +95,7 @@ public class GUIManager : MonoBehaviour {
 
 	public string ExtractPlayerName(GameObject settings) { 
 		string pname = settings.GetComponent<InputField>().text;
-
-		if(pname == "" || pname == null) {
-			pname = "Nameless";
-		}
-
+		if(pname == "" || pname == null) pname = "Nameless";
 		return pname;
 	}
 
@@ -105,6 +107,44 @@ public class GUIManager : MonoBehaviour {
 		UpdateElement(useItemStatus);
 		UpdateElement(spellStatus);
 		UpdateElement(spellCooldownStatus);
+		UpdateElement(expBarText);
+	}
+
+	/// <summary>
+	/// Updates the status elements.
+	/// Run this on every turn.
+	/// </summary>
+	public void UpdateStatusElements() {
+		foreach(GameObject go in listOfStatusElements) {
+			int duration = int.Parse(go.GetComponentInChildren<Text>().text);
+			duration--;
+
+			if(duration > 0) go.GetComponentInChildren<Text>().text = duration + "";
+			else go.GetComponentInChildren<Text>().text = "0";
+		}
+
+		// remove old elements.
+		for(int i = listOfStatusElements.Count - 1; i >= 0; i--) {
+			GameObject g = listOfStatusElements[i];
+
+			if(int.Parse(g.GetComponentInChildren<Text>().text) <= 0) {
+
+				// TODO:
+				// 1. journal entry that some specific effect stopped.
+
+				listOfStatusElements.Remove(g);
+				Destroy(g);
+			}
+		}
+
+	}
+
+	public void RemoveAllStatusElements() {
+		for(int i = listOfStatusElements.Count - 1; i >= 0; i--) {
+			GameObject g = listOfStatusElements[i];
+			listOfStatusElements.Remove(g);
+			Destroy(g);
+		}
 	}
 
 	private void DeleteOldJournalEntries() {
@@ -118,9 +158,38 @@ public class GUIManager : MonoBehaviour {
 	}
 
 	public void ClearJournal() {
-		for(int i = 0; i < journalList.transform.childCount; i++) {
+		for(int i = 0; i < journalList.transform.childCount; i++) { 
 			Destroy(journalList.transform.GetChild(i).gameObject);
 		}
+	}
+
+	public void CreateStatusBarElement(StatusEffect effect) {
+
+		GameObject inst = (GameObject) Instantiate(GUIManager.instance.effectStatusPrefab);
+
+		// sprite
+		switch(effect.type) {
+		case StatusEffect.EffectType.Healing:
+			inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+				SpriteManager.SpriteType.GUIStatusHealing);
+			break;
+		case StatusEffect.EffectType.Bleeding:
+			inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+				SpriteManager.SpriteType.GUIStatusBleeding);
+			break;
+		}
+
+		// duration text
+		inst.GetComponentInChildren<Text>().text = effect.duration + "";
+
+		// parent the object.
+		inst.transform.SetParent(statusBar.transform);
+
+		// add to a list
+		listOfStatusElements.Add(inst);
+
+		// set the reference for hover text to use.
+		inst.GetComponent<GUIItemInfo>().myEffect = effect;
 	}
 
 	/// <summary>
@@ -159,7 +228,7 @@ public class GUIManager : MonoBehaviour {
 		}
 
 		// scale the object down.
-		background.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+		//background.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
 
 		// fade background.
 		if(background != null) background.GetComponent<PopUpText>().StartFade(fadeTime);
@@ -233,6 +302,9 @@ public class GUIManager : MonoBehaviour {
 		case JournalType.LevelUp:
 			totalTxt = "<color=#FEC601>[LVLUP] </color>";
 			break;
+		case JournalType.Status:
+			totalTxt = "<color=#E2DDB1>[Status] </color>";
+			break;
 		}
 
 		obj.GetComponentInChildren<Text>().text = totalTxt + txt;
@@ -279,15 +351,24 @@ public class GUIManager : MonoBehaviour {
 			if(playerActor.GetComponent<Inventory>().currentUseItem != null) {
 				obj.GetComponentInChildren<Image>().sprite = playerActor.GetComponent<Inventory>().currentUseItem.GetComponentInChildren<SpriteRenderer>().sprite;
 				obj.GetComponentInChildren<Image>().color = Color.white;
+
+				// set the item reference for hover text to use.
+				obj.GetComponentInParent<GUIItemInfo>().myItem = playerActor.GetComponent<Inventory>().currentUseItem;
 			} else {
 				obj.GetComponentInChildren<Image>().sprite = null;
 				obj.GetComponentInChildren<Image>().color = Color.clear;
+
+				// set the item reference for hover text to use.
+				obj.GetComponentInParent<GUIItemInfo>().myItem = null;
 			}
 			break;
 		case GUIElementScript.Element.Spell:
 			if(playerActor.GetComponent<Inventory>().currentSpell != null) {
 
 				GameObject currentSpell = playerActor.GetComponent<Inventory>().currentSpell;
+
+				// set the item reference for hover text to use.
+				obj.GetComponentInParent<GUIItemInfo>().myItem = currentSpell;
 
 				obj.GetComponentInChildren<Image>().sprite = currentSpell.GetComponentInChildren<SpriteRenderer>().sprite;
 
@@ -300,6 +381,9 @@ public class GUIManager : MonoBehaviour {
 			} else {
 				obj.GetComponentInChildren<Image>().sprite = null;
 				obj.GetComponentInChildren<Image>().color = Color.clear;
+
+				// set the item reference for hover text to use.
+				obj.GetComponentInParent<GUIItemInfo>().myItem = null;
 			}
 			break;
 		case GUIElementScript.Element.SpellCooldown:
@@ -316,6 +400,15 @@ public class GUIManager : MonoBehaviour {
 				obj.GetComponentInChildren<Text>().text = "";
 			}
 			break;
+		case GUIElementScript.Element.ExpText:
+
+			Experience exp = playerActor.GetComponent<Experience>();
+
+			obj.GetComponent<Text>().text = exp.currentExp +
+				"/" + exp.GetLevelRequirementExp(exp.currentLevel + 1);
+
+			break;
+		
 		}
 
 	}

@@ -15,6 +15,10 @@ public class Actor : MonoBehaviour {
 	[HideInInspector] public NextMoveState myNextState = NextMoveState.Pass;
 	[HideInInspector] public Vector2 position;
 
+	// list of current status effects.
+	// these will proc on each turn.
+	[HideInInspector] public List<StatusEffect> myStatusEffects = new List<StatusEffect>();
+
 	protected Vector2 moveTargetPosition;
 	private Color startColor;
 
@@ -27,6 +31,9 @@ public class Actor : MonoBehaviour {
 	public int expAmount = 15;
 
 	void Awake() { startColor = GetComponentInChildren<SpriteRenderer>().color; }
+
+	public void SetMoveTargetPosition(Vector2 pos) { moveTargetPosition = pos; }
+	public Vector2 GetMoveTargetPosition() { return moveTargetPosition; }
 
 	public void Hide() { 
 		GetComponentInChildren<SpriteRenderer>().color = Color.clear; 

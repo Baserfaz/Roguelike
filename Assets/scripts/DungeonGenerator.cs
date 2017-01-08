@@ -187,6 +187,12 @@ public class DungeonGenerator : MonoBehaviour {
 		tile.actor = actor;
 	}
 
+	public void UpdateVanityItem(Vector2 pos, GameObject vanityItem) {
+		GameObject tileGo = GetTileAtPos(pos);
+		Tile tile = tileGo.GetComponent<Tile>();
+		tile.vanityItem = vanityItem;
+	}
+
 	public void UpdateTileItem(Vector2 pos, GameObject item) {
 		GameObject tileGo = GetTileAtPos(pos);
 		Tile tile = tileGo.GetComponent<Tile>();
@@ -454,7 +460,6 @@ public class DungeonGenerator : MonoBehaviour {
 	/// 3. generate doors from walls.
 	/// </summary>
 	private void GenerateDoors() {
-
 		foreach(GameObject tile in tiles) {
 			Tile current = tile.GetComponent<Tile>();
 			if(current.myType == Tile.TileType.Wall) {
@@ -508,6 +513,7 @@ public class DungeonGenerator : MonoBehaviour {
 	/// <param name="dungeonHeight">Dungeon height.</param>
 	public void Generate(int dungeonWidth, int dungeonHeight) {
 
+		// Generate all tiles.
 		for(int y = 0; y < dungeonHeight; y++) {
 			for(int x = 0; x < dungeonWidth; x++) {
 
@@ -529,10 +535,14 @@ public class DungeonGenerator : MonoBehaviour {
 			}
 		}
 
+		// Modify existing tiles.
 		GenerateExit();
 		GenerateTraps();
 		CalculateWallTileSprites();
 		GenerateDoors();
+
+		// Create items.
+		DungeonItemManager.instance.SpawnItems();
 		DungeonVanityManager.instance.SpawnVanityItems();
 	}
 }

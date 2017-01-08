@@ -10,7 +10,7 @@ public struct ColorToTileType {
 
 public class MapReader : MonoBehaviour {
 
-	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy, Door, Trap }
+	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy, Door, Trap, Container }
 	public enum State { Tile, ItemActor }
 
 	private State myState = State.Tile;
@@ -110,11 +110,17 @@ public class MapReader : MonoBehaviour {
 						break;
 					case PngTileType.ShopItem:
 
-						System.Array arr = System.Enum.GetValues(typeof(Item.Type));
-						Item.Type randomType = (Item.Type) arr.GetValue(Random.Range(0, arr.Length));
+						// randomize item type.
+						Item.Type randomItemType = PrefabManager.instance.RandomizeItemType();
 
-						PrefabManager.instance.InstantiateRandomItemInCategory(randomType, new Vector2(x, y), Item.Rarity.Normal, true);
+						while(randomItemType == Item.Type.Gold) {
+							randomItemType = PrefabManager.instance.RandomizeItemType();
+						}
+
+						PrefabManager.instance.InstantiateRandomItemInCategory(randomItemType, new Vector2(x, y), Item.Rarity.Normal, true);
+
 						break;
+
 					case PngTileType.LightSource:
 						DungeonVanityManager.instance.SpawnVanityItem(DungeonVanityManager.VanityItem.Lantern, new Vector2(x, y));
 						break;
@@ -122,9 +128,12 @@ public class MapReader : MonoBehaviour {
 						PrefabManager.instance.InstantiateEnemyAtPos(x, y);
 						break;
 					case PngTileType.Door:
-						DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.DoorClosed);
 						DungeonGenerator.instance.GenerateDoor(DungeonGenerator.instance.GetTileAtPos(new Vector2(x, y)));
 						break;
+					case PngTileType.Container:
+						PrefabManager.instance.InstantiateRandomItemInCategory(Item.Type.Container, new Vector2(x, y), Item.Rarity.Normal);
+						break;
+					
 					default:
 						break;
 					}

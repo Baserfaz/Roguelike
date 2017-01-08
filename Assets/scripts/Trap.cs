@@ -21,7 +21,6 @@ public class Trap : MonoBehaviour {
 	}
 
 	public void UpdateGraphics() {
-
 		if(myState == State.Active) {
 			GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(
 				SpriteManager.SpriteType.TrapOn);
@@ -29,11 +28,8 @@ public class Trap : MonoBehaviour {
 			GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(
 				SpriteManager.SpriteType.TrapOff);
 		}
-
 	}
 
-	public void Deactivate() {
-		myState = State.Inactive;
-	}
+	public void Deactivate() { myState = State.Inactive; }
 
 }

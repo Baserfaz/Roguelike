@@ -44,7 +44,7 @@ public class Player : Actor {
 		}
 	}
 
-	private void TestAllTileValidities() {
+	public void TestAllTileValidities() {
 
 		// first check if the next tile 
 		// has an actor in it. -> attack etc.
@@ -89,67 +89,17 @@ public class Player : Actor {
 			pressed = true;
 		} else if(Input.GetKeyDown(KeyCode.Keypad5)) {
 
+			HandleMultiUseKey();
+
 			// keypad5 is the general key for (in this order)
-			// 1. picking up items
+			// 1. picking up items / open chest.
 			// 2. exiting level
 			// 3. passing turn
 
-			Tile tile = DungeonGenerator.instance.GetTileAtPos(position).GetComponent<Tile>();
 
-			if(tile.item != null) {
-
-				if(tile.item.GetComponent<Item>().myState == Item.State.Free) {
-					
-					// pick the item up
-
-					PickUpItem(tile.item);
-					GameMaster.instance.EndTurn();
-
-				} else if(tile.item.GetComponent<Item>().myState == Item.State.Shop) {
-					
-					Item item = tile.item.GetComponent<Item>();
-
-					// buy item.
-					if(GetComponent<Inventory>().currentGold >= item.shopPrice) {
-				
-						// destroy guitext.
-						Destroy(GUIManager.instance.currentActiveShopGo);
-
-						GetComponent<Inventory>().currentGold -= item.shopPrice;
-						item.myState = Item.State.Free;
-						PickUpItem(tile.item);
-
-					} else {
-
-						// not enough money.
-						GUIManager.instance.CreatePopUpEntry("Not enough money", position, GUIManager.PopUpType.Other);
-						GUIManager.instance.CreateJournalEntry("Not enough money to buy " + item.itemName, GUIManager.JournalType.Item);
-
-					}
-				}
-
-			} else if(tile.myType == Tile.TileType.Exit) {
-				GameMaster.instance.ExitDungeon();
-			} else {
-				GameMaster.instance.EndTurn();
-			}
 		} else if(Input.GetKeyDown(KeyCode.Keypad0)) {
 			// use item
-
-			if(GetComponent<Inventory>().currentUseItem != null) {
-				GameObject item = GetComponent<Inventory>().currentUseItem;
-
-				GUIManager.instance.CreateJournalEntry("Used item " + "[" + item.GetComponent<Item>().itemName + "]", GUIManager.JournalType.Item);
-
-				if(item.GetComponent<Potion>() != null) {
-					item.GetComponent<Potion>().Drink();
-				}
-
-				GameMaster.instance.EndTurn();
-
-			} else {
-				GUIManager.instance.CreateJournalEntry("You don't have any item to use.", GUIManager.JournalType.Item);
-			}
+			HandleUseItem();
 
 		} else if(Input.GetKeyDown(KeyCode.KeypadEnter)) {
 
@@ -209,37 +159,7 @@ public class Player : Actor {
 			pressed = true;
 		} else if(Input.GetKeyDown(KeyCode.KeypadEnter)) {
 
-			// cast spell here.
-
-			// if we can see the targeted tile.
-			if(DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().isVisible) {
-
-				GameObject spell = GetComponent<Inventory>().currentSpell;
-
-				if(spell.GetComponent<Spell>().currentCooldown == 0) {
-
-					spell.GetComponent<Spell>().Cast(moveTargetPosition);
-
-					GUIManager.instance.CreatePopUpEntry(spell.GetComponent<Item>().itemName, position, GUIManager.PopUpType.Other);
-					GUIManager.instance.CreateJournalEntry("Cast spell " + "[" + spell.GetComponent<Item>().itemName + "]", GUIManager.JournalType.Item);
-
-				} else {
-					GUIManager.instance.CreatePopUpEntry("COOLDOWN", position, GUIManager.PopUpType.Other);
-					GUIManager.instance.CreateJournalEntry("Can't cast yet.", GUIManager.JournalType.Combat);
-
-					CrosshairManager.instance.PlayerMode();
-					return;
-				}
-
-				CrosshairManager.instance.PlayerMode();
-				GameMaster.instance.EndTurn();
-
-			} else {
-
-				GUIManager.instance.CreatePopUpEntry("Can't see target", position, GUIManager.PopUpType.Other);
-				GUIManager.instance.CreateJournalEntry("Can't see target.", GUIManager.JournalType.Combat);
-				CrosshairManager.instance.PlayerMode();
-			}
+			HandleCastSpell();
 
 		} else if(Input.GetKeyDown(KeyCode.Keypad5)) {
 			// cancel cast.
@@ -253,7 +173,109 @@ public class Player : Actor {
 
 	}
 
-	private void PickUpItem(GameObject itemGo) {
+	public void HandleMultiUseKey() {
+		Tile tile = DungeonGenerator.instance.GetTileAtPos(position).GetComponent<Tile>();
+
+		if(tile.item != null) {
+
+			// if the item is a chest
+			// -> open it.
+			if(tile.item.GetComponent<Container>() != null) {
+
+				tile.item.GetComponent<Container>().Open();
+				GameMaster.instance.EndTurn();
+
+			} else {
+				if(tile.item.GetComponent<Item>().myState == Item.State.Free) {
+
+					// pick the item up
+
+					PickUpItem(tile.item);
+					GameMaster.instance.EndTurn();
+
+				} else if(tile.item.GetComponent<Item>().myState == Item.State.Shop) {
+
+					Item item = tile.item.GetComponent<Item>();
+
+					// buy item.
+					if(GetComponent<Inventory>().currentGold >= item.shopPrice) {
+
+						// destroy guitext.
+						Destroy(GUIManager.instance.currentActiveShopGo);
+
+						GetComponent<Inventory>().currentGold -= item.shopPrice;
+						item.myState = Item.State.Free;
+						//PickUpItem(tile.item);
+
+					} else {
+
+						// not enough money.
+						GUIManager.instance.CreatePopUpEntry("Not enough money", position, GUIManager.PopUpType.Other);
+						GUIManager.instance.CreateJournalEntry("Not enough money to buy " + item.itemName, GUIManager.JournalType.Item);
+
+					}
+				}
+			}
+		} else if(tile.myType == Tile.TileType.Exit) {
+			GameMaster.instance.ExitDungeon();
+		} else {
+			GameMaster.instance.EndTurn();
+		}
+
+	}
+
+	public void HandleUseItem() {
+		if(GetComponent<Inventory>().currentUseItem != null) {
+			GameObject item = GetComponent<Inventory>().currentUseItem;
+
+			GUIManager.instance.CreateJournalEntry("Used item " + "[" + item.GetComponent<Item>().itemName + "]", GUIManager.JournalType.Item);
+
+			if(item.GetComponent<Potion>() != null) {
+				item.GetComponent<Potion>().Drink();
+			}
+
+			GameMaster.instance.EndTurn();
+
+		} else {
+			GUIManager.instance.CreateJournalEntry("You don't have any item to use.", GUIManager.JournalType.Item);
+		}
+	}
+
+	public void HandleCastSpell() {
+		// cast spell here.
+
+		// if we can see the targeted tile.
+		if(DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().isVisible) {
+
+			GameObject spell = GetComponent<Inventory>().currentSpell;
+
+			if(spell.GetComponent<Spell>().currentCooldown == 0) {
+
+				spell.GetComponent<Spell>().Cast(moveTargetPosition);
+
+				GUIManager.instance.CreatePopUpEntry(spell.GetComponent<Item>().itemName, position, GUIManager.PopUpType.Other);
+				GUIManager.instance.CreateJournalEntry("Cast spell " + "[" + spell.GetComponent<Item>().itemName + "]", GUIManager.JournalType.Item);
+
+			} else {
+				GUIManager.instance.CreatePopUpEntry("COOLDOWN", position, GUIManager.PopUpType.Other);
+				GUIManager.instance.CreateJournalEntry("Can't cast yet.", GUIManager.JournalType.Combat);
+
+				CrosshairManager.instance.PlayerMode();
+				return;
+			}
+
+			CrosshairManager.instance.PlayerMode();
+			GameMaster.instance.EndTurn();
+
+		} else {
+
+			GUIManager.instance.CreatePopUpEntry("Can't see target", position, GUIManager.PopUpType.Other);
+			GUIManager.instance.CreateJournalEntry("Can't see target.", GUIManager.JournalType.Combat);
+			CrosshairManager.instance.PlayerMode();
+		}
+	}
+
+	public void PickUpItem(GameObject itemGo) {
 
 		// 0.
 		Inventory inventory = GetComponent<Inventory>();

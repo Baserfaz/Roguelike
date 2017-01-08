@@ -31,7 +31,8 @@ public class Health : MonoBehaviour {
 		 */
 		if(GetComponent<Inventory>() != null) {
 			if(GetComponent<Inventory>().currentArmor != null) {
-				actualDmg -= GetComponent<Inventory>().currentArmor.GetComponent<Armor>().GetArmorRating();
+				actualDmg -= GetComponent<Inventory>().currentArmor.
+					GetComponent<Armor>().GetArmorRating();
 			} 
 		}
 		actualDmg -= GetComponent<Actor>().defaultArmor;
@@ -43,21 +44,26 @@ public class Health : MonoBehaviour {
 		currentHealth -= actualDmg;
 
 		if(isCrit) {
-			GUIManager.instance.CreatePopUpEntry(actualDmg + "!", GetComponent<Actor>().position, GUIManager.PopUpType.Crit);
-			GUIManager.instance.CreateJournalEntry("Critical hit! " + GetComponent<Actor>().actorName + " took " + actualDmg + " damage.", GUIManager.JournalType.Combat);
+			
+			GUIManager.instance.CreatePopUpEntry("-" + actualDmg + "HP!",
+				GetComponent<Actor>().position, GUIManager.PopUpType.Crit);
+			
+			GUIManager.instance.CreateJournalEntry(
+				"Critical hit! " + GetComponent<Actor>().actorName + " took " + actualDmg + " damage.",
+				GUIManager.JournalType.Combat);
 		} else {
-			GUIManager.instance.CreatePopUpEntry(actualDmg + "", GetComponent<Actor>().position, GUIManager.PopUpType.Damage);
-			GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " took " + actualDmg + " damage.", GUIManager.JournalType.Combat);
+			
+			GUIManager.instance.CreatePopUpEntry("-" + actualDmg + "HP",
+				GetComponent<Actor>().position, GUIManager.PopUpType.Damage);
+			
+			GUIManager.instance.CreateJournalEntry(
+				GetComponent<Actor>().actorName + " took " + actualDmg + " damage.",
+				GUIManager.JournalType.Combat);
 		}
 
 		// update healthbar if it exists.
 		if(GetComponent<HealthBar>() != null) {
 			GetComponent<HealthBar>().UpdateHPBar();
-		}
-
-		// update player's GUI.
-		if(GetComponent<Player>() != null) {
-			GUIManager.instance.UpdateAllElements();
 		}
 
 		if(currentHealth <= 0) {
@@ -74,16 +80,17 @@ public class Health : MonoBehaviour {
 
 		currentHealth -= amount;
 
-		GUIManager.instance.CreatePopUpEntry(amount + "", GetComponent<Actor>().position, GUIManager.PopUpType.Damage);
-		GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " took " + amount + " damage.", GUIManager.JournalType.Combat);
+		GUIManager.instance.CreatePopUpEntry("-" + amount + "HP",
+			GetComponent<Actor>().position,
+			GUIManager.PopUpType.Damage);
+		
+		GUIManager.instance.CreateJournalEntry(
+			GetComponent<Actor>().actorName + " took " + amount + " damage.",
+			GUIManager.JournalType.Combat);
 
 		// update healthbar if it exists.
 		if(GetComponent<HealthBar>() != null) {
 			GetComponent<HealthBar>().UpdateHPBar();
-		}
-
-		if(GetComponent<Player>() != null) {
-			GUIManager.instance.UpdateAllElements();
 		}
 
 		if(currentHealth <= 0) {
@@ -101,11 +108,13 @@ public class Health : MonoBehaviour {
 			GetComponent<HealthBar>().UpdateHPBar();
 		}
 
-		if(GetComponent<Player>() != null) {
-			GUIManager.instance.UpdateAllElements();
-		}
-		GUIManager.instance.CreatePopUpEntry(amount + "", GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
-		GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " healed " + amount + " health.", GUIManager.JournalType.Combat);
+		GUIManager.instance.CreatePopUpEntry("+" + amount + "HP",
+			GetComponent<Actor>().position,
+			GUIManager.PopUpType.Heal);
+		
+		GUIManager.instance.CreateJournalEntry(
+			GetComponent<Actor>().actorName + " healed " + amount + " health.",
+			GUIManager.JournalType.Combat);
 	}
 
 	private void Die() {

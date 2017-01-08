@@ -37,6 +37,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject armorPotionPrefab;
 	public GameObject hurtPotionPrefab;
 	public GameObject awesomePotionPrefab;
+	public GameObject rejuvenationPotionPrefab;
 
 	[Header("Weapons")]
 	public GameObject woodenSwordPrefab;
@@ -47,6 +48,10 @@ public class PrefabManager : MonoBehaviour {
 
 	[Header("Spells")]
 	public GameObject fireballSpellPrefab;
+	public GameObject rejuvenationSpellPrefab;
+
+	[Header("Containers")]
+	public GameObject chestGoldenPrefab;
 
 
 	// lists of single items.
@@ -95,9 +100,20 @@ public class PrefabManager : MonoBehaviour {
 		listOfPotions.Add(armorPotionPrefab);
 		listOfPotions.Add(awesomePotionPrefab);
 		listOfPotions.Add(hurtPotionPrefab);
+		listOfPotions.Add(rejuvenationPotionPrefab);
 
 		// spells
 		listOfSpells.Add(fireballSpellPrefab);
+		listOfSpells.Add(rejuvenationSpellPrefab);
+	}
+
+	/// <summary>
+	/// Randomizes item.type and returns it.
+	/// </summary>
+	/// <returns>The loot.</returns>
+	public Item.Type RandomizeItemType() {
+		System.Array values = System.Enum.GetValues(typeof(Item.Type));
+		return (Item.Type) values.GetValue(Random.Range(0, values.Length));
 	}
 
 	public void RemovePlayer() {
@@ -169,7 +185,7 @@ public class PrefabManager : MonoBehaviour {
 		return possibleTiles[Random.Range(0, possibleTiles.Count - 1)].GetComponent<Tile>().position;
 	}
 
-	public void InstantiateRandomItemInCategory(Item.Type itemType, Vector2 pos, Item.Rarity rarity, bool isShopItem = false) {
+	public void InstantiateRandomItemInCategory(Item.Type itemType, Vector2 pos, Item.Rarity rarity, bool isShopItem = false, Transform parent = null) {
 
 		GameObject instObj = null;
 		GameObject prefab = null;
@@ -194,14 +210,10 @@ public class PrefabManager : MonoBehaviour {
 				safetyCounter++;
 
 			}
-
-			if(prefab == null) break;
-
-			instObj = (GameObject) Instantiate(prefab);
 			break;
 
 		case Item.Type.Gold:
-			instObj = (GameObject) Instantiate(listOfGold[Random.Range(0, listOfGold.Count)]);
+			prefab = listOfGold[Random.Range(0, listOfGold.Count)];
 			break;
 
 		case Item.Type.Weapon:
@@ -219,10 +231,6 @@ public class PrefabManager : MonoBehaviour {
 
 				safetyCounter++;
 			}
-
-			if(prefab == null) break;
-
-			instObj = (GameObject) Instantiate(prefab);
 			break;
 
 		case Item.Type.UsableItem:
@@ -244,18 +252,19 @@ public class PrefabManager : MonoBehaviour {
 
 				safetyCounter++;
 			}
-
-			if(prefab == null) break;
-
-			instObj = (GameObject) Instantiate(prefab);
 			break;
 		case Item.Type.Spell:
 			prefab = listOfSpells[Random.Range(0, listOfSpells.Count)];
-			instObj = (GameObject) Instantiate(prefab);
+			break;
+		case Item.Type.Container:
+			prefab = chestGoldenPrefab;
 			break;
 		}
 
-		if(instObj == null) return;
+		if(prefab == null) return;
+
+		// instantiate object.
+		instObj = (GameObject) Instantiate(prefab);
 
 		// creates item that takes money before picking up.
 		if(isShopItem) {
@@ -265,11 +274,23 @@ public class PrefabManager : MonoBehaviour {
 		GameObject tileGO = DungeonGenerator.instance.GetTileAtPos(pos);
 		Tile tile = tileGO.GetComponent<Tile>();
 
+		// attach item to tile.
 		tile.item = instObj;
 
+		// update positions.
+		instObj.GetComponent<Item>().position = pos;
 		instObj.transform.position = new Vector3(pos.x, pos.y, GameMaster.instance.itemZLevel);
+
+		// set owner to null.
 		instObj.GetComponent<Item>().owner = null;
+
+		// save startcolor.
 		instObj.GetComponent<Item>().startColor = instObj.GetComponentInChildren<SpriteRenderer>().color;
+
+		// parent
+		instObj.transform.SetParent(parent);
+
+		// add to list.
 		itemInstances.Add(instObj);
 
 	}

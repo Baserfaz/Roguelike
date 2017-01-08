@@ -75,7 +75,9 @@ public class DungeonVanityManager : MonoBehaviour {
 			foreach(GameObject tileGo in DungeonGenerator.instance.GetTiles()) {
 				Tile tile = tileGo.GetComponent<Tile>();
 
-				if(tile.myType != Tile.TileType.Floor) continue;
+				// if the tile is not floor or it is a trap
+				// -> continue.
+				if(tile.myType != Tile.TileType.Floor || tileGo.GetComponent<Trap>() != null) continue;
 
 				if(Random.Range(0, 100) > 100 - vanityitemCoverage) {
 

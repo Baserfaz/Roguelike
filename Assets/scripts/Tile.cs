@@ -22,6 +22,7 @@ public class Tile : MonoBehaviour {
 	void Awake() { startColor = GetComponentInChildren<SpriteRenderer>().color; }
 
 	public void SetStartColor(Color newColor) { startColor = newColor; }
+	public Color GetStartColor() { return startColor; }
 	public void ShowAsDiscovered() { GetComponentInChildren<SpriteRenderer>().color = new Color(startColor.r, startColor.g, startColor.b, 0.5f); }
 	public void Show() { GetComponentInChildren<SpriteRenderer>().color = startColor; }
 	public void Hide() { GetComponentInChildren<SpriteRenderer>().color = Color.clear; }

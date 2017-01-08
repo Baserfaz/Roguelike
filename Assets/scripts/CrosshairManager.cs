@@ -9,6 +9,10 @@ public class CrosshairManager : MonoBehaviour {
 	[Header("Crosshair settings")]
 	public GameObject crosshairPrefab;
 
+	[Header("Crosshair Sprites")]
+	public Sprite crosshairNormal;
+	public Sprite crosshairSpell;
+
 	private GameObject crosshairInstance = null;
 
 	void Awake() { instance = this; }
