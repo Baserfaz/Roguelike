@@ -44,6 +44,7 @@ public class MapReader : MonoBehaviour {
 			// after first loop.
 			myState = State.ItemActor;
 
+			// on the first loop calculate sprites.
 			if(i == 0) DungeonGenerator.instance.CalculateWallTileSprites();
 		}
 	}
@@ -103,6 +104,11 @@ public class MapReader : MonoBehaviour {
 				if(ctt.color.Equals(color)) {
 					switch(ctt.type) {
 					case PngTileType.Start:
+						
+						if(PrefabManager.instance.GetPlayerInstance() == null) {
+							PrefabManager.instance.InstantiatePlayer("Player", true);
+						} 
+
 						PrefabManager.instance.MoveActorToPos(new Vector2(x, y), PrefabManager.instance.GetPlayerInstance());
 						break;
 					case PngTileType.Gold:

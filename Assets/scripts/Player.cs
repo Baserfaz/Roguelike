@@ -7,7 +7,7 @@ public class Player : Actor {
 	public int seeRadius = 1;
 
 	private void Update() {
-		ManageInputs();
+		if(GameMaster.instance.allowKeyboardInput) ManageInputs();
 	}
 
 	// Checks if the tile is walkable.
@@ -205,7 +205,7 @@ public class Player : Actor {
 
 						GetComponent<Inventory>().currentGold -= item.shopPrice;
 						item.myState = Item.State.Free;
-						//PickUpItem(tile.item);
+						PickUpItem(tile.item);
 
 					} else {
 
@@ -217,8 +217,10 @@ public class Player : Actor {
 				}
 			}
 		} else if(tile.myType == Tile.TileType.Exit) {
+			myNextState = NextMoveState.Pass;
 			GameMaster.instance.ExitDungeon();
 		} else {
+			myNextState = NextMoveState.Pass;
 			GameMaster.instance.EndTurn();
 		}
 
@@ -241,9 +243,11 @@ public class Player : Actor {
 		}
 	}
 
+	/// <summary>
+	/// Handles the cast spell.
+	/// </summary>
 	public void HandleCastSpell() {
-		// cast spell here.
-
+		
 		// if we can see the targeted tile.
 		if(DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().isVisible) {
 

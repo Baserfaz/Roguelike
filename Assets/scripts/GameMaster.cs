@@ -17,13 +17,34 @@ public class GameMaster : MonoBehaviour {
 
 	[HideInInspector] public bool isGameRunning = false;
 
+	[Header("Controls")]
+	public bool allowKeyboardInput = false;
+	public bool allowMouseInput = true;
+	public bool allowPathfinding = true;
+	public bool allowPathfindInvisibleTiles = true;
+	public bool allowSmoothMovement = true;
+
+	[Header("Debugging")]
+	public bool enableEnemyAI = true;
+
 	[Header("General settings")]
 	public bool spawnEnemies = false;
 	public bool wallsBlockLos = true;
+	public bool pickupGoldAutomatically = true;
 	public bool attacksSubtractDefaultArmor = true;
+	public bool useBlankmainMenuScreen = false;
+	public bool randomizeDungeonSize = true;
+	public bool randomizeEnemyStartCount = true;
 
-	[Header("Fonts")]
-	public Font pixelFont;
+	[Header("Randomized dungeon sizes")]
+	[Tooltip("OVERRIDES DUNGEON SETTINGS!")]
+	[Range(1, 50)] public int maxWidth = 25;
+	[Tooltip("OVERRIDES DUNGEON SETTINGS!")]
+	[Range(1, 50)] public int minWidth = 10;
+	[Tooltip("OVERRIDES DUNGEON SETTINGS!")]
+	[Range(1, 50)] public int maxHeight = 25;
+	[Tooltip("OVERRIDES DUNGEON SETTINGS!")]
+	[Range(1, 50)] public int minHeight = 10;
 
 	[Header("Dungeon settings")]
 	public int dungeonHeight = 5;
@@ -57,11 +78,15 @@ public class GameMaster : MonoBehaviour {
 	public int lightZLevel = -3;
 
 	[Header("Enemy settings")]
-	public int maxEnemyCountPerDungeon = 15;
+	public int defaultMaxEnemyCountPerDungeon = 15;
+	public int absoluteMaxEnemyCount = 30;
 
 	[Header("Special Levels")]
 	public Texture2D shopLevel;
 	public Texture2D mobCabinetlevel01;
+	public Texture2D pathfindingTestLevel;
+
+	private bool wasLastLevelSpecial = false;
 
 	void Awake() { instance = this; }
 
@@ -72,20 +97,69 @@ public class GameMaster : MonoBehaviour {
 
 	// PROGRAM START
 	void Start () {
-		GUIManager.instance.ShowMainmenu();
 		GUIManager.instance.HideGUI();
+		GUIManager.instance.HideDeathScreen();
+		GUIManager.instance.ShowMainmenu();
+
+		// create mainmenu scene.
+		CreateMainMenuScene();
 
 		// CONTINUES -> PLAY BUTTON OnClick
 		// --> StartNewGame()
 	}
 
+	public void OpenPathfindingTest() {
+		ResetEverything();
+
+		DungeonGenerator.instance.debugMode = true;
+
+		// game loop is running.
+		isGameRunning = true;
+
+		// randomize tile set.
+		SpriteManager.instance.RandomizeTileSet();
+
+		// populate item lists.
+		PrefabManager.instance.PopulateItemLists();
+
+		// create level
+		MapReader.instance.GenerateDungeonFromImage(pathfindingTestLevel);
+
+		// update player line of sight
+		UpdatePlayerLos();
+
+		// update GUI
+		GUIManager.instance.UpdateAllElements();
+
+	}
+
+	public void CreateMainMenuScene() {
+		if(useBlankmainMenuScreen) return;
+		DungeonGenerator.instance.debugMode = true;
+		SpriteManager.instance.RandomizeTileSet();
+		PrefabManager.instance.PopulateItemLists();
+		StartDungeonCreationProcess();
+	}
+
 	public void ResetEverything() {
+
+		DungeonGenerator.instance.debugMode = false;
+
+		// Reset camera.
+		CameraManager cm = Camera.main.GetComponent<CameraManager>();
+
+		// rotation.
+		cm.ResetRotation();
+
+		// orthosize.
+		Camera.main.orthographicSize = (float) cm.maxZoom / cm.minZoom;
 
 		// reset dungeon level
 		dungeonLevel = 1;
 
 		// reset player level
-		PrefabManager.instance.GetPlayerInstance().GetComponent<Experience>().currentLevel = 1;
+		GameObject player = PrefabManager.instance.GetPlayerInstance();
+		if(player != null) player.GetComponent<Experience>().currentLevel = 1;
 
 		// reset status elements GUI
 		GUIManager.instance.RemoveAllStatusElements();
@@ -99,8 +173,24 @@ public class GameMaster : MonoBehaviour {
 		DungeonVanityManager.instance.RemoveVanityItems();
 	}
 
+	/// <summary>
+	/// Calculates random/set dungeon widths and generates dungeon.
+	/// </summary>
+	private void StartDungeonCreationProcess() {
+		// overrides set dungeonheight and dungeonwidth.
+		if(randomizeDungeonSize) {
+			dungeonWidth = Random.Range(minWidth, maxWidth);
+			dungeonHeight = Random.Range(minHeight, maxHeight);
+		} 
+		DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
+	}
+
 	public void StartNewGame(GameObject gameSettings) {
 
+		// before anything just reset all.
+		ResetEverything();
+
+		// game loop is running.
 		isGameRunning = true;
 
 		// randomize tile set.
@@ -109,8 +199,8 @@ public class GameMaster : MonoBehaviour {
 		// populate item lists.
 		PrefabManager.instance.PopulateItemLists();
 
-		// create dungeon.
-		DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
+		// create dungeon
+		StartDungeonCreationProcess();
 
 		// instantiate actors
 		PrefabManager.instance.InstantiateEnemies();
@@ -120,8 +210,8 @@ public class GameMaster : MonoBehaviour {
 		string playerName = GUIManager.instance.ExtractPlayerName(gameSettings);
 
 		// instantiate player.
-		PrefabManager.instance.InstantiatePlayer(playerName);
-
+		PrefabManager.instance.InstantiatePlayer(playerName, false);
+	
 		// update player line of sight
 		UpdatePlayerLos();
 
@@ -156,7 +246,7 @@ public class GameMaster : MonoBehaviour {
 		GUIManager.instance.UpdateStatusElements();
 
 		HandlePlayerTurn();
-		HandleEnemyTurns();
+		if(enableEnemyAI) HandleEnemyTurns();
 		HandleTraps();
 		UpdatePlayerLos();
 
@@ -173,28 +263,31 @@ public class GameMaster : MonoBehaviour {
 		// update player info
 		GUIManager.instance.UpdateAllElements();
 
-		// after all turns, check if the player is dead
-		// -> if it is just end the game.
-		// TODO: death screen.
+		// Check if player is dead.
 		if(PrefabManager.instance.GetPlayerInstance().GetComponent<Health>().isDead) {
-			GameMaster.instance.ResetEverything();
-			GUIManager.instance.ShowMainmenu();
+
+			// update gui
+			GUIManager.instance.UpdateDeathScreen();
+
+			// show/hide guis
 			GUIManager.instance.HideGUI();
+			GUIManager.instance.ShowDeathScreen();
+
+			// reset game
+			GameMaster.instance.ResetEverything();
+
+			// set the game loop false
 			isGameRunning = false;
+
+			// create main menu scene.
+			CreateMainMenuScene();
 		}
 	}
 
-	public void ExitDungeon() {
-
-		dungeonLevel++;
-
-		// clear stuff
-		PrefabManager.instance.RemoveEnemies();
-		PrefabManager.instance.RemoveItems();
-		DungeonGenerator.instance.DestroyDungeon();
-		DungeonVanityManager.instance.RemoveVanityItems();
-
+	private bool TryGetSpecialLevel() {
 		if(Random.Range(0, 100) > 100 - ShopChance) {
+
+			wasLastLevelSpecial = true;
 
 			// change tileset to use shop tiles.
 			SpriteManager.instance.currentTileSet = SpriteManager.TileSet.Shop;
@@ -203,9 +296,13 @@ public class GameMaster : MonoBehaviour {
 			MapReader.instance.GenerateDungeonFromImage(shopLevel);
 
 			// name
-			currentDungeonName = "Shop a holic";
+			currentDungeonName = "Shopaholic's dream";
+
+			return true;
 
 		} else if(Random.Range(0, 100) > 100 - mobCabinet01Chance) {
+
+			wasLastLevelSpecial = true;
 
 			// randomize tileset
 			SpriteManager.instance.RandomizeTileSet();
@@ -215,22 +312,50 @@ public class GameMaster : MonoBehaviour {
 
 			currentDungeonName = "It's not a trap.";
 
+			return true;
+		}
+
+		return false;
+	}
+
+	private void GetRandomGenLevel() {
+		wasLastLevelSpecial = false;
+
+		// randomize tileset once again.
+		SpriteManager.instance.RandomizeTileSet();
+
+		// create new randomized dungeon.
+		StartDungeonCreationProcess();
+
+		// instantiate enemies.
+		PrefabManager.instance.InstantiateEnemies();
+
+		// name it.
+		CreateNewRandomDungeonName();
+
+		// move player to new location
+		PrefabManager.instance.MovePlayerToNewStartLocation();
+	}
+
+	public void ExitDungeon() {
+
+		PrefabManager.instance.GetPlayerInstance().GetComponent<Player>().StopCoroutines();
+
+		dungeonLevel++;
+
+		// clear stuff
+		PrefabManager.instance.RemoveEnemies();
+		PrefabManager.instance.RemoveItems();
+		DungeonGenerator.instance.DestroyDungeon();
+		DungeonVanityManager.instance.RemoveVanityItems();
+
+		if(wasLastLevelSpecial) {
+			GetRandomGenLevel();
 		} else {
-
-			// randomize tileset once again.
-			SpriteManager.instance.RandomizeTileSet();
-
-			// create new randomized dungeon.
-			DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
-
-			// instantiate enemies.
-			PrefabManager.instance.InstantiateEnemies();
-
-			// name it.
-			CreateNewRandomDungeonName();
-		
-			// move player to new location
-			PrefabManager.instance.MovePlayerToNewStartLocation();
+			bool success = TryGetSpecialLevel();
+			if(success == false) {
+				GetRandomGenLevel();
+			} 
 		}
 
 		GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
@@ -311,9 +436,16 @@ public class GameMaster : MonoBehaviour {
 	private void HandleEnemyTurns() {
 		foreach(GameObject enemy in PrefabManager.instance.GetEnemyInstances()) {
 			Enemy e = enemy.GetComponent<Enemy>();
-			if(e.isActive && enemy.GetComponent<Health>().isDead == false) {
+			if(e.isActive) {
+
+				// this can cause bleed effect,
+				// and there fore it can kill the enemy.
 				HandleStatusEffects(e);
-				e.DecideNextStep();
+
+				// so we need to check is dead here.
+				if(enemy.GetComponent<Health>().isDead == false) {
+					e.DecideNextStep();
+				}
 			}
 		}
 	}
@@ -353,10 +485,31 @@ public class GameMaster : MonoBehaviour {
 
 			switch(e.type) {
 			case StatusEffect.EffectType.Bleeding:
+				
 				actor.GetComponent<Health>().TakeDamageSimple(e.amount);
 				break;
+
 			case StatusEffect.EffectType.Healing:
+				
 				actor.GetComponent<Health>().HealDamage(e.amount);
+				break;
+
+			case StatusEffect.EffectType.Armor:
+
+				// can apply effect only once.
+				if(e.isApplied == false) {
+					e.isApplied = true;
+					actor.GetComponent<Actor>().buffedArmor += e.amount;
+				}
+
+				break;
+			case StatusEffect.EffectType.Attack:
+
+				// can apply effect only once.
+				if(e.isApplied == false) {
+					e.isApplied = true;
+					actor.GetComponent<Actor>().buffedDamage += e.amount;
+				}
 				break;
 			}
 

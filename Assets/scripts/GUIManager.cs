@@ -10,13 +10,17 @@ public class GUIManager : MonoBehaviour {
 
 	public static GUIManager instance;
 
-	[Header("GUI elements")]
+	[Header("Canvases")]
 	public GameObject mainGUI;
+	public GameObject mainmenuGUI;
+	public GameObject deathScreenGUI;
+
+	[Header("mainGUI elements")]
 	public GameObject journalList;
 	public GameObject statusBar;
 
-	[Header("MainMenu elements")]
-	public GameObject mainmenuGUI;
+	[Header("Deathscreen elements")]
+	public GameObject playerNameText;
 
 	[Header("Player info elements")]
 	public GameObject healthStatus;
@@ -63,6 +67,20 @@ public class GUIManager : MonoBehaviour {
 
 	public void HideMainmenu() { Hide(mainmenuGUI); }
 	public void ShowMainmenu() { Show(mainmenuGUI); }
+
+	public void HideDeathScreen() { Hide(deathScreenGUI); }
+	public void ShowDeathScreen() { Show(deathScreenGUI); }
+
+	public void UpdateDeathScreen() {
+
+		// update name.
+		playerNameText.GetComponent<Text>().text = 
+			PrefabManager.instance.GetPlayerInstance().GetComponent<Actor>().actorName;
+
+
+
+
+	}
 
 	public void UpdateExpBar(int currentExp, int maxExp) {
 		Slider slider = expBarStatus.GetComponent<Slider>();
@@ -170,12 +188,37 @@ public class GUIManager : MonoBehaviour {
 		// sprite
 		switch(effect.type) {
 		case StatusEffect.EffectType.Healing:
+			
 			inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
 				SpriteManager.SpriteType.GUIStatusHealing);
 			break;
+
 		case StatusEffect.EffectType.Bleeding:
+			
 			inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
 				SpriteManager.SpriteType.GUIStatusBleeding);
+			break;
+
+		case StatusEffect.EffectType.Armor:
+
+			if(effect.amount < 0) {
+				inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+					SpriteManager.SpriteType.GUIStatusDefDebuff);
+			} else {
+				inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+					SpriteManager.SpriteType.GUIStatusDefBuff);
+			}
+			break;
+
+		case StatusEffect.EffectType.Attack:
+
+			if(effect.amount < 0) {
+				inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+					SpriteManager.SpriteType.GUIStatusAttDebuff);
+			} else {
+				inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+					SpriteManager.SpriteType.GUIStatusAttBuff);
+			}
 			break;
 		}
 

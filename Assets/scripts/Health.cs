@@ -35,7 +35,7 @@ public class Health : MonoBehaviour {
 					GetComponent<Armor>().GetArmorRating();
 			} 
 		}
-		actualDmg -= GetComponent<Actor>().defaultArmor;
+		actualDmg -= GetComponent<Actor>().defaultArmor + GetComponent<Actor>().buffedArmor;
 
 		// safety
 		if(actualDmg <= 0) actualDmg = 0;

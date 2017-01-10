@@ -6,6 +6,13 @@ public class Enemy : Actor {
 	public bool isActive = false;
 	public Vector2 targetPosition = Vector2.zero;
 
+	/// <summary>
+	/// Finds the next tile.
+	/// This is really simplified pathfinding 
+	/// and should be upgraded to atleast to use
+	/// pathfinding.cs (breadth-first search).
+	/// </summary>
+	/// <returns>The find next tile.</returns>
 	private GameObject PathFindNextTile() {
 
 		// Simple pathfinding algorithm
@@ -21,7 +28,9 @@ public class Enemy : Actor {
 			Tile tile = tileGo.GetComponent<Tile>();
 
 			// tile is walkable
-			if(tile.myType == Tile.TileType.Floor || tile.myType == Tile.TileType.DoorOpen) {
+			if(tile.myType == Tile.TileType.Floor ||
+				tile.myType == Tile.TileType.DoorOpen ||
+				tile.myType == Tile.TileType.FloorSpecialItem) {
 
 				// tile is not occupied.
 				if(tile.actor == null) {
@@ -47,6 +56,19 @@ public class Enemy : Actor {
 
 					}
 				}
+
+				// if the player is standing on an exit tile
+				// and this enemy can reach it -> attack.
+			} else if(tile.myType == Tile.TileType.Exit) {
+
+				if(tile.actor != null) {
+					if(tile.actor.GetComponent<Player>() != null) {
+						bestTile = tileGo;
+						myNextState = NextMoveState.Attack;
+						break;
+					}
+				}
+
 			}
 		}
 		return bestTile;

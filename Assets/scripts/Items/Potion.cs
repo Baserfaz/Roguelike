@@ -4,7 +4,7 @@ using UnityEngine;
 
 [System.Serializable]
 public struct Effects {
-	public enum PotionType { Heal, Hurt, Attack, Armor, MaxHP, HoT, DoT };
+	public enum PotionType { Heal, Hurt, AttackBuff, ArmorBuff, MaxHP, HoT, DoT };
 	public PotionType type;
 	public int minAmount;
 	public int maxAmount;
@@ -23,28 +23,59 @@ public class Potion : Item {
 
 		foreach(Effects effect in potionEffects) {
 			switch(effect.type) {
+
 			case Effects.PotionType.Heal:
+				
 				owner.GetComponent<Health>().HealDamage(Random.Range(effect.minAmount, effect.maxAmount));
 				break;
+
 			case Effects.PotionType.Hurt:
+				
 				owner.GetComponent<Health>().TakeDamageSimple(Random.Range(effect.minAmount, effect.maxAmount));
 				break;
-			case Effects.PotionType.Armor:
+
+			case Effects.PotionType.ArmorBuff:
 
 				amount = Random.Range(effect.minAmount, effect.maxAmount);
 
-				owner.GetComponent<Actor>().defaultArmor += amount;
-				GUIManager.instance.CreatePopUpEntry("Armor +" + amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
-				GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " armor.", GUIManager.JournalType.Item);
+				myEffect = StatusEffect.CreateEffect(
+					StatusEffect.EffectType.Armor,
+					amount,
+					effect.effectDuration);
+
+				owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
+
+				GUIManager.instance.CreatePopUpEntry("+Armor",
+					owner.GetComponent<Actor>().position,
+					GUIManager.PopUpType.Other);
+
+				GUIManager.instance.CreateStatusBarElement(myEffect);
+
+				//owner.GetComponent<Actor>().defaultArmor += amount;
+				//GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " armor.", GUIManager.JournalType.Item);
 				break;
-			case Effects.PotionType.Attack:
+
+			case Effects.PotionType.AttackBuff:
 
 				amount = Random.Range(effect.minAmount, effect.maxAmount);
 
-				owner.GetComponent<Actor>().defaultDamage += amount;
-				GUIManager.instance.CreatePopUpEntry("Attack +" + amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
-				GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " attack.", GUIManager.JournalType.Item);
+				myEffect = StatusEffect.CreateEffect(
+					StatusEffect.EffectType.Attack,
+					amount,
+					effect.effectDuration);
+
+				owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
+
+				GUIManager.instance.CreatePopUpEntry("+Attack",
+					owner.GetComponent<Actor>().position,
+					GUIManager.PopUpType.Other);
+	
+				GUIManager.instance.CreateStatusBarElement(myEffect);
+
+				//owner.GetComponent<Actor>().defaultDamage += amount;
+				//GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " attack.", GUIManager.JournalType.Item);
 				break;
+
 			case Effects.PotionType.MaxHP:
 
 				amount = Random.Range(effect.minAmount, effect.maxAmount);
@@ -53,6 +84,7 @@ public class Potion : Item {
 				GUIManager.instance.CreatePopUpEntry("MaxHP +" + amount, owner.GetComponent<Actor>().position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Potion gave " + amount + " MaxHP.", GUIManager.JournalType.Item);
 				break;
+
 			case Effects.PotionType.HoT:
 				
 				myEffect = StatusEffect.CreateEffect(

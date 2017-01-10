@@ -13,7 +13,7 @@ public class Actor : MonoBehaviour {
 
 	// default to pass state.
 	[HideInInspector] public NextMoveState myNextState = NextMoveState.Pass;
-	[HideInInspector] public Vector2 position;
+	public Vector2 position;
 
 	// list of current status effects.
 	// these will proc on each turn.
@@ -29,6 +29,11 @@ public class Actor : MonoBehaviour {
 	public float defaultCritMultiplier = 2f;
 	public int defaultMissChance = 25;
 	public int expAmount = 15;
+
+	// status effects modify these and 
+	// these can't be reduced by anything.
+	[HideInInspector] public int buffedDamage = 0;
+	[HideInInspector] public int buffedArmor = 0;
 
 	void Awake() { startColor = GetComponentInChildren<SpriteRenderer>().color; }
 
@@ -46,7 +51,7 @@ public class Actor : MonoBehaviour {
 
 	public void Attack() {
 		bool crit = false;
-		int totalDamage = defaultDamage;
+		int totalDamage = defaultDamage + buffedDamage;
 
 		GameObject target = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().actor;
 
@@ -73,6 +78,7 @@ public class Actor : MonoBehaviour {
 			crit = true;
 		}
 
+		// do damage to the target.
 		target.GetComponent<Health>().TakeDamage(totalDamage, crit);
 
 		// degenerate armor.
@@ -88,22 +94,66 @@ public class Actor : MonoBehaviour {
 
 	}
 
+	private IEnumerator MoveCharacterSmooth(Vector3 target) {
+
+		float currentTime = 0f;
+		float maxTime = 1f;
+
+		Vector3 startPos = position;
+		Vector3 endPos = target;
+
+		while(currentTime < maxTime) {
+
+			currentTime += Time.deltaTime;
+
+			transform.position = Vector3.Lerp(transform.position, endPos, currentTime/maxTime);
+
+			yield return null;
+		}
+
+		transform.position = target;
+	}
+
+	public void StopCoroutines() {
+		StopAllCoroutines();
+	}
+
 	public void Move() {
+		
 		// first reset the tile actor field.
 		DungeonGenerator.instance.UpdateTileActor(position, null);
 
-		// calculate z-level.
+		// calculate correct z-level.
 		int zLevel = 0;
 		if(GetComponent<Player>() != null) zLevel = GameMaster.instance.playerZLevel;
 		else if(GetComponent<Enemy>() != null) zLevel = GameMaster.instance.enemyZLevel;
 
-		// move the actor
+		// create target vector3
 		Vector3 target = new Vector3(moveTargetPosition.x, moveTargetPosition.y, zLevel);
-		transform.position = target;
 
-		position = new Vector2(transform.position.x, transform.position.y);
+		// smoothly move the actor.
+		if(GameMaster.instance.allowSmoothMovement) {
+			StopAllCoroutines();
+			StartCoroutine(MoveCharacterSmooth(target));
+		} else {
+			transform.position = target;
+		}
 
+		// save the position.
+		position = moveTargetPosition;
+
+		// get the current tile we just stepped.
 		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(position);
+		Tile tile = tileGo.GetComponent<Tile>();
+
+		// pick up gold automatically.
+		if(GameMaster.instance.pickupGoldAutomatically) {
+			if(tile.item != null) {
+				if(tile.item.GetComponent<Gold>() != null && GetComponent<Player>() != null) {
+					GetComponent<Player>().PickUpItem(tile.item);
+				}
+			}
+		}
 
 		// if we stepped on a trap.
 		if(tileGo.GetComponent<Trap>() != null) {

@@ -110,10 +110,19 @@ public class PrefabManager : MonoBehaviour {
 	/// <summary>
 	/// Randomizes item.type and returns it.
 	/// </summary>
-	/// <returns>The loot.</returns>
+	/// <returns>The loot type.</returns>
 	public Item.Type RandomizeItemType() {
 		System.Array values = System.Enum.GetValues(typeof(Item.Type));
 		return (Item.Type) values.GetValue(Random.Range(0, values.Length));
+	}
+
+	/// <summary>
+	/// Randomizes the item rarity.
+	/// </summary>
+	/// <returns>The item rarity.</returns>
+	public Item.Rarity RandomizeItemRarity() {
+		System.Array values = System.Enum.GetValues(typeof(Item.Rarity));
+		return (Item.Rarity) values.GetValue(Random.Range(0, values.Length));
 	}
 
 	public void RemovePlayer() {
@@ -254,7 +263,21 @@ public class PrefabManager : MonoBehaviour {
 			}
 			break;
 		case Item.Type.Spell:
-			prefab = listOfSpells[Random.Range(0, listOfSpells.Count)];
+
+			while(true) {
+				prefab = listOfSpells[Random.Range(0, listOfSpells.Count)];
+				if(prefab.GetComponent<Item>().myRarity == rarity) {
+					break;
+				}
+
+				if(safetyCounter > listOfSpells.Count + safetyCount) {
+					prefab = null;
+					break;
+				}
+
+				safetyCounter++;
+			}
+
 			break;
 		case Item.Type.Container:
 			prefab = chestGoldenPrefab;
@@ -341,12 +364,36 @@ public class PrefabManager : MonoBehaviour {
 	}
 
 	public void InstantiateEnemies() {
-		for(int i = 0; i < GameMaster.instance.maxEnemyCountPerDungeon; i++) {
-			InstantiateEnemy();
+		int count = 0;
+		if(GameMaster.instance.randomizeEnemyStartCount) {
+			
+			// get free floor tile count.
+			int maxCount = DungeonGenerator.instance.GetNumberOfTilesOfType(Tile.TileType.Floor);
+
+			// one is player.
+			maxCount--;
+
+			// lock the max count.
+			if(maxCount > GameMaster.instance.absoluteMaxEnemyCount) maxCount = GameMaster.instance.absoluteMaxEnemyCount;
+
+			// randomize.
+			count = Random.Range(10, maxCount);
+
+		} else {
+			count = GameMaster.instance.defaultMaxEnemyCountPerDungeon;
 		}
+
+		// instantiate.
+		for(int i = 0; i < count; i++) {InstantiateEnemy(); }
 	}
 
-	public void InstantiatePlayer(string pname) {
+	public void InstantiatePlayer(string pname, bool simpleInstantiate = false) {
+
+		if(simpleInstantiate) {
+			playerInstance = (GameObject) Instantiate(playerPrefab);
+			return;
+		}
+
 		Vector2 spawnPos = GetFreeInstPosition();
 	
 		playerInstance = (GameObject) Instantiate(playerPrefab, new Vector3(spawnPos.x, spawnPos.y, GameMaster.instance.playerZLevel), Quaternion.identity);

@@ -23,11 +23,16 @@ public class MouseController : MonoBehaviour {
 	}
 
 	void Update () {
-		if(GameMaster.instance.isGameRunning) {
+		if(GameMaster.instance.isGameRunning && GameMaster.instance.allowMouseInput) {
 
 			if(crosshairInst == null) 
 				crosshairInst = (GameObject) Instantiate(CrosshairManager.instance.crosshairPrefab);
 
+			// if the movementmode is set to player
+			// we can use mouse input.
+			// -> This is because if we are using keyboard input also,
+			//    we can be in a "aim-mode". In this mode we don't want
+			//    the player to be able to move their character with mouse inputs.
 			if(GameMaster.instance.movementMode == GameMaster.MovementMode.Player) {
 				if(playerInst == null) playerInst = PrefabManager.instance.GetPlayerInstance();
 				Highlight();
@@ -54,11 +59,11 @@ public class MouseController : MonoBehaviour {
 
 		if(myState == State.Normal) {
 			if(Input.GetMouseButtonDown(0)) {
-
-				// in normal state:
+				
+				// in normal state: (MultiUseKey())
 				// 1. move
 				// 2. melee
-				// 3. loot
+				// 3. loot 
 				// 4. open chest
 				// 5. buy
 				// 6. use ladder (end dungeon)
@@ -74,12 +79,90 @@ public class MouseController : MonoBehaviour {
 				}
 
 				// movement & attack
+				// TODO: own system for measuring distance between tiles?
 				if(Vector2.Distance(chosenTile.position, player.position) < 1.5f) {
 					player.SetMoveTargetPosition(chosenTile.position);
 					player.TestAllTileValidities();
 
 					if(player.myNextState == Actor.NextMoveState.Stuck) return;
 					else GameMaster.instance.EndTurn();
+				} else {
+
+					if(GameMaster.instance.allowPathfinding == false) return;
+
+					if(chosenTile.myType == Tile.TileType.Floor || 
+						chosenTile.myType == Tile.TileType.DoorOpen ||
+						chosenTile.myType == Tile.TileType.Exit ||
+						chosenTile.myType == Tile.TileType.FloorSpecialItem) {
+
+						// if the tile is invisible
+						// -> dont move there.
+						if(GameMaster.instance.allowPathfindInvisibleTiles == false) {
+							if(chosenTile.isVisible == false) return;
+						}
+
+						int loop = 0;
+						bool finished = false;
+
+						// move automatically to target.
+						// uses pathfinding algorithm.
+						while(true) {
+
+							// dont crash unity.
+							if(loop > 100){
+								Debug.LogError("Loop error: HandleClick");
+								break;
+							}
+
+							// if we are at the target position.
+							if(player.position == chosenTile.position) break;
+
+							// get the path to target.
+							List<Tile> path = player.GetComponent<Pathfinding>().CalculatePathToTarget(chosenTile);
+							path.Reverse();
+
+							Tile nextStep = null;
+
+							// get the next step.
+							try {
+								nextStep = path[1];
+							} catch {
+								GUIManager.instance.CreatePopUpEntry("No path", player.position, GUIManager.PopUpType.Other);
+								break;
+							}
+
+							// if we can see an enemy
+							// cancel out.
+							foreach(GameObject g in DungeonGenerator.instance.GetTilesAroundPosition(nextStep.position, 1)) {
+								Tile tile = g.GetComponent<Tile>();
+
+								if(tile.actor != null) {
+									if(tile.actor.GetComponent<Enemy>() != null) {
+										finished = true;
+										break;
+									}
+								}
+							}
+
+							// leave a gap between enemy if the break is here.
+							//if(finished) break;
+
+							// set next move target to be the next step.
+							player.SetMoveTargetPosition(nextStep.position);
+
+							// set our state to move.
+							player.myNextState = Actor.NextMoveState.Move;
+
+							// end our turn.
+							GameMaster.instance.EndTurn();
+
+							// increment loop.
+							loop ++;
+
+							// if we can see an enemy -> break out of the loop.
+							if(finished) break;
+						}
+					}
 				}
 
 			}
@@ -87,6 +170,11 @@ public class MouseController : MonoBehaviour {
 		} else if(myState == State.CastSpell) {
 			if(Input.GetMouseButtonDown(0)) {
 				if(chosenTile == null) return;
+
+				// make sure that our next state is NOT move!
+				// if it was, our character would move to the
+				// same tile as the spell target.
+				player.myNextState = Actor.NextMoveState.Pass;
 
 				// update target position
 				player.SetMoveTargetPosition(chosenTile.position);
@@ -99,9 +187,12 @@ public class MouseController : MonoBehaviour {
 
 				// change our crosshair to normal sprite.
 				ChangeCrosshairSprite(CrosshairManager.instance.crosshairNormal);
+
 			} else if(Input.GetMouseButtonDown(1)) {
+				
 				myState = State.Normal;
 				ChangeCrosshairSprite(CrosshairManager.instance.crosshairNormal);
+
 			}
 		}
 	}
@@ -124,9 +215,7 @@ public class MouseController : MonoBehaviour {
 		crosshairInst.GetComponent<SpriteRenderer>().color = Color.clear;
 	}
 
-	private void ShowCursor() {
-		crosshairInst.GetComponent<SpriteRenderer>().color = Color.white;
-	}
+	private void ShowCursor() { crosshairInst.GetComponent<SpriteRenderer>().color = Color.white; }
 
 	private void Highlight() {
 		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -135,13 +224,22 @@ public class MouseController : MonoBehaviour {
 		if(hit) {
 			if(hit.transform.GetComponent<Tile>() != null) {
 				Tile tile = hit.transform.GetComponent<Tile>();
-				if(tile.isVisible || tile.isDiscovered) {
+
+				if(DungeonGenerator.instance.debugMode) {
 					ShowCursor();
 					chosenTile = tile;
 					crosshairInst.transform.position = tile.position;
-				} else if(tile.isVisible == false && tile.isDiscovered == false) {
-					HideCursor();
+				} else {
+					if(tile.isVisible || tile.isDiscovered) {
+						ShowCursor();
+						chosenTile = tile;
+						crosshairInst.transform.position = tile.position;
+					} else if(tile.isVisible == false && tile.isDiscovered == false) {
+						HideCursor();
+					}
 				}
+
+
 			} else {
 				HideCursor();
 			}

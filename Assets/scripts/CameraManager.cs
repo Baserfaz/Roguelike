@@ -9,20 +9,51 @@ public class CameraManager : MonoBehaviour {
 	private Vector3 targetPosition;
 	private int cameraZLevel = -10;
 
-	private int maxZoom = 15;
-	private int minZoom = 3;
+	public int maxZoom = 15;
+	public int minZoom = 3;
 
 	void Awake() { instance = this; }
 
 	void Update () {
-		if(GameMaster.instance.movementMode == GameMaster.MovementMode.Player) {
-			if(PrefabManager.instance.GetPlayerInstance() != null) {
-				FollowPlayer();
+
+		if(GameMaster.instance.isGameRunning) {
+
+			if(GameMaster.instance.movementMode == GameMaster.MovementMode.Player) {
+				if(PrefabManager.instance.GetPlayerInstance() != null) {
+					FollowPlayer();
+				}
+			} else if(GameMaster.instance.movementMode == GameMaster.MovementMode.Crosshair) {
+				if(CrosshairManager.instance.GetCrosshairInstance() != null) {
+					FollowCrosshair();
+				}
 			}
-		} else if(GameMaster.instance.movementMode == GameMaster.MovementMode.Crosshair) {
-			if(CrosshairManager.instance.GetCrosshairInstance() != null) {
-				FollowCrosshair();
-			}
+
+		} else {
+
+			// in main menu
+			CenterCameraToDungeon();
+			BounceCamera();
+
+			transform.Rotate(0f, 0f, 6f * Time.deltaTime);
+		}
+	}
+
+	public void ResetRotation() {
+		transform.rotation = Quaternion.identity;
+	}
+
+	private void BounceCamera() {
+
+		float sin = Mathf.Sin(Time.time * 0.25f);
+		GetComponent<Camera>().orthographicSize += sin * 0.01f;
+	}
+
+	private void CenterCameraToDungeon() {
+		// center
+		GameObject parent = DungeonGenerator.instance.GetWorldParent();
+		if(parent != null) {
+			DungeonInfo info = parent.GetComponent<DungeonInfo>();
+			transform.position = new Vector2(info.GetWidth() / 2f, info.GetHeight() / 2f);
 		}
 	}
 
@@ -40,7 +71,7 @@ public class CameraManager : MonoBehaviour {
 	}
 
 	private void UpdatePosition() {
-		Vector2 pos = PrefabManager.instance.GetPlayerInstance().GetComponent<Player>().position;
+		Vector2 pos = PrefabManager.instance.GetPlayerInstance().transform.position;
 		targetPosition = new Vector3(pos.x, pos.y, cameraZLevel);
 	}
 

@@ -11,12 +11,20 @@ public class SpriteManager : MonoBehaviour {
 	public static SpriteManager instance;
 
 	public Texture2D spriteSheet;
-	public TileSet currentTileSet = TileSet.Concrete;
+	[HideInInspector] public TileSet currentTileSet = TileSet.Concrete;
 
 	public enum TileSet { Concrete, Shop, Sewer }
-	public enum SpriteType { CornerTL, CornerTR, CornerBL, CornerBR, Floor, DeadendB, DeadendT, DeadendL, DeadendR, JunctionT, JunctionB,
-		JunctionL, JunctionR, Horizontal, Vertical, Middle, Single, Exit, FloorSpecialItem, DoorHorizontalClosed, DoorVerticalClosed,
-		DoorHorizontalOpen, DoorVerticalOpen, TrapOff, TrapOn, ChestOpen, GUIStatusBleeding, GUIStatusHealing }
+	public enum SpriteType { CornerTL, CornerTR, CornerBL, CornerBR, Floor, DeadendB, DeadendT, 
+		DeadendL, DeadendR, JunctionT, JunctionB,
+		JunctionL, JunctionR, Horizontal, Vertical, 
+		Middle, Single, Exit, FloorSpecialItem, 
+		DoorHorizontalClosed, DoorVerticalClosed,
+		DoorHorizontalOpen, DoorVerticalOpen, 
+		TrapOff, TrapOn, 
+		ChestOpen, 
+		GUIStatusBleeding, GUIStatusHealing, 
+		GUIStatusAttBuff, GUIStatusDefBuff, GUIStatusAttDebuff, GUIStatusDefDebuff
+	}
 
 	private Color32[] pixels;
 
@@ -26,8 +34,11 @@ public class SpriteManager : MonoBehaviour {
 	// This is because for loop starts from bottom. (origin 0,0)
 	private int spriteSheetTileCountStandard = 16;
 
-	void Awake() { instance = this; } 
-	void Start() { pixels = spriteSheet.GetPixels32(); }
+	void Awake() { 
+		instance = this; 
+		pixels = spriteSheet.GetPixels32();
+	} 
+	//void Start() { pixels = spriteSheet.GetPixels32(); }
 
 	private int GetTileCountHeight() { return spriteSheet.height / 16; }
 	private int GetTileCountWidth() { return spriteSheet.width / 16; }
@@ -407,6 +418,18 @@ public class SpriteManager : MonoBehaviour {
 			return ReadSpriteSheet(topTilePos, 10);
 		case SpriteType.GUIStatusHealing:
 			topTilePos = 15 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 11);
+		case SpriteType.GUIStatusAttBuff:
+			topTilePos = 14 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 10);
+		case SpriteType.GUIStatusDefBuff:
+			topTilePos = 13 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 10);
+		case SpriteType.GUIStatusAttDebuff:
+			topTilePos = 14 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 11);
+		case SpriteType.GUIStatusDefDebuff:
+			topTilePos = 13 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 			return ReadSpriteSheet(topTilePos, 11);
 		}
 

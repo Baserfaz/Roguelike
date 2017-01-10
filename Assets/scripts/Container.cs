@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Container : Item {
 
+	/// <summary>
+	/// Open this instance.
+	/// Chest cannot drop legendary or rare loot!
+	/// Hardcoded
+	/// </summary>
 	public void Open() {
 
 		// Detach this item from tile.
@@ -19,15 +24,19 @@ public class Container : Item {
 		Destroy(GetComponent<ItemBounce>());
 
 		// randomize loot type
-		// 1. do not instantiate container.
 		Item.Type randomType = PrefabManager.instance.RandomizeItemType();
 		while(randomType == Type.Container) {
 			randomType = PrefabManager.instance.RandomizeItemType();
 		}
 
+		// randomize loot rarity.
+		Item.Rarity randomRarity = PrefabManager.instance.RandomizeItemRarity();
+		while(randomRarity == Item.Rarity.Legendary || randomRarity == Item.Rarity.Rare) {
+			randomRarity = PrefabManager.instance.RandomizeItemRarity();
+		}
+
 		// instantiate random type of loot.
-		// TODO: randomize rarity.
-		PrefabManager.instance.InstantiateRandomItemInCategory(randomType, position, Rarity.Normal);
+		PrefabManager.instance.InstantiateRandomItemInCategory(randomType, position, randomRarity);
 
 		// Update the sprite.
 		updateGraphics();

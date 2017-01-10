@@ -76,9 +76,8 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 		switch(gii.myType) {
 		case GUIItemInfo.ElementType.ItemSlot:
 
-			// use the item.
+			// mouse state to use item.
 			GameObject useItem = player.GetComponent<Inventory>().currentUseItem;
-
 			if(useItem != null) {
 				if(useItem.GetComponent<Potion>() != null) {
 					useItem.GetComponent<Potion>().Drink();
@@ -88,9 +87,8 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 			break;
 		case GUIItemInfo.ElementType.SpellSlot:
 	
-			// cast spell
+			// mouse state to cast spell.
 			GameObject spell = player.GetComponent<Inventory>().currentSpell;
-
 			if(spell != null) {
 				MouseController.instance.ChangeState(MouseController.State.CastSpell);
 				MouseController.instance.ChangeCrosshairSprite(CrosshairManager.instance.crosshairSpell);

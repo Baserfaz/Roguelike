@@ -19,7 +19,11 @@ public class LineOfSightManager : MonoBehaviour {
 
 	public void CalculateLoS() {
 
-		List<GameObject> tilesAroundPlayer = DungeonGenerator.instance.GetTilesAroundPosition(GetComponent<Actor>().position, GetComponent<Player>().seeRadius);
+		List<GameObject> tilesAroundPlayer = 
+			DungeonGenerator.instance.GetTilesAroundPosition(
+				GetComponent<Player>().position, 
+				GetComponent<Player>().seeRadius);
+		
 		allTiles = DungeonGenerator.instance.GetTiles();
 
 		// flag tiles that are next to player
@@ -40,7 +44,7 @@ public class LineOfSightManager : MonoBehaviour {
 		}
 
 		// calculates blocked LOS.
-		if(GameMaster.instance.wallsBlockLos) CalculateWalls();
+		if(GameMaster.instance.wallsBlockLos) CalculateWallLoS();
 
 		EnemyActivation();
 
@@ -52,7 +56,7 @@ public class LineOfSightManager : MonoBehaviour {
 		}
 	}
 
-	private void CalculateWalls() {
+	private void CalculateWallLoS() {
 		List<GameObject> hiddenTiles = new List<GameObject>();
 		Vector2 myPos = GetComponent<Actor>().position;
 		GameObject hiddenTile = null;

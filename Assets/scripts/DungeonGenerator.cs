@@ -22,6 +22,8 @@ public class DungeonGenerator : MonoBehaviour {
 
 	public List<GameObject> GetTiles() { return tiles; }
 
+	public GameObject GetWorldParent() { return worldParent; }
+
 	public void DestroyDungeon() {
 		foreach(GameObject tile in tiles) {
 			Destroy(tile);
@@ -133,6 +135,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 		for(int y = -1 * radius; y < 2 + radius - 1; y++) {
 			for(int x = -1 * radius; x < 2 + radius - 1; x++) {
+
 				GameObject current = DungeonGenerator.instance.GetTileAtPos(new Vector2(x, y) + pos);
 				if(current == null) continue;
 				tiles.Add(current);
@@ -212,11 +215,18 @@ public class DungeonGenerator : MonoBehaviour {
 		return retObj;
 	}
 
+	public int GetNumberOfTilesOfType(Tile.TileType t) {
+		int count = 0;
+		foreach(GameObject g in tiles) {
+			Tile tile = g.GetComponent<Tile>();
+			if(tile.GetComponent<Trap>() != null) continue;
+			if(tile.myType == t) count++;
+		}
+		return count;
+	}
+
 	public void CreateTile(int x, int y, Tile.TileType type) {
-
-		// create parent GO.
-		if(worldParent == null) worldParent = new GameObject("Dungeon");
-
+		
 		GameObject currentTile = (GameObject) Instantiate(tilePrefab);
 
 		if(type == Tile.TileType.Floor) {
@@ -512,6 +522,14 @@ public class DungeonGenerator : MonoBehaviour {
 	/// <param name="dungeonWidth">Dungeon width.</param>
 	/// <param name="dungeonHeight">Dungeon height.</param>
 	public void Generate(int dungeonWidth, int dungeonHeight) {
+
+		// create parent GO.
+		if(worldParent == null) {
+			worldParent = new GameObject("Dungeon");
+			DungeonInfo info = worldParent.AddComponent<DungeonInfo>();
+			info.SetHeight(dungeonHeight);
+			info.SetWidth(dungeonWidth);
+		}
 
 		// Generate all tiles.
 		for(int y = 0; y < dungeonHeight; y++) {
