@@ -46,48 +46,53 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\scripts\Actor.cs" />
-     <Compile Include="Assets\scripts\CameraManager.cs" />
-     <Compile Include="Assets\scripts\Container.cs" />
-     <Compile Include="Assets\scripts\Crosshair.cs" />
-     <Compile Include="Assets\scripts\CrosshairManager.cs" />
-     <Compile Include="Assets\scripts\Door.cs" />
-     <Compile Include="Assets\scripts\DungeonGenerator.cs" />
-     <Compile Include="Assets\scripts\DungeonInfo.cs" />
-     <Compile Include="Assets\scripts\DungeonItemManager.cs" />
-     <Compile Include="Assets\scripts\DungeonVanityManager.cs" />
-     <Compile Include="Assets\scripts\Enemy.cs" />
-     <Compile Include="Assets\scripts\Experience.cs" />
-     <Compile Include="Assets\scripts\GUIElementScript.cs" />
-     <Compile Include="Assets\scripts\GUIItemInfo.cs" />
-     <Compile Include="Assets\scripts\GUIManager.cs" />
-     <Compile Include="Assets\scripts\GameMaster.cs" />
-     <Compile Include="Assets\scripts\GuiHoverElement.cs" />
+     <Compile Include="Assets\scripts\Actors\Actor.cs" />
+     <Compile Include="Assets\scripts\Actors\Enemy.cs" />
+     <Compile Include="Assets\scripts\Actors\Player.cs" />
+     <Compile Include="Assets\scripts\Data\Experience.cs" />
+     <Compile Include="Assets\scripts\Data\GameSettings.cs" />
+     <Compile Include="Assets\scripts\Data\StatusEffect.cs" />
+     <Compile Include="Assets\scripts\Effects\CameraEffects.cs" />
+     <Compile Include="Assets\scripts\Effects\ItemBounce.cs" />
+     <Compile Include="Assets\scripts\Effects\LightFlicker.cs" />
+     <Compile Include="Assets\scripts\GUI\Crosshair.cs" />
+     <Compile Include="Assets\scripts\GUI\CrosshairManager.cs" />
+     <Compile Include="Assets\scripts\GUI\GUIElementScript.cs" />
+     <Compile Include="Assets\scripts\GUI\GUIItemInfo.cs" />
+     <Compile Include="Assets\scripts\GUI\GUIManager.cs" />
+     <Compile Include="Assets\scripts\GUI\GuiHoverElement.cs" />
+     <Compile Include="Assets\scripts\GUI\HealthBar.cs" />
+     <Compile Include="Assets\scripts\GUI\PlayButton.cs" />
+     <Compile Include="Assets\scripts\GUI\PopUpText.cs" />
      <Compile Include="Assets\scripts\Health.cs" />
-     <Compile Include="Assets\scripts\HealthBar.cs" />
      <Compile Include="Assets\scripts\Inventory.cs" />
-     <Compile Include="Assets\scripts\ItemBounce.cs" />
-     <Compile Include="Assets\scripts\ItemDropController.cs" />
      <Compile Include="Assets\scripts\Items\Armor.cs" />
+     <Compile Include="Assets\scripts\Items\Container.cs" />
+     <Compile Include="Assets\scripts\Items\DungeonVanityManager.cs" />
      <Compile Include="Assets\scripts\Items\Gold.cs" />
      <Compile Include="Assets\scripts\Items\Item.cs" />
      <Compile Include="Assets\scripts\Items\Potion.cs" />
+     <Compile Include="Assets\scripts\Items\Scroll.cs" />
+     <Compile Include="Assets\scripts\Items\Spell.cs" />
+     <Compile Include="Assets\scripts\Items\UseItem.cs" />
+     <Compile Include="Assets\scripts\Items\VanityItem.cs" />
      <Compile Include="Assets\scripts\Items\Weapon.cs" />
-     <Compile Include="Assets\scripts\LightFlicker.cs" />
      <Compile Include="Assets\scripts\LineOfSightManager.cs" />
-     <Compile Include="Assets\scripts\MapReader.cs" />
-     <Compile Include="Assets\scripts\MouseController.cs" />
+     <Compile Include="Assets\scripts\Managers\CameraManager.cs" />
+     <Compile Include="Assets\scripts\Managers\DungeonGenerator.cs" />
+     <Compile Include="Assets\scripts\Managers\DungeonInfo.cs" />
+     <Compile Include="Assets\scripts\Managers\DungeonItemManager.cs" />
+     <Compile Include="Assets\scripts\Managers\GameMaster.cs" />
+     <Compile Include="Assets\scripts\Managers\ItemDropController.cs" />
+     <Compile Include="Assets\scripts\Managers\MapReader.cs" />
+     <Compile Include="Assets\scripts\Managers\MouseController.cs" />
+     <Compile Include="Assets\scripts\Managers\PrefabManager.cs" />
+     <Compile Include="Assets\scripts\Managers\SpriteManager.cs" />
+     <Compile Include="Assets\scripts\Managers\shadowController.cs" />
      <Compile Include="Assets\scripts\Pathfinding.cs" />
-     <Compile Include="Assets\scripts\Player.cs" />
-     <Compile Include="Assets\scripts\PopUpText.cs" />
-     <Compile Include="Assets\scripts\PrefabManager.cs" />
-     <Compile Include="Assets\scripts\Spell.cs" />
-     <Compile Include="Assets\scripts\SpriteManager.cs" />
-     <Compile Include="Assets\scripts\StatusEffect.cs" />
-     <Compile Include="Assets\scripts\Tile.cs" />
-     <Compile Include="Assets\scripts\Trap.cs" />
-     <Compile Include="Assets\scripts\VanityItem.cs" />
-     <Compile Include="Assets\scripts\shadowController.cs" />
+     <Compile Include="Assets\scripts\Tile\Door.cs" />
+     <Compile Include="Assets\scripts\Tile\Tile.cs" />
+     <Compile Include="Assets\scripts\Tile\Trap.cs" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableWeightedBlurDof34.shader" />
@@ -156,9 +161,6 @@
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\FXAAPreset2.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlurAndFlares.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendForBloom.shader" />
- <Reference Include="UnityEngine.Advertisements">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
- </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -173,9 +175,6 @@
  </Reference>
  <Reference Include="UnityEngine.HoloLens">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Purchasing">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.VR">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>

@@ -52,7 +52,7 @@ public class Inventory : MonoBehaviour {
 				currentWeapon.GetComponent<shadowController>().Hide();
 			}
 
-		} else if(itemGo.GetComponent<Potion>() != null) {
+		} else if(itemGo.GetComponent<UseItem>() != null) {
 
 			if(currentUseItem != null) {
 				// swap the two items.
