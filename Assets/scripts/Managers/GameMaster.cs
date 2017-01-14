@@ -19,8 +19,13 @@ public class GameMaster : MonoBehaviour {
 	[Header("Controls")]
 	public bool allowKeyboardInput = false;
 	public bool allowMouseInput = true;
+
+	[Header("Pathfinding settings")]
 	public bool allowPathfinding = true;
+	public bool useAStar = true;
 	public bool allowPathfindInvisibleTiles = true;
+
+	[Header("Movement settings")]
 	public bool allowSmoothMovement = true;
 
 	[Header("Debugging")]
@@ -87,8 +92,12 @@ public class GameMaster : MonoBehaviour {
 	public Texture2D pathfindingTestLevel;
 
 	private bool wasLastLevelSpecial = false;
+	private bool debugModeRealValue = false;
 
-	void Awake() { instance = this; }
+	void Awake() { 
+		instance = this;
+		debugModeRealValue = debugMode;
+	}
 
 	private void UpdatePlayerLos() {
 		PrefabManager.instance.GetPlayerInstance().GetComponent<LineOfSightManager>().CalculateLoS();
@@ -118,7 +127,7 @@ public class GameMaster : MonoBehaviour {
 	public void OpenPathfindingTest() {
 		ResetEverything();
 
-		GameMaster.instance.debugMode = true;
+		debugMode = true;
 
 		// game loop is running.
 		gamestate = GameState.Running;
@@ -150,7 +159,11 @@ public class GameMaster : MonoBehaviour {
 
 	public void ResetEverything() {
 
-		GameMaster.instance.debugMode = false;
+		if(debugModeRealValue) {
+			debugMode = true;
+		} else {
+			debugMode = false;
+		}
 
 		// Reset camera.
 		CameraManager cm = Camera.main.GetComponent<CameraManager>();
@@ -176,6 +189,11 @@ public class GameMaster : MonoBehaviour {
 
 		PrefabManager.instance.ClearItemLists();
 		PrefabManager.instance.RemoveEnemies();
+
+		// set the item owner to be null, that it can be deleted.
+		PrefabManager.instance.RemoveOwnershipAllItems();
+
+		// Destroy everything else.
 		PrefabManager.instance.RemoveItems();
 		DungeonGenerator.instance.DestroyDungeon();
 		GUIManager.instance.ClearJournal();
@@ -193,6 +211,29 @@ public class GameMaster : MonoBehaviour {
 			dungeonHeight = Random.Range(minHeight, maxHeight);
 		} 
 		DungeonGenerator.instance.Generate(dungeonWidth, dungeonHeight);
+	}
+
+	private void GivePlayerStartItems(Player player, GameSettings.StartItem myItem) {
+		GameObject go = null;
+		switch(myItem) {
+		case GameSettings.StartItem.ExpMultScroll:
+			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.expScrollPrefab);
+			break;
+		case GameSettings.StartItem.FireballSpell:
+			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.fireballSpellPrefab);
+			break;
+
+		case GameSettings.StartItem.AttackScroll:
+			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.attackScrollPrefab);
+			break;
+
+		default:
+			break;
+		}
+
+		if(go != null) {
+			player.PickUpItem(go);
+		}
 	}
 
 	// From play button.
@@ -218,32 +259,9 @@ public class GameMaster : MonoBehaviour {
 
 		// instantiate player.
 		GameObject playerinstance = PrefabManager.instance.InstantiatePlayer(settings.playername, false);
-	
-		// TODO
-		// 1. Give player items & spells & effects on start game.
-		// settings.myItem
 
-		GameObject go = null;
-
-		switch(settings.myItem) {
-		case GameSettings.StartItem.ExpMultScroll:
-			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.expScrollPrefab);
-			break;
-		case GameSettings.StartItem.FireballSpell:
-			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.fireballSpellPrefab);
-			break;
-
-		case GameSettings.StartItem.AttackScroll:
-			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.attackScrollPrefab);
-			break;
-
-		default:
-			break;
-		}
-
-		if(go != null) {
-			playerinstance.GetComponent<Player>().PickUpItem(go);
-		}
+		// instantiate item that player chose in main menu.
+		GivePlayerStartItems(playerinstance.GetComponent<Player>(), settings.myItem);
 
 		// update player line of sight
 		UpdatePlayerLos();
@@ -301,6 +319,11 @@ public class GameMaster : MonoBehaviour {
 
 		// Check if player is dead.
 		// -> run this sequence.
+		HandlePlayerDeath();
+	}
+
+	private void HandlePlayerDeath() {
+
 		if(PrefabManager.instance.GetPlayerInstance().GetComponent<Health>().isDead) {
 
 			// update gui
@@ -311,13 +334,10 @@ public class GameMaster : MonoBehaviour {
 			GUIManager.instance.ShowDeathScreen();
 
 			// reset game
-			GameMaster.instance.ResetEverything();
+			ResetEverything();
 
 			// set the game loop to main menu
 			gamestate = GameState.InMainMenu;
-
-			// create main menu scene.
-			CreateMainMenuScene();
 		}
 	}
 

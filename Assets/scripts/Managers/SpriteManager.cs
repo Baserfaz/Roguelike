@@ -6,6 +6,8 @@ public class SpriteManager : MonoBehaviour {
 
 	/*
 	 * Tiles are 16x16 pixels.
+	 * Spritesheet was originally 16 tiles high, 
+	 * -> so therefore use 16 as default height.
 	 */
 
 	public static SpriteManager instance;
@@ -13,7 +15,8 @@ public class SpriteManager : MonoBehaviour {
 	public Texture2D spriteSheet;
 	[HideInInspector] public TileSet currentTileSet = TileSet.Concrete;
 
-	public enum TileSet { Concrete, Shop, Sewer }
+	public enum TileSet { Concrete, Shop, Sewer, Sand }
+
 	public enum SpriteType { CornerTL, CornerTR, CornerBL, CornerBR, Floor, DeadendB, DeadendT, 
 		DeadendL, DeadendR, JunctionT, JunctionB,
 		JunctionL, JunctionR, Horizontal, Vertical, 
@@ -38,34 +41,27 @@ public class SpriteManager : MonoBehaviour {
 	void Awake() { 
 		instance = this; 
 		pixels = spriteSheet.GetPixels32();
-	} 
-	//void Start() { pixels = spriteSheet.GetPixels32(); }
+	}
 
 	private int GetTileCountHeight() { return spriteSheet.height / 16; }
 	private int GetTileCountWidth() { return spriteSheet.width / 16; }
 
 	public void RandomizeTileSet() {
-
 		System.Array values = System.Enum.GetValues(typeof(TileSet));
 		System.Random random = new System.Random();
 		TileSet randomTileSet = (TileSet)values.GetValue(random.Next(values.Length));
-
 		currentTileSet = randomTileSet;
 	}
-
 
 	private Sprite ReadSpriteSheet(int row, int column) {
 		List<Color32> spriteColors = new List<Color32>();
 
 		// reads the spritesheet from bottom left corner to top right corner.
 		// row = 0 && column = 0 is bottom left corner.
-
 		for(int y = row * 16; y < (row + 1) * 16; y++) {
 			for(int x = column * 16; x < (column + 1) * 16; x++) {
-
 				Color32 currentPixel = pixels[(y * spriteSheet.width) + x];
 				spriteColors.Add(currentPixel);
-
 			}
 		}
 
@@ -105,7 +101,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 0);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 0);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 0);
+			} 
 
 			break;
 		case SpriteType.CornerBR:
@@ -118,7 +116,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 2);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 2);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 2);
+			} 
 
 			break;
 		case SpriteType.CornerTL:
@@ -131,7 +131,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 0);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 0);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 0);
+			} 
 
 			break;
 		case SpriteType.CornerTR:
@@ -144,7 +146,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 2);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 2);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 2);
+			} 
 
 			break;
 		case SpriteType.DeadendB:
@@ -157,7 +161,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 3);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 3);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 3);
+			} 
 
 			break;
 		case SpriteType.DeadendL:
@@ -170,7 +176,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 3);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 3);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 3);
+			} 
 
 			break;
 		case SpriteType.DeadendR:
@@ -183,7 +191,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 4);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 4);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 4);
+			} 
 
 			break;
 		case SpriteType.DeadendT:
@@ -196,7 +206,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 3);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 3);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 3);
+			} 
 
 			break;
 		case SpriteType.Floor:
@@ -209,7 +221,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 5);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 5);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 5);
+			} 
 
 			break;
 		case SpriteType.Horizontal:
@@ -222,7 +236,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 1);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 1);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 1);
+			} 
 
 			break;
 		case SpriteType.Vertical:
@@ -235,7 +251,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 0);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 0);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 0);
+			} 
 
 			break;
 		case SpriteType.Single:
@@ -248,7 +266,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 4);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 4);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 4);
+			} 
 
 			break;
 		case SpriteType.Middle:
@@ -261,7 +281,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 1);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 1);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 1);
+			} 
 
 			break;
 		case SpriteType.JunctionB:
@@ -274,7 +296,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 6);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 6);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 6);
+			} 
 
 			break;
 		case SpriteType.JunctionL:
@@ -287,7 +311,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 6);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 6);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 6);
+			} 
 
 			break;
 		case SpriteType.JunctionR:
@@ -300,7 +326,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 5);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 5);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 5);
+			} 
 
 			break;
 		case SpriteType.JunctionT:
@@ -313,7 +341,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 5);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 5);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 5);
+			} 
 
 			break;
 		case SpriteType.Exit:
@@ -326,7 +356,10 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 4);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 4);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 4);
+			} 
+
 			break;
 		case SpriteType.FloorSpecialItem:
 
@@ -338,7 +371,10 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 7);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 7);
-			}
+			}else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 7);
+			} 
+
 			break;
 		case SpriteType.DoorHorizontalClosed:
 
@@ -350,7 +386,9 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 7);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 7);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 7);
+			} 
 			break;
 
 		case SpriteType.DoorVerticalClosed:
@@ -363,8 +401,11 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 8);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 8);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 8);
+			} 
 			break;
+
 		case SpriteType.DoorHorizontalOpen:
 			
 			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
@@ -375,8 +416,11 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 7);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 7);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 7);
+			} 
 			break;
+
 		case SpriteType.DoorVerticalOpen:
 
 			topTilePos = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
@@ -387,8 +431,11 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 8);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 8);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 8);
+			} 
 			break;
+
 		case SpriteType.TrapOff:
 			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 
@@ -398,8 +445,11 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 8);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 8);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 8);
+			} 
 			break;
+
 		case SpriteType.TrapOn:
 			topTilePos = 6 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 
@@ -409,8 +459,11 @@ public class SpriteManager : MonoBehaviour {
 				return ReadSpriteSheet(topTilePos - 3, 9);
 			} else if(currentTileSet == TileSet.Sewer) {
 				return ReadSpriteSheet(topTilePos - 6, 9);
-			}
+			} else if(currentTileSet == TileSet.Sand) {
+				return ReadSpriteSheet(topTilePos - 9, 9);
+			} 
 			break;
+
 		case SpriteType.ChestOpen:
 			topTilePos = 11 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 			return ReadSpriteSheet(topTilePos, 2);
@@ -438,9 +491,13 @@ public class SpriteManager : MonoBehaviour {
 		case SpriteType.GUIStatusExpMult:
 			topTilePos = 15 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 			return ReadSpriteSheet(topTilePos, 12);
+
+		default:
+			Debug.LogError("No such sprite found.");
+			return null;
 		}
 
-		// should never get here.
+		// should not get here.
 		return null;
 	}
 }

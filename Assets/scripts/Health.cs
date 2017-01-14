@@ -174,7 +174,9 @@ public class Health : MonoBehaviour {
 
 			// drop item under the 
 			if(targetTile.GetComponent<Tile>().item == null) {
+				
 				ItemDropController.instance.DropItem(targetTile.GetComponent<Tile>().position);
+
 			} else {
 
 				// if tile has an item already.

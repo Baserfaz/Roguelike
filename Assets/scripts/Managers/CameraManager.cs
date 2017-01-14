@@ -34,8 +34,9 @@ public class CameraManager : MonoBehaviour {
 			// pause effects.
 
 		} else if(GameMaster.instance.gamestate == GameMaster.GameState.InMainMenu) {
-
+			
 			// in main menu
+
 			CenterCameraToDungeon();
 			BounceCamera();
 
@@ -58,7 +59,7 @@ public class CameraManager : MonoBehaviour {
 		GameObject parent = DungeonGenerator.instance.GetWorldParent();
 		if(parent != null) {
 			DungeonInfo info = parent.GetComponent<DungeonInfo>();
-			transform.position = new Vector2(info.GetWidth() / 2f, info.GetHeight() / 2f);
+			transform.position = new Vector3(info.GetWidth() / 2f, info.GetHeight() / 2f, cameraZLevel);
 		}
 	}
 

@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class PrefabManager : MonoBehaviour {
 
+	// this instance.
 	public static PrefabManager instance;
 
+	// Instantiated prefabs are stored here.
 	private GameObject playerInstance;
 	private List<GameObject> enemyInstances = new List<GameObject>();
 	private List<GameObject> itemInstances = new List<GameObject>();
+
+	// enemy parent go.
+	private GameObject enemyParent = null;
 
 	[Header("Player prefabs")]
 	public GameObject playerPrefab;
@@ -162,6 +167,15 @@ public class PrefabManager : MonoBehaviour {
 		Destroy(playerInstance);
 	}
 
+	public void RemoveOwnershipAllItems() {
+		if(playerInstance == null) return;
+		Inventory inv = playerInstance.GetComponent<Inventory>();
+		if(inv.currentArmor != null) inv.currentArmor.GetComponent<Item>().owner = null;
+		if(inv.currentSpell != null) inv.currentSpell.GetComponent<Item>().owner = null;
+		if(inv.currentUseItem != null) inv.currentUseItem.GetComponent<Item>().owner = null;
+		if(inv.currentWeapon != null) inv.currentWeapon.GetComponent<Item>().owner = null;
+	}
+
 	public void RemoveEnemies() {
 		foreach(GameObject enemy in enemyInstances) {
 			Destroy(enemy);
@@ -219,6 +233,7 @@ public class PrefabManager : MonoBehaviour {
 			Tile tile = tileGo.GetComponent<Tile>();
 
 			if(tile.actor != null) continue;
+			if(tile.GetComponent<Trap>() != null) continue;
 
 			if(tile.myType == Tile.TileType.Floor) {
 				possibleTiles.Add(tileGo);
@@ -374,39 +389,30 @@ public class PrefabManager : MonoBehaviour {
 
 	}
 
-	public void InstantiateEnemyAtPos(int x, int y) {
-		Vector2 spawnPos = new Vector2(x, y);
+	public void InstantiateEnemy(Vector2 pos) {
 
-		GameObject enemyInst = (GameObject) Instantiate(listOfEnemies[Random.Range(0, listOfEnemies.Count)], new Vector3(spawnPos.x, spawnPos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
+		if(enemyParent == null) enemyParent = new GameObject("EnemyParent");
 
-		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(spawnPos);
+		GameObject enemyInst = (GameObject) Instantiate(listOfEnemies[Random.Range(0, listOfEnemies.Count)],
+			new Vector3(pos.x, pos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
+
+		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x, pos.y));
 		Tile tile = tileGo.GetComponent<Tile>();
 
 		tile.actor = enemyInst;
 
 		enemyInst.GetComponent<Enemy>().position = tile.position;
+
+		enemyInst.transform.SetParent(enemyParent.transform);
+
 		enemyInstances.Add(enemyInst);
 
 		GameMaster.instance.enemyCount++;
 	}
 
-	public void InstantiateEnemy() {
+	public void InstantiateEnemyRandomPos() {
 		Vector2 spawnPos = GetFreeInstPosition();
-
-		// TODO:
-		// a difficulty mechanic that the harder monsters can't be spawned at lvl 1.
-
-		GameObject enemyInst = (GameObject) Instantiate(listOfEnemies[Random.Range(0, listOfEnemies.Count)], new Vector3(spawnPos.x, spawnPos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
-
-		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(spawnPos);
-		Tile tile = tileGo.GetComponent<Tile>();
-
-		tile.actor = enemyInst;
-
-		enemyInst.GetComponent<Enemy>().position = tile.position;
-		enemyInstances.Add(enemyInst);
-
-		GameMaster.instance.enemyCount++;
+		InstantiateEnemy(spawnPos);
 	}
 
 	public void InstantiateEnemies() {
@@ -430,7 +436,7 @@ public class PrefabManager : MonoBehaviour {
 		}
 
 		// instantiate.
-		for(int i = 0; i < count; i++) {InstantiateEnemy(); }
+		for(int i = 0; i < count; i++) {InstantiateEnemyRandomPos(); }
 	}
 
 	public GameObject InstantiatePlayer(string pname, bool simpleInstantiate = false) {

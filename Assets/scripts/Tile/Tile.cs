@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour {
 
-	public Tile pathfindingParentTile = null;
-
 	public enum TileType { Floor, Wall, Empty, Exit, OuterWall, FloorSpecialItem, DoorOpen, DoorClosed, Trap }
 
 	public Vector2 position;

@@ -23,8 +23,8 @@ public class Pathfinding : MonoBehaviour {
 
 		// reset tile parent tiles
 		foreach(GameObject t in DungeonGenerator.instance.GetTiles()) {
-			Tile tile = t.GetComponent<Tile>();
-			tile.pathfindingParentTile = null;
+			Node node = t.GetComponent<Node>();
+			node.parentNode = null;
 		}
 
 		// get the player
@@ -64,7 +64,7 @@ public class Pathfinding : MonoBehaviour {
 
 
 	private Tile GetParent(Tile tile) {
-		return tile.pathfindingParentTile;
+		return tile.GetComponent<Node>().parentNode;
 	}
 
 	private void SearchTiles(Tile _tile) {
@@ -78,7 +78,7 @@ public class Pathfinding : MonoBehaviour {
 			Tile tile = t.GetComponent<Tile>();
 
 			if(tile.position == target.position) {
-				tile.pathfindingParentTile = _tile;
+				tile.GetComponent<Node>().parentNode = _tile;
 				CreatePath(tile);
 				finished = true;
 				return;
@@ -98,7 +98,7 @@ public class Pathfinding : MonoBehaviour {
 				tile.myType == Tile.TileType.Exit ||
 				tile.myType == Tile.TileType.FloorSpecialItem) {
 
-				tile.pathfindingParentTile = _tile;
+				tile.GetComponent<Node>().parentNode = _tile;
 
 				foundTiles.Enqueue(tile);
 			}

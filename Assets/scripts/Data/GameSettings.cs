@@ -13,7 +13,9 @@ public class GameSettings {
 
 		GameSettings settings = new GameSettings();
 
-		settings.playername = _playername;
+		if(_playername == null || _playername == "") settings.playername = "Nameless";
+		else settings.playername = _playername;
+
 		settings.myItem = _startItem;
 
 		return settings;

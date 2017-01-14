@@ -111,7 +111,7 @@ public class MouseController : MonoBehaviour {
 
 						// move automatically to target.
 						// uses pathfinding algorithm.
-						while(true) {
+						while(player.position != chosenTile.position) {
 
 							// dont crash unity.
 							if(loop > 100){
@@ -119,22 +119,41 @@ public class MouseController : MonoBehaviour {
 								break;
 							}
 
-							// if we are at the target position.
-							if(player.position == chosenTile.position) break;
-
 							// get the path to target.
-							List<Tile> path = player.GetComponent<Pathfinding>().CalculatePathToTarget(chosenTile);
-							path.Reverse();
+							List<Tile> path = new List<Tile>();
+
+							// whether we use breadth-first search or A*.
+							if(GameMaster.instance.useAStar) {
+								path = player.GetComponent<AStar>().FindPath(chosenTile);
+
+								if(path == null) {
+									GUIManager.instance.CreatePopUpEntry("No path", player.position, GUIManager.PopUpType.Other);
+									break;
+								}
+
+							} else {
+								path = player.GetComponent<Pathfinding>().CalculatePathToTarget(chosenTile);
+								path.Reverse();
+							}
 
 							Tile nextStep = null;
 
 							// get the next step.
-							try {
-								nextStep = path[1];
-							} catch {
-								GUIManager.instance.CreatePopUpEntry("No path", player.position, GUIManager.PopUpType.Other);
-								break;
+							if(GameMaster.instance.useAStar) {
+
+								nextStep = path[0];
+
+							} else {
+
+								try {
+									nextStep = path[1];
+								} catch {
+									GUIManager.instance.CreatePopUpEntry("No path", player.position, GUIManager.PopUpType.Other);
+									break;
+								}
+
 							}
+
 
 							// if we can see an enemy
 							// cancel out.
@@ -148,9 +167,6 @@ public class MouseController : MonoBehaviour {
 									}
 								}
 							}
-
-							// leave a gap between enemy if the break is here.
-							//if(finished) break;
 
 							// set next move target to be the next step.
 							player.SetMoveTargetPosition(nextStep.position);

@@ -106,14 +106,18 @@ public class MapReader : MonoBehaviour {
 					case PngTileType.Start:
 						
 						if(PrefabManager.instance.GetPlayerInstance() == null) {
+							
 							PrefabManager.instance.InstantiatePlayer("Player", true);
 						} 
 
 						PrefabManager.instance.MoveActorToPos(new Vector2(x, y), PrefabManager.instance.GetPlayerInstance());
 						break;
+
 					case PngTileType.Gold:
+						
 						PrefabManager.instance.InstantiateRandomItemInCategory(Item.Type.Gold, new Vector2(x, y), Item.Rarity.Normal);
 						break;
+
 					case PngTileType.ShopItem:
 
 						// randomize item type.
@@ -124,18 +128,20 @@ public class MapReader : MonoBehaviour {
 						}
 
 						PrefabManager.instance.InstantiateRandomItemInCategory(randomItemType, new Vector2(x, y), Item.Rarity.Normal, true);
-
 						break;
 
 					case PngTileType.LightSource:
 						DungeonVanityManager.instance.SpawnVanityItem(DungeonVanityManager.VanityItem.Lantern, new Vector2(x, y));
 						break;
+
 					case PngTileType.RandomEnemy:
-						PrefabManager.instance.InstantiateEnemyAtPos(x, y);
+						PrefabManager.instance.InstantiateEnemy(new Vector2(x, y));
 						break;
+
 					case PngTileType.Door:
 						DungeonGenerator.instance.GenerateDoor(DungeonGenerator.instance.GetTileAtPos(new Vector2(x, y)));
 						break;
+
 					case PngTileType.Container:
 						PrefabManager.instance.InstantiateRandomItemInCategory(Item.Type.Container, new Vector2(x, y), Item.Rarity.Normal);
 						break;

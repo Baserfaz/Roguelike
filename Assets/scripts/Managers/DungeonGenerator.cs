@@ -18,7 +18,6 @@ public class DungeonGenerator : MonoBehaviour {
 	public GameObject tilePrefab;
 
 	public List<GameObject> GetTiles() { return tiles; }
-
 	public GameObject GetWorldParent() { return worldParent; }
 
 	public void DestroyDungeon() {
@@ -26,6 +25,9 @@ public class DungeonGenerator : MonoBehaviour {
 			Destroy(tile);
 		}
 		tiles.Clear();
+
+		//Destroy(worldParent);
+
 	}
 
 	public List<tileData> GetAdjacentTileDataAroundPosition(Vector2 pos, bool includeOuterWalls = true) {

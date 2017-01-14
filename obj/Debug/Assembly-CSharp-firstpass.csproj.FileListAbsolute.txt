@@ -27,7 +27,3 @@ C:\Users\Baserfaz\Documents\github\Roguelike\Temp\bin\Debug\UnityEngine.VR.xml
 C:\Users\Baserfaz\Documents\github\Roguelike\obj\Debug\Assembly-CSharp-firstpass.csprojResolveAssemblyReference.cache
 C:\Users\Baserfaz\Documents\github\Roguelike\obj\Debug\Assembly-CSharp-firstpass.dll
 C:\Users\Baserfaz\Documents\github\Roguelike\obj\Debug\Assembly-CSharp-firstpass.pdb
-C:\Users\Baserfaz\Documents\github\Roguelike\Temp\bin\Debug\UnityEngine.Advertisements.dll
-C:\Users\Baserfaz\Documents\github\Roguelike\Temp\bin\Debug\UnityEngine.Purchasing.dll
-C:\Users\Baserfaz\Documents\github\Roguelike\Temp\bin\Debug\UnityEngine.Advertisements.xml
-C:\Users\Baserfaz\Documents\github\Roguelike\Temp\bin\Debug\UnityEngine.Purchasing.xml
