@@ -26,6 +26,11 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject eyePrefab;
 	public GameObject tinyPrefab;
 	public GameObject berzerkerPrefab;
+	public GameObject flyingSkullPrefab;
+	public GameObject tentaclePurplePrefab;
+
+	[Header("Bosses")]
+	public GameObject slimeKingPrefab;
 
 	[Header("Other prefabs")]
 	public GameObject blobShadow;
@@ -82,6 +87,7 @@ public class PrefabManager : MonoBehaviour {
 
 	// list of enemy prefabs.
 	private List<GameObject> listOfEnemies = new List<GameObject>();
+    private List<GameObject> listOfSlimes = new List<GameObject>();
 
 	void Awake() { instance = this; }
 	public GameObject GetPlayerInstance() { return playerInstance; }
@@ -95,6 +101,7 @@ public class PrefabManager : MonoBehaviour {
 		listOfSpells.Clear();
 		listOfEnemies.Clear();
 		listOfScrolls.Clear();
+        listOfSlimes.Clear();
 	}
 
 	public void PopulatePrefabLists() {
@@ -107,6 +114,13 @@ public class PrefabManager : MonoBehaviour {
 		listOfEnemies.Add(tinyPrefab);
 		listOfEnemies.Add(berzerkerPrefab);
 		listOfEnemies.Add(eyePrefab);
+		listOfEnemies.Add(flyingSkullPrefab);
+		listOfEnemies.Add(tentaclePurplePrefab);
+
+        // specific enemy types
+        listOfSlimes.Add(slimeBluePrefab);
+        listOfSlimes.Add(slimeGreenPrefab);
+        listOfSlimes.Add(slimePurplePrefab);
 
 		// armors
 		listOfArmors.Add(woodenArmorPrefab);
@@ -144,6 +158,11 @@ public class PrefabManager : MonoBehaviour {
 		listOfScrolls.Add(attackScrollPrefab);
 
 	}
+
+    public GameObject[] GetSlimeEnemies()
+    {
+        return listOfSlimes.ToArray();
+    }
 
 	/// <summary>
 	/// Randomizes item.type and returns it.
@@ -249,6 +268,9 @@ public class PrefabManager : MonoBehaviour {
 
 		// set owner to null.
 		go.GetComponent<Item>().owner = null;
+
+        // set z level
+        go.transform.position = new Vector3(0f, 0f, GameMaster.instance.itemZLevel);
 
 		// save startcolor.
 		go.GetComponent<Item>().startColor = go.GetComponentInChildren<SpriteRenderer>().color;
@@ -389,12 +411,21 @@ public class PrefabManager : MonoBehaviour {
 
 	}
 
-	public void InstantiateEnemy(Vector2 pos) {
+	public void InstantiateEnemy(Vector2 pos, GameObject enemyPrefab = null) {
 
 		if(enemyParent == null) enemyParent = new GameObject("EnemyParent");
 
-		GameObject enemyInst = (GameObject) Instantiate(listOfEnemies[Random.Range(0, listOfEnemies.Count)],
-			new Vector3(pos.x, pos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
+        GameObject enemyInst = null;
+
+        if (enemyPrefab == null)
+        {
+            enemyInst = (GameObject)Instantiate(listOfEnemies[Random.Range(0, listOfEnemies.Count)],
+                new Vector3(pos.x, pos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
+        }
+        else
+        {
+            enemyInst = (GameObject)Instantiate(enemyPrefab, new Vector3(pos.x, pos.y, GameMaster.instance.enemyZLevel), Quaternion.identity);
+        }
 
 		GameObject tileGo = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x, pos.y));
 		Tile tile = tileGo.GetComponent<Tile>();

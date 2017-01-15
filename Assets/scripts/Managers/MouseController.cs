@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class MouseController : MonoBehaviour {
 
+    // TODO: 
+    // REFACTOR 
+    // 1. cast range methods should be in their own class.
+
 	public static MouseController instance;
 
 	[Header("Cursor textures")]
@@ -12,8 +16,9 @@ public class MouseController : MonoBehaviour {
 	private Tile chosenTile;
 	private GameObject crosshairInst;
 	private GameObject playerInst;
+    private List<Tile> validTiles = null;
 
-	public enum State { CastSpell, UseItem, Normal };
+	public enum State { CastSpell, UseItem, Normal, OnGui };
 	private State myState = State.Normal;
 
 	void Awake() { instance = this; }
@@ -58,6 +63,7 @@ public class MouseController : MonoBehaviour {
 
 	public void ChangeCrosshairSprite(Sprite s) { crosshairInst.GetComponent<SpriteRenderer>().sprite = s; }
 	public void ChangeState(MouseController.State s) { myState = s; }
+    public MouseController.State GetState() { return myState; }
 
 	private void HandleClick() {
 		Player player = playerInst.GetComponent<Player>();
@@ -105,55 +111,34 @@ public class MouseController : MonoBehaviour {
 						if(GameMaster.instance.allowPathfindInvisibleTiles == false) {
 							if(chosenTile.isVisible == false) return;
 						}
-
-						int loop = 0;
 						bool finished = false;
 
-						// move automatically to target.
-						// uses pathfinding algorithm.
-						while(player.position != chosenTile.position) {
+						// create a list that stores path.
+						List<Tile> path = new List<Tile>();
 
-							// dont crash unity.
-							if(loop > 100){
-								Debug.LogError("Loop error: HandleClick");
-								break;
-							}
+						// get the path to target.
+						path = player.GetComponent<AStar>().FindPath(chosenTile);
 
-							// get the path to target.
-							List<Tile> path = new List<Tile>();
+						// check if there is no path.
+						if(path == null) {
+							GUIManager.instance.CreatePopUpEntry("No path", player.position, GUIManager.PopUpType.Other);
+							return;
+						}
 
-							// whether we use breadth-first search or A*.
-							if(GameMaster.instance.useAStar) {
-								path = player.GetComponent<AStar>().FindPath(chosenTile);
+						// reverse path.
+						path.Reverse();
 
-								if(path == null) {
-									GUIManager.instance.CreatePopUpEntry("No path", player.position, GUIManager.PopUpType.Other);
-									break;
-								}
-
-							} else {
-								path = player.GetComponent<Pathfinding>().CalculatePathToTarget(chosenTile);
-								path.Reverse();
-							}
-
-							Tile nextStep = null;
+						// traverse.
+						// because the path is reversed we can
+						// use 0 as the start tile.
+						for(int i = 0; i < path.Count; i++) {
 
 							// get the next step.
-							if(GameMaster.instance.useAStar) {
+							Tile nextStep = path[i];
 
-								nextStep = path[0];
-
-							} else {
-
-								try {
-									nextStep = path[1];
-								} catch {
-									GUIManager.instance.CreatePopUpEntry("No path", player.position, GUIManager.PopUpType.Other);
-									break;
-								}
-
-							}
-
+							// check if the nextStep is a wall
+							// -> trap turns into an unwalkable wall.
+							if(nextStep.myType == Tile.TileType.Wall) break;
 
 							// if we can see an enemy
 							// cancel out.
@@ -177,20 +162,24 @@ public class MouseController : MonoBehaviour {
 							// end our turn.
 							GameMaster.instance.EndTurn();
 
-							// increment loop.
-							loop ++;
-
-							// if we can see an enemy -> break out of the loop.
+							// stop moving if there is an enemy nearby.
 							if(finished) break;
 						}
 					}
 				}
-
 			}
 
 		} else if(myState == State.CastSpell) {
 			if(Input.GetMouseButtonDown(0)) {
 				if(chosenTile == null) return;
+
+                // check if we actually clicked on a valid tile.
+                // i.e. is on our spell casting range.
+                if (validTiles.Contains(chosenTile) == false)
+                {
+                    GUIManager.instance.CreatePopUpEntry("No range.", playerInst.GetComponent<Player>().position, GUIManager.PopUpType.Other);
+                    return;
+                }
 
 				// make sure that our next state is NOT move!
 				// if it was, our character would move to the
@@ -209,11 +198,16 @@ public class MouseController : MonoBehaviour {
 				// change our crosshair to normal sprite.
 				ChangeCrosshairSprite(CrosshairManager.instance.crosshairNormal);
 
+                // Always reset the highlighted area after casting/cancelling.
+                ResetHighlighedArea();
+
 			} else if(Input.GetMouseButtonDown(1)) {
 				
 				myState = State.Normal;
 				ChangeCrosshairSprite(CrosshairManager.instance.crosshairNormal);
 
+                // Always reset the highlighted area after casting/cancelling.
+                ResetHighlighedArea();
 			}
 		}
 	}
@@ -243,9 +237,102 @@ public class MouseController : MonoBehaviour {
 		GUIManager.instance.ShowTileInfo(tile);
 	}
 
+    private void ResetHighlighedArea()
+    {
+        // reset highlighted area.
+        foreach (GameObject g in DungeonGenerator.instance.GetTiles())
+        {
+            Tile t = g.GetComponent<Tile>();
+            if (t.isVisible) g.GetComponentInChildren<SpriteRenderer>().color = Color.white;
+        }
+    }
+
+    private List<Tile> GetSpellRange(Spell spell, Player player)
+    {
+        List<Tile> range = new List<Tile>();
+        Tile current = null;
+        GameObject go = null;
+
+        if (spell.isLinear)
+        {
+            for (int x = 0; x < GameMaster.instance.playerCastRange; x++)
+            {
+                go = DungeonGenerator.instance.GetTileAtPos(player.position + new Vector2(x, 0f));
+                if (go == null) continue;
+                current = go.GetComponent<Tile>();
+                range.Add(current);
+            }
+
+            for (int x = 0; x < GameMaster.instance.playerCastRange; x++)
+            {
+                go = DungeonGenerator.instance.GetTileAtPos(player.position - new Vector2(x, 0f));
+                if (go == null) continue;
+                current = go.GetComponent<Tile>();
+                range.Add(current);
+            }
+
+            for (int y = 0; y < GameMaster.instance.playerCastRange; y++)
+            {
+                go = DungeonGenerator.instance.GetTileAtPos(player.position + new Vector2(0f, y));
+                if (go == null) continue;
+                current = go.GetComponent<Tile>();
+                range.Add(current);
+            }
+
+            for (int y = 0; y < GameMaster.instance.playerCastRange; y++)
+            {
+                go = DungeonGenerator.instance.GetTileAtPos(player.position - new Vector2(0f, y));
+                if (go == null) continue;
+                current = go.GetComponent<Tile>();
+                range.Add(current);
+            }
+        }
+        else
+        {
+            foreach (GameObject g in DungeonGenerator.instance.GetTilesAroundPosition(player.position, GameMaster.instance.playerCastRange))
+            {
+                Tile tile = g.GetComponent<Tile>();
+                if (tile.isVisible) range.Add(tile);
+            }
+        }
+
+        return range;
+    }
+
+    private void DrawSpellRange(List<Tile> range)
+    {
+        foreach (Tile t in range)
+        {
+            // out of bounds.
+            if (t == null) continue;
+
+            if (t.isVisible)
+            {
+                t.GetComponentInChildren<SpriteRenderer>().color = Color.green;
+            }
+        }
+    }
+
 	private void Highlight() {
 		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		RaycastHit2D hit = Physics2D.Raycast(new Vector2(pos.x, pos.y), Vector2.zero);
+
+        Spell currentSpell = null;
+
+        // draw cast area.
+        if (myState == State.CastSpell)
+        {
+            currentSpell = playerInst.GetComponent<Inventory>().currentSpell.GetComponent<Spell>();
+
+            // reset highlighted area.
+            ResetHighlighedArea();
+
+            // get the tiles that are valid.
+            validTiles = GetSpellRange(currentSpell, playerInst.GetComponent<Player>());
+
+            // highlight those tiles.
+            DrawSpellRange(validTiles);
+        }
 
 		if(hit) {
 			if(hit.transform.GetComponent<Tile>() != null) {
@@ -253,11 +340,55 @@ public class MouseController : MonoBehaviour {
 				if(GameMaster.instance.debugMode) {
 					MoveCursor(tile);
 				} else {
-					if(tile.isVisible || tile.isDiscovered) {
-						MoveCursor(tile);
-					} else if(tile.isVisible == false && tile.isDiscovered == false) {
-						HideCursor();
-					}
+
+                    if (myState == State.CastSpell)
+                    {
+
+                        MoveCursor(tile);
+
+                        if (tile.isVisible)
+                        {
+
+                            Spell.DamageInfo di = new Spell.DamageInfo();
+                            di.targetTile = tile;
+                            di.damageDealer = playerInst;
+
+                            GameObject[] aoe = currentSpell.CalculateAOE(di);
+
+                            // if there is no area, return.
+                            if (aoe == null) return;
+
+                            // if we are not hovering on top of a valid tile, then return.
+                            if (validTiles.Contains(di.targetTile) == false) return;
+
+                            // --> otherwise draw the area.
+
+                            // set new highlight area of the spell!
+                            foreach (GameObject g in aoe)
+                            {
+                                // out of bounds.
+                                if (g == null) continue;
+
+                                Tile _tile = g.GetComponent<Tile>();
+                                if (_tile.isVisible)
+                                {
+                                    g.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                                }
+                            }
+                        }
+                    }
+                    else if (myState == State.Normal)
+                    {
+                        if (tile.isVisible || tile.isDiscovered)
+                        {
+                            MoveCursor(tile);
+                        }
+                        else if (tile.isVisible == false && tile.isDiscovered == false)
+                        {
+                            HideCursor();
+                        }
+                    }
+
 				}
 			} else {
 				HideCursor();

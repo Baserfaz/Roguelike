@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: b448ac236681d624890f49bf4916695f
-timeCreated: 1484172502
+timeCreated: 1484479446
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -88,6 +88,11 @@ TextureImporter:
     21300162: golden_hammer
     21300164: wand_blue
     21300166: wand_red
+    21300168: slime_king
+    21300170: skull_flying
+    21300172: tentacle_purple
+    21300174: cactus_01
+    21300176: slime_small
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -926,6 +931,71 @@ TextureImporter:
         serializedVersion: 2
         x: 160
         y: 240
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: slime_king
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 176
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: skull_flying
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tentacle_purple
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: cactus_01
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 208
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: slime_small
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 160
         width: 16
         height: 16
       alignment: 0

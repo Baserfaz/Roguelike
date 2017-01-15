@@ -5,7 +5,6 @@ using UnityEngine;
 public class Pathfinding : MonoBehaviour {
 
 	Tile target = null;
-	Tile start = null;
 
 	bool finished = false;
 
@@ -41,9 +40,6 @@ public class Pathfinding : MonoBehaviour {
 
 		// get the first tile.
 		Tile startTile = DungeonGenerator.instance.GetTileAtPos(player.position).GetComponent<Tile>();
-
-		// set the start tile.
-		start = startTile;
 
 		// enqueue it.
 		foundTiles.Enqueue(startTile);

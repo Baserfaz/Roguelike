@@ -9,6 +9,11 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 	private GameObject hoverTextobj = null;
 
 	public void OnPointerEnter(PointerEventData data) {
+
+        if (MouseController.instance.GetState() == MouseController.State.CastSpell) return;
+
+        MouseController.instance.ChangeState(MouseController.State.OnGui);
+
 		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
 
 		gii.SetCanvasGroupAlpha(1f);
@@ -62,13 +67,18 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 	}
 
 	public void OnPointerExit(PointerEventData data) {
+
+        if(MouseController.instance.GetState() == MouseController.State.OnGui) MouseController.instance.ChangeState(MouseController.State.Normal);
+
 		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
 		gii.ResetCanvasGroupAlpha();
 		Destroy(hoverTextobj);
 	}
 
 	public void OnPointerClick(PointerEventData data) {
-	
+
+        if (data.button == PointerEventData.InputButton.Right || data.button == PointerEventData.InputButton.Middle) return;
+
 		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
 
 		Player player = PrefabManager.instance.GetPlayerInstance().GetComponent<Player>();

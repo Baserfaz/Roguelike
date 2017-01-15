@@ -169,34 +169,40 @@ public class Health : MonoBehaviour {
 			// player gains experience.
 			PrefabManager.instance.GetPlayerInstance().GetComponent<Experience>().AddExp(GetComponent<Actor>().expAmount);
 
-			// get target tile.
-			GameObject targetTile = DungeonGenerator.instance.GetTileAtPos(GetComponent<Actor>().position);
+            // check if the enemy can even drop items.
+            if (GetComponent<Enemy>().canDropItems)
+            {
+                // get target tile.
+                GameObject targetTile = DungeonGenerator.instance.GetTileAtPos(GetComponent<Actor>().position);
 
-			// drop item under the 
-			if(targetTile.GetComponent<Tile>().item == null) {
-				
-				ItemDropController.instance.DropItem(targetTile.GetComponent<Tile>().position);
+                // drop item under the 
+                if (targetTile.GetComponent<Tile>().item == null)
+                {
 
-			} else {
+                    ItemDropController.instance.DropItem(targetTile.GetComponent<Tile>().position);
 
-				// if tile has an item already.
-				// -> calculate new position.
-				targetTile = DungeonGenerator.instance.GetFirstFreeTileNearPosition(GetComponent<Actor>().position);
-				if(targetTile != null) {
-					ItemDropController.instance.DropItem(targetTile.GetComponent<Tile>().position);
-				}
-			}
+                }
+                else
+                {
 
+                    // if tile has an item already.
+                    // -> calculate new position.
+                    targetTile = DungeonGenerator.instance.GetFirstFreeTileNearPosition(GetComponent<Actor>().position);
+                    if (targetTile != null)
+                    {
+                        ItemDropController.instance.DropItem(targetTile.GetComponent<Tile>().position);
+                    }
+                }
+            }
+
+            // deactivate enemy script.
 			GetComponent<Enemy>().isActive = false;
 
 			// deactivate actor
 			gameObject.SetActive(false);
 
+            // create GUI element.
 			GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " died.", GUIManager.JournalType.Combat);
-
-
 		} 
 	}
-
-
 }

@@ -38,7 +38,7 @@ public class CameraManager : MonoBehaviour {
 			// in main menu
 
 			CenterCameraToDungeon();
-			BounceCamera();
+			//BounceCamera();
 
 			transform.Rotate(0f, 0f, 6f * Time.deltaTime);
 		}

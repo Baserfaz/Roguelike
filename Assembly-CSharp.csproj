@@ -48,8 +48,10 @@
   <ItemGroup>
      <Compile Include="Assets\scripts\AStar.cs" />
      <Compile Include="Assets\scripts\Actors\Actor.cs" />
+     <Compile Include="Assets\scripts\Actors\Boss.cs" />
      <Compile Include="Assets\scripts\Actors\Enemy.cs" />
      <Compile Include="Assets\scripts\Actors\Player.cs" />
+     <Compile Include="Assets\scripts\Data\Ability.cs" />
      <Compile Include="Assets\scripts\Data\Experience.cs" />
      <Compile Include="Assets\scripts\Data\GameSettings.cs" />
      <Compile Include="Assets\scripts\Data\StatusEffect.cs" />

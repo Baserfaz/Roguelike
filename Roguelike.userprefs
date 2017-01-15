@@ -1,8 +1,8 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\AStar.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Managers\MouseController.cs">
     <Files>
-      <File FileName="Assets\scripts\Managers\MouseController.cs" Line="182" Column="8" />
+      <File FileName="Assets\scripts\Managers\MouseController.cs" Line="144" Column="38" />
       <File FileName="Assets\scripts\GUI\GuiHoverElement.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Items\Scroll.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Items\Potion.cs" Line="1" Column="1" />
@@ -16,21 +16,21 @@
       <File FileName="Assets\scripts\Managers\ItemDropController.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Managers\PrefabManager.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Managers\MapReader.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Tile\Tile.cs" Line="18" Column="1" />
-      <File FileName="Assets\scripts\Tile\Node.cs" Line="12" Column="1" />
-      <File FileName="Assets\scripts\Pathfinding.cs" Line="8" Column="1" />
-      <File FileName="Assets\scripts\Actors\Player.cs" Line="326" Column="25" NotebookId="1" />
-      <File FileName="Assets\scripts\Actors\Actor.cs" Line="137" Column="10" NotebookId="1" />
+      <File FileName="Assets\scripts\Tile\Tile.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Tile\Node.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Pathfinding.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Actors\Player.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Actors\Actor.cs" Line="175" Column="41" NotebookId="1" />
       <File FileName="Assets\scripts\GUI\GUIManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\Managers\GameMaster.cs" Line="164" Column="11" NotebookId="1" />
-      <File FileName="Assets\scripts\Actors\Enemy.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\GameMaster.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Actors\Enemy.cs" Line="26" Column="25" NotebookId="1" />
       <File FileName="Assets\scripts\Effects\CameraEffects.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Managers\SpriteManager.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Managers\CameraManager.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Data\GameSettings.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\GUI\PlayButton.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Items\Item.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\AStar.cs" Line="39" Column="6" NotebookId="1" />
+      <File FileName="Assets\scripts\AStar.cs" Line="127" Column="1" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

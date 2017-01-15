@@ -27,7 +27,8 @@ public class SpriteManager : MonoBehaviour {
 		ChestOpen, 
 		GUIStatusBleeding, GUIStatusHealing, 
 		GUIStatusAttBuff, GUIStatusDefBuff, GUIStatusAttDebuff, GUIStatusDefDebuff,
-		GUIStatusStun, GUIStatusExpMult
+		GUIStatusStun, GUIStatusExpMult,
+        GUIStatusBurning
 	}
 
 	private Color32[] pixels;
@@ -490,6 +491,9 @@ public class SpriteManager : MonoBehaviour {
 			return ReadSpriteSheet(topTilePos, 12);
 		case SpriteType.GUIStatusExpMult:
 			topTilePos = 15 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(topTilePos, 12);
+        case SpriteType.GUIStatusBurning:
+            topTilePos = 13 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 			return ReadSpriteSheet(topTilePos, 12);
 
 		default:

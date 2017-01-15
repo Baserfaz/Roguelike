@@ -273,6 +273,12 @@ public class GUIManager : MonoBehaviour {
 
 			break;
 
+        case StatusEffect.EffectType.Burning:
+
+            inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+            SpriteManager.SpriteType.GUIStatusBurning);
+            break;
+
 		default:
 			Debug.LogError("Can't find sprite.");
 			break;

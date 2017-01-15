@@ -6,7 +6,7 @@ public class DungeonVanityManager : MonoBehaviour {
 
 	public static DungeonVanityManager instance;
 
-	public enum VanityItem { Candle, Lantern, Skull }
+	public enum VanityItem { Candle, Lantern, Skull, Cactus }
 
 	[Header("Settings")]
 	public bool spawnVanityItems = true;
@@ -18,6 +18,7 @@ public class DungeonVanityManager : MonoBehaviour {
 	public GameObject skull01Prefab;
 	public GameObject lantern01Prefab;
 	public GameObject burntCandlePrefab;
+	public GameObject cactus01Prefab;
 
 	private GameObject parentGo;
 	private List<GameObject> InstantiatedVanityItems = new List<GameObject>();
@@ -42,6 +43,9 @@ public class DungeonVanityManager : MonoBehaviour {
 		case VanityItem.Skull:
 			vanityItemPrefab = skull01Prefab;
 			break;
+		case VanityItem.Cactus:
+			//vanityItemPrefab = cactus01Prefab;
+            return;
 		}
 	
 		GameObject inst = (GameObject) Instantiate(vanityItemPrefab);

@@ -22,7 +22,6 @@ public class GameMaster : MonoBehaviour {
 
 	[Header("Pathfinding settings")]
 	public bool allowPathfinding = true;
-	public bool useAStar = true;
 	public bool allowPathfindInvisibleTiles = true;
 
 	[Header("Movement settings")]
@@ -37,9 +36,10 @@ public class GameMaster : MonoBehaviour {
 	public bool wallsBlockLos = true;
 	public bool pickupGoldAutomatically = true;
 	public bool attacksSubtractDefaultArmor = true;
-	public bool useBlankmainMenuScreen = false;
+	public bool useBlankMainMenuScreen = false;
 	public bool randomizeDungeonSize = true;
 	public bool randomizeEnemyStartCount = true;
+    public int playerCastRange = 2;
 
 	[Header("Randomized dungeon sizes")]
 	[Tooltip("OVERRIDES DUNGEON SETTINGS!")]
@@ -72,6 +72,7 @@ public class GameMaster : MonoBehaviour {
 	[Header("Special level chance to spawn")]
 	[Range(1, 100)] public int ShopChance = 10;
 	[Range(1, 100)] public int mobCabinet01Chance = 15;
+    [Range(1, 100)] public int bossRoomChance = 5;
 
 	[Header("Z-levels")]
 	public int playerZLevel = -1;
@@ -90,6 +91,7 @@ public class GameMaster : MonoBehaviour {
 	public Texture2D shopLevel;
 	public Texture2D mobCabinetlevel01;
 	public Texture2D pathfindingTestLevel;
+    public Texture2D slimeKingThroneLevel;
 
 	private bool wasLastLevelSpecial = false;
 	private bool debugModeRealValue = false;
@@ -150,7 +152,7 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	public void CreateMainMenuScene() {
-		if(useBlankmainMenuScreen) return;
+		if(useBlankMainMenuScreen) return;
 		GameMaster.instance.debugMode = true;
 		SpriteManager.instance.RandomizeTileSet();
 		PrefabManager.instance.PopulatePrefabLists();
@@ -255,7 +257,7 @@ public class GameMaster : MonoBehaviour {
 		StartDungeonCreationProcess();
 
 		// instantiate actors
-		PrefabManager.instance.InstantiateEnemies();
+		if(spawnEnemies) PrefabManager.instance.InstantiateEnemies();
 
 		// instantiate player.
 		GameObject playerinstance = PrefabManager.instance.InstantiatePlayer(settings.playername, false);
@@ -342,35 +344,63 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	private bool TryGetSpecialLevel() {
-		if(Random.Range(0, 100) > 100 - ShopChance) {
 
-			wasLastLevelSpecial = true;
 
-			// change tileset to use shop tiles.
-			SpriteManager.instance.currentTileSet = SpriteManager.TileSet.Shop;
+        if (Random.Range(0, 100) > 100 - bossRoomChance)
+        {
 
-			// create shop
-			MapReader.instance.GenerateDungeonFromImage(shopLevel);
+            // TODO:
+            // 1. multiple boss rooms.
 
-			// name
-			currentDungeonName = "Shopaholic's dream";
+            wasLastLevelSpecial = true;
 
-			return true;
+            // change tileset to use slime tileset
+            SpriteManager.instance.currentTileSet = SpriteManager.TileSet.Shop;
 
-		} else if(Random.Range(0, 100) > 100 - mobCabinet01Chance) {
+            // create shop
+            MapReader.instance.GenerateDungeonFromImage(slimeKingThroneLevel);
 
-			wasLastLevelSpecial = true;
+            // name
+            currentDungeonName = "Royal slime's throne room";
 
-			// randomize tileset
-			SpriteManager.instance.RandomizeTileSet();
+            return true;
 
-			// create shop
-			MapReader.instance.GenerateDungeonFromImage(mobCabinetlevel01);
+        }
+        else
+        {
+            if (Random.Range(0, 100) > 100 - ShopChance)
+            {
 
-			currentDungeonName = "It's not a trap.";
+                wasLastLevelSpecial = true;
 
-			return true;
-		}
+                // change tileset to use shop tiles.
+                SpriteManager.instance.currentTileSet = SpriteManager.TileSet.Shop;
+
+                // create shop
+                MapReader.instance.GenerateDungeonFromImage(shopLevel);
+
+                // name
+                currentDungeonName = "Shopaholic's dream";
+
+                return true;
+
+            }
+            else if (Random.Range(0, 100) > 100 - mobCabinet01Chance)
+            {
+
+                wasLastLevelSpecial = true;
+
+                // randomize tileset
+                SpriteManager.instance.RandomizeTileSet();
+
+                // create shop
+                MapReader.instance.GenerateDungeonFromImage(mobCabinetlevel01);
+
+                currentDungeonName = "It's not a trap.";
+
+                return true;
+            }
+        }
 
 		return false;
 	}
@@ -493,8 +523,12 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	private void HandleEnemyTurns() {
-		foreach(GameObject enemy in PrefabManager.instance.GetEnemyInstances()) {
-			Enemy e = enemy.GetComponent<Enemy>();
+
+        GameObject[] enemies = PrefabManager.instance.GetEnemyInstances().ToArray();
+
+        // looping backwards makes possible to instantiate new enemies at run time.
+        for(int i = enemies.Length - 1; i >= 0; i-- ) {
+			Enemy e = enemies[i].GetComponent<Enemy>();
 			if(e.isActive) {
 
 				// this can cause bleed effect,
@@ -502,7 +536,7 @@ public class GameMaster : MonoBehaviour {
 				HandleStatusEffects(e);
 
 				// so we need to check is dead here.
-				if(enemy.GetComponent<Health>().isDead == false || enemy.GetComponent<Actor>().myNextState != Actor.NextMoveState.Stunned) {
+				if(e.GetComponent<Health>().isDead == false || e.GetComponent<Actor>().myNextState != Actor.NextMoveState.Stunned) {
 					e.DecideNextStep();
 				}
 			}
@@ -586,8 +620,12 @@ public class GameMaster : MonoBehaviour {
 			case StatusEffect.EffectType.Stun:
 				
 				actor.GetComponent<Actor>().myNextState = Actor.NextMoveState.Stunned;
-
 				break;
+
+           case StatusEffect.EffectType.Burning:
+
+                actor.GetComponent<Health>().TakeDamageSimple(e.amount);
+                break;
 
 			default:
 				Debug.LogError("Can't find such status effect at GameMaster.HandleStatusEffects().");

@@ -10,10 +10,12 @@ public class Actor : MonoBehaviour {
 	public enum NextMoveState { Move, Attack, Pass, Stuck, None, Stunned };
 
 	public string actorName = "";
+	public bool canFly = false;
+	public bool isStatic = false;
 
 	// default to pass state.
 	[HideInInspector] public NextMoveState myNextState = NextMoveState.Pass;
-	public Vector2 position;
+	[HideInInspector] public Vector2 position;
 
 	// list of current status effects.
 	// these will proc on each turn.
@@ -116,14 +118,15 @@ public class Actor : MonoBehaviour {
 	private IEnumerator MoveCharacterSmooth(Vector3 target) {
 
 		float currentTime = 0f;
-		float maxTime = 1f;
+        float maxTime = 1f;
 
 		Vector3 startPos = position;
 		Vector3 endPos = target;
 
 		while(currentTime < maxTime) {
 			currentTime += Time.deltaTime;
-			transform.position = Vector3.Lerp(transform.position, endPos, currentTime/maxTime);
+            // WAS transform.position not startPOS
+            transform.position = Vector3.Lerp(transform.position, endPos, currentTime / maxTime);
 			yield return null;
 		}
 
@@ -172,7 +175,7 @@ public class Actor : MonoBehaviour {
 
 		// if we stepped on a trap.
 		if(tileGo.GetComponent<Trap>() != null) {
-			tileGo.GetComponent<Trap>().Activate();
+			if(canFly == false) tileGo.GetComponent<Trap>().Activate();
 		}
 
 		// update next tile's actor field.

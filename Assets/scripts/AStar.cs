@@ -19,7 +19,7 @@ public class AStar : MonoBehaviour {
 
 		// set the start score to zero.
 		start.GetComponent<Node>().gScore = 0f;
-		start.GetComponent<Node>().fScore = 0f; // FIXME
+		start.GetComponent<Node>().fScore = 0f;
 
 		// set the start position
 		openSet.Add(start);
@@ -42,7 +42,7 @@ public class AStar : MonoBehaviour {
 			// if we are at the goal position
 			// construct path and return it.
 			if(current.position == goal.position) {
-				List<Tile> completePath = ConstructPath(current);
+				List<Tile> completePath = ConstructPath(current, player);
 				//DrawPath(completePath);
 				return completePath;
 			}
@@ -87,7 +87,6 @@ public class AStar : MonoBehaviour {
 				neighborNode.gScore = tentative_gScore;
 				neighborNode.fScore = neighborNode.gScore + HeuristicCostEstimate(neighbor, goal);
 			}
-
 		}
 
 		// failure.
@@ -108,11 +107,10 @@ public class AStar : MonoBehaviour {
 	}
 
 	private Tile GetParentNode(Tile t) {
-
 		return t.GetComponent<Node>().parentNode;
 	}
 
-	private List<Tile> ConstructPath(Tile current) {
+	private List<Tile> ConstructPath(Tile current, Player player) {
 		List<Tile> totalPath = new List<Tile>();
 		totalPath.Add(current);
 
@@ -121,16 +119,28 @@ public class AStar : MonoBehaviour {
 
 		int counter = 0;
 
-		while(parent != null) {
+		while(true) {
 
-			if(counter > 200) break;
+			// safety first ;)
+			if(counter > 200) {
+				Debug.Log("Loop error: ConstructPath");
+				break;
+			}
 
 			parent = GetParentNode(parent);
+
 			totalPath.Add(parent);
+
+			// if we are back at the player position
+			// -> break.
+			if(parent.position == player.position) break;
 
 			counter ++;
 
 		}
+
+		// remove the player current position from the list.
+		totalPath.RemoveAt(totalPath.Count - 1);
 
 		return totalPath;
 	}

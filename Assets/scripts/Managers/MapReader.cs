@@ -10,7 +10,7 @@ public struct ColorToTileType {
 
 public class MapReader : MonoBehaviour {
 
-	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy, Door, Trap, Container }
+	public enum PngTileType { Floor, Wall, OuterWall, Exit, Start, Gold, ShopItem, LightSource, RandomEnemy, Door, Trap, Container, SlimeBoss, RandomSlimeEnemy }
 	public enum State { Tile, ItemActor }
 
 	private State myState = State.Tile;
@@ -145,6 +145,20 @@ public class MapReader : MonoBehaviour {
 					case PngTileType.Container:
 						PrefabManager.instance.InstantiateRandomItemInCategory(Item.Type.Container, new Vector2(x, y), Item.Rarity.Normal);
 						break;
+
+                    case PngTileType.SlimeBoss:
+
+                        PrefabManager.instance.InstantiateEnemy(new Vector2(x, y), PrefabManager.instance.slimeKingPrefab);
+                        break;
+
+                    case PngTileType.RandomSlimeEnemy:
+
+                        GameObject[] slimes = PrefabManager.instance.GetSlimeEnemies();
+
+                        GameObject enemy = slimes[Random.Range(0, slimes.Length)];
+
+                        PrefabManager.instance.InstantiateEnemy(new Vector2(x, y), enemy);
+                        break;
 					
 					default:
 						break;
