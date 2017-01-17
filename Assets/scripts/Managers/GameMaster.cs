@@ -28,18 +28,17 @@ public class GameMaster : MonoBehaviour {
 	public bool allowSmoothMovement = true;
 
 	[Header("Debugging")]
-	public bool enableEnemyAI = true;
+	public bool disableEnemyAI = true;
 	public bool debugMode = false;
 
 	[Header("General settings")]
 	public bool spawnEnemies = false;
-	public bool wallsBlockLos = true;
+    public bool enemiesBlockLoS = true;
 	public bool pickupGoldAutomatically = true;
 	public bool attacksSubtractDefaultArmor = true;
 	public bool useBlankMainMenuScreen = false;
 	public bool randomizeDungeonSize = true;
 	public bool randomizeEnemyStartCount = true;
-    public int playerCastRange = 2;
 
 	[Header("Randomized dungeon sizes")]
 	[Tooltip("OVERRIDES DUNGEON SETTINGS!")]
@@ -102,7 +101,8 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	private void UpdatePlayerLos() {
-		PrefabManager.instance.GetPlayerInstance().GetComponent<LineOfSightManager>().CalculateLoS();
+		//PrefabManager.instance.GetPlayerInstance().GetComponent<LineOfSightManager>().CalculateLoS();
+        PrefabManager.instance.GetPlayerInstance().GetComponent<Losv2>().CalculateLoS();
 		DungeonGenerator.instance.UpdateTileColorVisibility();
 	}
 
@@ -299,7 +299,7 @@ public class GameMaster : MonoBehaviour {
 	public void EndTurn() {
 		
 		HandlePlayerTurn();
-		if(enableEnemyAI) HandleEnemyTurns();
+		if(disableEnemyAI == false) HandleEnemyTurns();
 		HandleTraps();
 		UpdatePlayerLos();
 
@@ -526,7 +526,7 @@ public class GameMaster : MonoBehaviour {
 
         GameObject[] enemies = PrefabManager.instance.GetEnemyInstances().ToArray();
 
-        // looping backwards makes possible to instantiate new enemies at run time.
+        // looping backwards makes possible to instantiate new enemies at runtime.
         for(int i = enemies.Length - 1; i >= 0; i-- ) {
 			Enemy e = enemies[i].GetComponent<Enemy>();
 			if(e.isActive) {

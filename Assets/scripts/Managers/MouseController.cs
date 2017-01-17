@@ -255,45 +255,59 @@ public class MouseController : MonoBehaviour {
 
         if (spell.isLinear)
         {
-            for (int x = 0; x < GameMaster.instance.playerCastRange; x++)
+            for (int x = 0; x < player.castRange; x++)
             {
                 go = DungeonGenerator.instance.GetTileAtPos(player.position + new Vector2(x, 0f));
                 if (go == null) continue;
                 current = go.GetComponent<Tile>();
+
+                if (current.myType == Tile.TileType.Wall || current.myType == Tile.TileType.DoorClosed || current.myType == Tile.TileType.OuterWall) break;
+
                 range.Add(current);
             }
 
-            for (int x = 0; x < GameMaster.instance.playerCastRange; x++)
+            for (int x = 0; x < player.castRange; x++)
             {
                 go = DungeonGenerator.instance.GetTileAtPos(player.position - new Vector2(x, 0f));
                 if (go == null) continue;
                 current = go.GetComponent<Tile>();
+
+                if (current.myType == Tile.TileType.Wall || current.myType == Tile.TileType.DoorClosed || current.myType == Tile.TileType.OuterWall) break;
+
                 range.Add(current);
             }
 
-            for (int y = 0; y < GameMaster.instance.playerCastRange; y++)
+            for (int y = 0; y < player.castRange; y++)
             {
                 go = DungeonGenerator.instance.GetTileAtPos(player.position + new Vector2(0f, y));
                 if (go == null) continue;
                 current = go.GetComponent<Tile>();
+
+                if (current.myType == Tile.TileType.Wall || current.myType == Tile.TileType.DoorClosed || current.myType == Tile.TileType.OuterWall) break;
+
                 range.Add(current);
             }
 
-            for (int y = 0; y < GameMaster.instance.playerCastRange; y++)
+            for (int y = 0; y < player.castRange; y++)
             {
                 go = DungeonGenerator.instance.GetTileAtPos(player.position - new Vector2(0f, y));
                 if (go == null) continue;
                 current = go.GetComponent<Tile>();
+
+                if (current.myType == Tile.TileType.Wall || current.myType == Tile.TileType.DoorClosed || current.myType == Tile.TileType.OuterWall) break;
+
                 range.Add(current);
             }
         }
         else
         {
-            foreach (GameObject g in DungeonGenerator.instance.GetTilesAroundPosition(player.position, GameMaster.instance.playerCastRange))
+
+            Debug.LogError("Free spell range: NOT YET IMPLEMENTED!");
+            /*foreach (GameObject g in DungeonGenerator.instance.GetTilesAroundPosition(player.position, player.castRange))
             {
                 Tile tile = g.GetComponent<Tile>();
                 if (tile.isVisible) range.Add(tile);
-            }
+            }*/
         }
 
         return range;
@@ -322,6 +336,7 @@ public class MouseController : MonoBehaviour {
         // draw cast area.
         if (myState == State.CastSpell)
         {
+            // get the current spell.
             currentSpell = playerInst.GetComponent<Inventory>().currentSpell.GetComponent<Spell>();
 
             // reset highlighted area.
@@ -344,15 +359,18 @@ public class MouseController : MonoBehaviour {
                     if (myState == State.CastSpell)
                     {
 
+                        // move the cursor.
                         MoveCursor(tile);
 
                         if (tile.isVisible)
                         {
 
+                            // create helper object.
                             Spell.DamageInfo di = new Spell.DamageInfo();
                             di.targetTile = tile;
                             di.damageDealer = playerInst;
 
+                            // calculate AOE tiles.
                             GameObject[] aoe = currentSpell.CalculateAOE(di);
 
                             // if there is no area, return.

@@ -17,7 +17,6 @@ public class Spell : Item {
     public int damageOrHealAmount = 2;
 	public int statusDuration = 5;
 
-
 	[HideInInspector] public int currentCooldown = 0;
 
 	public struct DamageInfo {
@@ -163,6 +162,7 @@ public class Spell : Item {
             return;
         }
 
+        // apply things to the tiles.
         foreach (GameObject g in aoe)
         {
             if (g == null) continue;

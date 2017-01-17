@@ -30,24 +30,29 @@ public class DungeonGenerator : MonoBehaviour {
 
 	}
 
-	public List<tileData> GetAdjacentTileDataAroundPosition(Vector2 pos, bool includeOuterWalls = true) {
-		List<tileData> tiles = new List<tileData>();
+	public List<TileData> GetAdjacentTileDataAroundPosition(Vector2 pos, bool includeOuterWalls = true) {
+		List<TileData> tiles = new List<TileData>();
 
 		GameObject current = null;
-		tileData currentTileData = new tileData();
+		Tile tile = null;
+        TileData currentTileData = new TileData();
 
 		// TOP
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x, pos.y + 1));
 		if(current != null) {
 
+            tile = current.GetComponent<Tile>();
+
 			if(includeOuterWalls) {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-					currentTileData.mypos = tileData.MYPOS.Top;
+                if (tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed)
+                {
+					currentTileData.mypos = TileData.MYPOS.Top;
 					tiles.Add(currentTileData);
 				}
 			} else {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
-					currentTileData.mypos = tileData.MYPOS.Top;
+                if (tile.myType == Tile.TileType.Wall)
+                {
+					currentTileData.mypos = TileData.MYPOS.Top;
 					tiles.Add(currentTileData);
 				}
 			}
@@ -57,14 +62,18 @@ public class DungeonGenerator : MonoBehaviour {
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x - 1, pos.y));
 		if(current != null) {
 
+            tile = current.GetComponent<Tile>();
+
 			if(includeOuterWalls) {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-					currentTileData.mypos = tileData.MYPOS.Left;
+                if (tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed)
+                {
+					currentTileData.mypos = TileData.MYPOS.Left;
 					tiles.Add(currentTileData);
 				}
 			} else {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
-					currentTileData.mypos = tileData.MYPOS.Left;
+                if (tile.myType == Tile.TileType.Wall)
+                {
+					currentTileData.mypos = TileData.MYPOS.Left;
 					tiles.Add(currentTileData);
 				}
 			}
@@ -74,14 +83,18 @@ public class DungeonGenerator : MonoBehaviour {
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x, pos.y - 1));
 		if(current != null) {
 
+            tile = current.GetComponent<Tile>();
+
 			if(includeOuterWalls) {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-					currentTileData.mypos = tileData.MYPOS.Bottom;
+                if (tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed)
+                {
+					currentTileData.mypos = TileData.MYPOS.Bottom;
 					tiles.Add(currentTileData);
 				}
 			} else {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
-					currentTileData.mypos = tileData.MYPOS.Bottom;
+                if (tile.myType == Tile.TileType.Wall)
+                {
+					currentTileData.mypos = TileData.MYPOS.Bottom;
 					tiles.Add(currentTileData);
 				}
 			}
@@ -91,14 +104,18 @@ public class DungeonGenerator : MonoBehaviour {
 		current = DungeonGenerator.instance.GetTileAtPos(new Vector2(pos.x + 1, pos.y));
 		if(current != null) {
 
+            tile = current.GetComponent<Tile>();
+
 			if(includeOuterWalls) {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall || current.GetComponent<Tile>().myType == Tile.TileType.OuterWall) {
-					currentTileData.mypos = tileData.MYPOS.Right;
+                if (tile.myType == Tile.TileType.Wall || tile.myType == Tile.TileType.OuterWall || tile.myType == Tile.TileType.DoorClosed)
+                {
+					currentTileData.mypos = TileData.MYPOS.Right;
 					tiles.Add(currentTileData);
 				}
 			} else {
-				if(current.GetComponent<Tile>().myType == Tile.TileType.Wall) {
-					currentTileData.mypos = tileData.MYPOS.Right;
+                if (tile.myType == Tile.TileType.Wall)
+                {
+					currentTileData.mypos = TileData.MYPOS.Right;
 					tiles.Add(currentTileData);
 				}
 			}
@@ -107,7 +124,7 @@ public class DungeonGenerator : MonoBehaviour {
 		return tiles;
 	}
 
-	public struct tileData {
+	public struct TileData {
 		public enum MYPOS { Top, Bottom, Left, Right };
 		public MYPOS mypos;
 	}
@@ -287,20 +304,20 @@ public class DungeonGenerator : MonoBehaviour {
 
 			if(currentTile.myType == Tile.TileType.Wall || currentTile.myType == Tile.TileType.OuterWall) {
 
-				List<tileData> tilesAround = GetAdjacentTileDataAroundPosition(new Vector2(currentTile.position.x, currentTile.position.y));
+				List<TileData> tilesAround = GetAdjacentTileDataAroundPosition(new Vector2(currentTile.position.x, currentTile.position.y));
 
-				foreach(tileData data in tilesAround) {
+				foreach(TileData data in tilesAround) {
 					switch(data.mypos) {
-					case tileData.MYPOS.Bottom:
+					case TileData.MYPOS.Bottom:
 						isBottomWall = true;
 						break;
-					case  tileData.MYPOS.Top:
+					case  TileData.MYPOS.Top:
 						isTopWall = true;
 						break;
-					case tileData.MYPOS.Left:
+					case TileData.MYPOS.Left:
 						isLeftWall = true;
 						break;
-					case tileData.MYPOS.Right:
+					case TileData.MYPOS.Right:
 						isRightWall = true;
 						break;
 					}
@@ -426,25 +443,25 @@ public class DungeonGenerator : MonoBehaviour {
 
 		Tile current = tile.GetComponent<Tile>();
 
-		tileData[] tds = GetAdjacentTileDataAroundPosition(current.position).ToArray();
+		TileData[] tds = GetAdjacentTileDataAroundPosition(current.position).ToArray();
 
 		bool isTopWall = false;
 		bool isBottomWall = false;
 		bool isLeftWall = false;
 		bool isRightWall = false;
 
-		foreach(tileData td in tds) {
+		foreach(TileData td in tds) {
 			switch(td.mypos) {
-			case tileData.MYPOS.Bottom:
+			case TileData.MYPOS.Bottom:
 				isBottomWall = true;
 				break;
-			case  tileData.MYPOS.Top:
+			case  TileData.MYPOS.Top:
 				isTopWall = true;
 				break;
-			case tileData.MYPOS.Left:
+			case TileData.MYPOS.Left:
 				isLeftWall = true;
 				break;
-			case tileData.MYPOS.Right:
+			case TileData.MYPOS.Right:
 				isRightWall = true;
 				break;
 			}

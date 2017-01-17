@@ -46,7 +46,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\scripts\AStar.cs" />
      <Compile Include="Assets\scripts\Actors\Actor.cs" />
      <Compile Include="Assets\scripts\Actors\Boss.cs" />
      <Compile Include="Assets\scripts\Actors\Enemy.cs" />
@@ -67,8 +66,10 @@
      <Compile Include="Assets\scripts\GUI\HealthBar.cs" />
      <Compile Include="Assets\scripts\GUI\PlayButton.cs" />
      <Compile Include="Assets\scripts\GUI\PopUpText.cs" />
-     <Compile Include="Assets\scripts\Health.cs" />
-     <Compile Include="Assets\scripts\Inventory.cs" />
+     <Compile Include="Assets\scripts\General\Health.cs" />
+     <Compile Include="Assets\scripts\General\Inventory.cs" />
+     <Compile Include="Assets\scripts\General\LineOfSightManager.cs" />
+     <Compile Include="Assets\scripts\General\Losv2.cs" />
      <Compile Include="Assets\scripts\Items\Armor.cs" />
      <Compile Include="Assets\scripts\Items\Container.cs" />
      <Compile Include="Assets\scripts\Items\DungeonVanityManager.cs" />
@@ -80,7 +81,6 @@
      <Compile Include="Assets\scripts\Items\UseItem.cs" />
      <Compile Include="Assets\scripts\Items\VanityItem.cs" />
      <Compile Include="Assets\scripts\Items\Weapon.cs" />
-     <Compile Include="Assets\scripts\LineOfSightManager.cs" />
      <Compile Include="Assets\scripts\Managers\CameraManager.cs" />
      <Compile Include="Assets\scripts\Managers\DungeonGenerator.cs" />
      <Compile Include="Assets\scripts\Managers\DungeonInfo.cs" />
@@ -92,7 +92,8 @@
      <Compile Include="Assets\scripts\Managers\PrefabManager.cs" />
      <Compile Include="Assets\scripts\Managers\SpriteManager.cs" />
      <Compile Include="Assets\scripts\Managers\shadowController.cs" />
-     <Compile Include="Assets\scripts\Pathfinding.cs" />
+     <Compile Include="Assets\scripts\Pathfinding\AStar.cs" />
+     <Compile Include="Assets\scripts\Pathfinding\Pathfinding.cs" />
      <Compile Include="Assets\scripts\Tile\Door.cs" />
      <Compile Include="Assets\scripts\Tile\Node.cs" />
      <Compile Include="Assets\scripts\Tile\Tile.cs" />

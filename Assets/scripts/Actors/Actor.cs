@@ -120,12 +120,10 @@ public class Actor : MonoBehaviour {
 		float currentTime = 0f;
         float maxTime = 1f;
 
-		Vector3 startPos = position;
 		Vector3 endPos = target;
 
 		while(currentTime < maxTime) {
 			currentTime += Time.deltaTime;
-            // WAS transform.position not startPOS
             transform.position = Vector3.Lerp(transform.position, endPos, currentTime / maxTime);
 			yield return null;
 		}

@@ -6,6 +6,7 @@ public class Player : Actor {
 
 	[Header("Player specific settings")]
 	public int seeRadius = 1;
+    public int castRange = 2;
 
 	[HideInInspector] public bool inEscMenu = false;
 
