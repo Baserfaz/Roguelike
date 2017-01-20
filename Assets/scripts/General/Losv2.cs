@@ -126,32 +126,32 @@ public class Losv2 : MonoBehaviour {
                 case Direction.Down:
                     t = DungeonGenerator.instance.GetTileAtPos(startTile.position - new Vector2(0f, offset)).GetComponent<Tile>();
 
-                    if(preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Down);
+                    //if(preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Down);
 
                     break;
                 case Direction.Up:
                     t = DungeonGenerator.instance.GetTileAtPos(startTile.position + new Vector2(0f, offset)).GetComponent<Tile>();
 
-                    if (preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Up);
+                    //if (preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Up);
 
                     break;
                 case Direction.Left:
                     t = DungeonGenerator.instance.GetTileAtPos(startTile.position - new Vector2(offset, 0f)).GetComponent<Tile>();
 
-                    if (preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Left);
+                    //if (preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Left);
 
                     break;
                 case Direction.Right:
                     t = DungeonGenerator.instance.GetTileAtPos(startTile.position + new Vector2(offset, 0f)).GetComponent<Tile>();
 
-                    if (preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Right);
+                    //if (preventTilesToBeAddedToList == false) preventTilesToBeAddedToList = CheckGap(t, Direction.Right);
 
                     break;
                     // ----------->
 
 
                 case Direction.DownLeft:
-                    t = DungeonGenerator.instance.GetTileAtPos(startTile.position - new Vector2(offset, offset)).GetComponent<Tile>();
+                    t = DungeonGenerator.instance.GetTileAtPos(startTile.position + new Vector2(-offset, -offset)).GetComponent<Tile>();
                     break;
                 case Direction.DownRight:
                     t = DungeonGenerator.instance.GetTileAtPos(startTile.position + new Vector2(offset, -offset)).GetComponent<Tile>();
@@ -165,6 +165,7 @@ public class Losv2 : MonoBehaviour {
             }
 
             // set the tile visible.
+            // and also discover it.
             t.isVisible = true;
             t.isDiscovered = true;
 
@@ -207,17 +208,48 @@ public class Losv2 : MonoBehaviour {
         }
     }
 
+    private void ResetVision()
+    {
+        foreach (GameObject g in DungeonGenerator.instance.GetTiles())
+        {
+            Tile tile = g.GetComponent<Tile>();
+            tile.GetComponent<Tile>().isVisible = false;
+        }
+    }
+
+    private void ActivateEnemies(Tile startTile)
+    {
+        foreach (GameObject g in DungeonGenerator.instance.GetTiles())
+        {
+            Tile tile = g.GetComponent<Tile>();
+
+            if (tile.isVisible == false) continue;
+
+            // calculate the distance
+            int distance = Mathf.FloorToInt(Mathf.Abs(startTile.position.x - tile.position.x) + Mathf.Abs(startTile.position.y - tile.position.y));
+
+            // if the enemy is further than aggro range, just continue.
+            if (distance > GameMaster.instance.enemyAggroRange) continue;
+
+            if (tile.actor != null)
+            {
+                if (tile.actor.GetComponent<Enemy>() != null)
+                {
+                    Enemy enemy = tile.actor.GetComponent<Enemy>();
+                    enemy.targetPosition = startTile.position;
+                    enemy.isActive = true;
+                }
+            }
+        }
+    }
+
     public void CalculateLoS()
     {
         Player player = GetComponent<Player>();
         Tile startTile = DungeonGenerator.instance.GetTileAtPos(player.position).GetComponent<Tile>();
 
         // reset vision.
-        foreach (GameObject g in DungeonGenerator.instance.GetTiles())
-        {
-            Tile tile = g.GetComponent<Tile>();
-            tile.GetComponent<Tile>().isVisible = false;
-        }
+        ResetVision();
 
         // our position is visible too
         startTile.isVisible = true;
@@ -261,6 +293,9 @@ public class Losv2 : MonoBehaviour {
             CastVisionline(Direction.UpLeft, t, false);
             CastVisionline(Direction.UpRight, t, false);
         }
+
+        // activate enemies
+        ActivateEnemies(startTile);
 
         // reset lists.
         listOfTilesDown.Clear();

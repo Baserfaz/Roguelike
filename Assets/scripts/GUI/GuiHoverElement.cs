@@ -61,7 +61,7 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 				}
 			}
 
-			hoverTextobj.transform.SetParent(GUIManager.instance.mainGUI.transform);
+			hoverTextobj.transform.SetParent(GUIManager.instance.gameGUI.transform);
 			hoverTextobj.transform.position = Input.mousePosition;
 		}
 	}

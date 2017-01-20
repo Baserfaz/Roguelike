@@ -90,13 +90,14 @@ public class MouseController : MonoBehaviour {
 				}
 
 				// movement & attack
-				// TODO: own system for measuring distance between tiles?
-				if(Vector2.Distance(chosenTile.position, player.position) < 1.5f) {
+                if(Vector2.Distance(chosenTile.position, player.position) < 1.5f) {
+
 					player.SetMoveTargetPosition(chosenTile.position);
 					player.TestAllTileValidities();
 
 					if(player.myNextState == Actor.NextMoveState.Stuck) return;
 					else GameMaster.instance.EndTurn();
+
 				} else {
 
 					if(GameMaster.instance.allowPathfinding == false) return;
@@ -135,6 +136,8 @@ public class MouseController : MonoBehaviour {
 
 							// get the next step.
 							Tile nextStep = path[i];
+
+                            if (nextStep.actor != null) break;
 
 							// check if the nextStep is a wall
 							// -> trap turns into an unwalkable wall.
@@ -365,33 +368,44 @@ public class MouseController : MonoBehaviour {
                         if (tile.isVisible)
                         {
 
-                            // create helper object.
-                            Spell.DamageInfo di = new Spell.DamageInfo();
-                            di.targetTile = tile;
-                            di.damageDealer = playerInst;
-
-                            // calculate AOE tiles.
-                            GameObject[] aoe = currentSpell.CalculateAOE(di);
-
-                            // if there is no area, return.
-                            if (aoe == null) return;
-
-                            // if we are not hovering on top of a valid tile, then return.
-                            if (validTiles.Contains(di.targetTile) == false) return;
-
-                            // --> otherwise draw the area.
-
-                            // set new highlight area of the spell!
-                            foreach (GameObject g in aoe)
+                            if (currentSpell.isAOE)
                             {
-                                // out of bounds.
-                                if (g == null) continue;
 
-                                Tile _tile = g.GetComponent<Tile>();
-                                if (_tile.isVisible)
+                                // create helper object.
+                                Spell.DamageInfo di = new Spell.DamageInfo();
+                                di.targetTile = tile;
+                                di.damageDealer = playerInst;
+
+                                // calculate AOE tiles.
+                                GameObject[] aoe = currentSpell.CalculateAOE(di);
+
+                                // if there is no area, return.
+                                if (aoe == null) return;
+
+                                // if we are not hovering on top of a valid tile, then return.
+                                if (validTiles.Contains(di.targetTile) == false) return;
+
+                                // --> otherwise draw the area.
+
+                                // set new highlight area of the spell!
+                                foreach (GameObject g in aoe)
                                 {
-                                    g.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                                    // out of bounds.
+                                    if (g == null) continue;
+
+                                    Tile _tile = g.GetComponent<Tile>();
+                                    if (_tile.isVisible)
+                                    {
+                                        g.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                                    }
                                 }
+                            }
+                            else
+                            {
+
+                                if (validTiles.Contains(tile) == false) return;
+                                tile.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+
                             }
                         }
                     }

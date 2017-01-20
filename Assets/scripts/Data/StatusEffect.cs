@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StatusEffect {
 	
-	public enum EffectType { Bleeding, Healing, Armor, Attack, ExpMultiplier, Stun, Burning };
+	public enum EffectType { Bleeding, Healing, Armor, Attack, ExpMultiplier, Stun, Burning, Invulnerable };
 	public EffectType type;
 	public int amount;
 	public int duration;

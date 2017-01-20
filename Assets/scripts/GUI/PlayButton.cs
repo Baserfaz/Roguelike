@@ -33,6 +33,12 @@ public class PlayButton : MonoBehaviour {
 		case 2:
 			startitem = GameSettings.StartItem.FireballSpell;
 			break;
+        case 3:
+            startitem = GameSettings.StartItem.RejuvenationSpell;
+            break;
+        case 4:
+            startitem = GameSettings.StartItem.IceBlockSpell;
+            break;
 
 		default:
 			startitem = GameSettings.StartItem.None;
@@ -44,7 +50,7 @@ public class PlayButton : MonoBehaviour {
 	}
 
 	private void StartGame(GameSettings settings) {
-		GUIManager.instance.HideMainmenu();
+		GUIManager.instance.HideCharacterCreation();
 		GUIManager.instance.ShowGUI();
 		GameMaster.instance.StartNewGame(settings);
 	}

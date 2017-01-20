@@ -9,7 +9,8 @@ public class CameraManager : MonoBehaviour {
 	private Vector3 targetPosition;
 	private int cameraZLevel = -10;
 
-	public int maxZoom = 15;
+    public int startZoom = 15;
+	public int maxZoom = 20;
 	public int minZoom = 3;
 
 	void Awake() { instance = this; }

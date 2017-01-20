@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: b448ac236681d624890f49bf4916695f
-timeCreated: 1484479446
+timeCreated: 1484923462
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -39,7 +39,7 @@ TextureImporter:
     21300064: wall_junction_right
     21300066: wall_junction_left
     21300068: GUI_gold
-    21300070: gold_coin
+    21300070: gold
     21300072: armor_ruby
     21300074: sword_ruby
     21300076: armor_emerald
@@ -54,7 +54,7 @@ TextureImporter:
     21300094: gradient_01
     21300096: potion_green
     21300098: potion_orange
-    21300100: chest_giolden
+    21300100: chest_golden
     21300102: gold_pile
     21300104: potion_black
     21300106: potion_purple
@@ -93,6 +93,16 @@ TextureImporter:
     21300172: tentacle_purple
     21300174: cactus_01
     21300176: slime_small
+    21300178: dry_01
+    21300180: dry_02
+    21300182: forester_01
+    21300184: forester_02
+    21300186: shroom_01
+    21300188: shroom_02
+    21300190: shroom_03
+    21300192: mini_shroom_01
+    21300194: mini_shroom_02
+    21300196: mini_shroom_03
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -163,7 +173,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 224
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -176,7 +186,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 288
+        y: 352
         width: 16
         height: 16
       alignment: 0
@@ -189,7 +199,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 288
+        y: 352
         width: 16
         height: 16
       alignment: 0
@@ -202,7 +212,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 288
+        y: 352
         width: 16
         height: 16
       alignment: 0
@@ -215,7 +225,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 224
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -228,7 +238,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -241,7 +251,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -254,7 +264,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -267,7 +277,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -280,7 +290,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 208
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -293,7 +303,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -306,7 +316,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -319,8 +329,8 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 208
-        y: 288
-        width: 15
+        y: 352
+        width: 16
         height: 16
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -328,11 +338,11 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: gold_coin
+      name: gold
       rect:
         serializedVersion: 2
         x: 80
-        y: 224
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -345,7 +355,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 288
+        y: 352
         width: 16
         height: 16
       alignment: 0
@@ -358,7 +368,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -371,7 +381,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 288
+        y: 352
         width: 16
         height: 16
       alignment: 0
@@ -384,7 +394,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 272
+        y: 336
         width: 16
         height: 16
       alignment: 0
@@ -397,7 +407,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -410,7 +420,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -423,7 +433,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 208
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -436,7 +446,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 208
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -449,7 +459,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 208
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -462,7 +472,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 288
+        y: 352
         width: 16
         height: 16
       alignment: 0
@@ -475,7 +485,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -488,7 +498,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -497,11 +507,11 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: chest_giolden
+      name: chest_golden
       rect:
         serializedVersion: 2
         x: 16
-        y: 224
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -514,7 +524,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 224
+        y: 288
         width: 16
         height: 16
       alignment: 0
@@ -527,7 +537,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -540,7 +550,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -553,7 +563,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 288
+        y: 352
         width: 16
         height: 16
       alignment: 0
@@ -566,7 +576,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 208
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -579,7 +589,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -592,7 +602,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 208
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -605,7 +615,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -618,7 +628,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 112
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -631,7 +641,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 192
+        y: 256
         width: 16
         height: 16
       alignment: 0
@@ -644,7 +654,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -657,7 +667,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -670,7 +680,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -683,7 +693,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -696,33 +706,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 256
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: GUI_status_bleed
-      rect:
-        serializedVersion: 2
-        x: 160
-        y: 288
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: GUI_status_heal
-      rect:
-        serializedVersion: 2
-        x: 176
-        y: 288
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -735,7 +719,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -748,35 +732,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 274
+        y: 338
         width: 13
         height: 14
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: GUI_status_ATT
-      rect:
-        serializedVersion: 2
-        x: 160
-        y: 272
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: GUI_status_DEF
-      rect:
-        serializedVersion: 2
-        x: 176
-        y: 272
-        width: 16
-        height: 16
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -787,7 +745,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 208
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -800,7 +758,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 208
+        y: 272
         width: 16
         height: 16
       alignment: 0
@@ -813,7 +771,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 192
+        y: 256
         width: 16
         height: 16
       alignment: 0
@@ -826,7 +784,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 176
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -839,7 +797,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 176
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -852,7 +810,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 192
+        y: 256
         width: 16
         height: 16
       alignment: 0
@@ -865,7 +823,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 112
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -878,7 +836,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -891,7 +849,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 144
-        y: 256
+        y: 320
         width: 16
         height: 16
       alignment: 0
@@ -904,7 +862,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -917,7 +875,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 144
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -930,7 +888,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 160
-        y: 240
+        y: 304
         width: 16
         height: 16
       alignment: 0
@@ -943,7 +901,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 208
-        y: 176
+        y: 240
         width: 16
         height: 16
       alignment: 0
@@ -956,7 +914,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 160
+        y: 224
         width: 16
         height: 16
       alignment: 0
@@ -969,20 +927,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 160
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: cactus_01
-      rect:
-        serializedVersion: 2
-        x: 80
-        y: 208
+        y: 224
         width: 16
         height: 16
       alignment: 0
@@ -995,7 +940,137 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 208
-        y: 160
+        y: 224
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: dry_01
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 288
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: dry_02
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 288
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forester_01
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 272
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forester_02
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 272
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: shroom_01
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: shroom_02
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 256
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: shroom_03
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: mini_shroom_01
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 240
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: mini_shroom_02
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 240
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: mini_shroom_03
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 240
         width: 16
         height: 16
       alignment: 0

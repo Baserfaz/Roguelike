@@ -220,14 +220,12 @@ public class Player : Actor {
 				}
 			}
 		} else if(tile.myType == Tile.TileType.Exit) {
-			Camera.main.GetComponent<CameraEffects>().StartBrightUp();
 			myNextState = NextMoveState.Pass;
 			GameMaster.instance.ExitDungeon();
 		} else {
 			myNextState = NextMoveState.Pass;
 			GameMaster.instance.EndTurn();
 		}
-
 	}
 
 	public void HandleUseItem() {
@@ -252,19 +250,35 @@ public class Player : Actor {
 	/// </summary>
 	public void HandleCastSpell() {
 		
+        Tile tile = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>();
+
 		// if we can see the targeted tile.
-		if(DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().isVisible) {
+		if(tile.isVisible) {
 
 			GameObject spell = GetComponent<Inventory>().currentSpell;
 
 			if(spell.GetComponent<Spell>().currentCooldown == 0) {
 
+
+                // check if the spell is iceblock -> can't cast on tile which has an actor on it.
+                /*if (spell.GetComponent<Spell>().spellType == Spell.SpellType.IceWall)
+                {
+                    if (tile.actor != null)
+                    {
+                        GUIManager.instance.CreatePopUpEntry("Tile is occupied!", position, GUIManager.PopUpType.Other);
+                        return;
+                    }
+                }*/
+
+                // cast the spell.
 				spell.GetComponent<Spell>().Cast(moveTargetPosition, this.gameObject);
 
+                // handle GUI.
 				GUIManager.instance.CreatePopUpEntry(spell.GetComponent<Item>().itemName, position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Cast spell " + "[" + spell.GetComponent<Item>().itemName + "]", GUIManager.JournalType.Item);
 
 			} else {
+                // handle GUI.
 				GUIManager.instance.CreatePopUpEntry("COOLDOWN", position, GUIManager.PopUpType.Other);
 				GUIManager.instance.CreateJournalEntry("Can't cast yet.", GUIManager.JournalType.Combat);
 
@@ -320,7 +334,7 @@ public class Player : Actor {
 
 				GameMaster.instance.ResetEverything();
 
-				GUIManager.instance.ShowMainmenu();
+				GUIManager.instance.ShowCharacterCreation();
 				GUIManager.instance.HideGUI();
 				GUIManager.instance.HideDeathScreen();
 

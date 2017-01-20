@@ -30,10 +30,13 @@ public class GameMaster : MonoBehaviour {
 	[Header("Debugging")]
 	public bool disableEnemyAI = true;
 	public bool debugMode = false;
+    public bool forceTileset = true;
+    public SpriteManager.TileSet forcedTileSet = SpriteManager.TileSet.Concrete;
 
 	[Header("General settings")]
 	public bool spawnEnemies = false;
     public bool enemiesBlockLoS = true;
+    [Range(1, 10)] public int enemyAggroRange = 3;
 	public bool pickupGoldAutomatically = true;
 	public bool attacksSubtractDefaultArmor = true;
 	public bool useBlankMainMenuScreen = false;
@@ -53,8 +56,7 @@ public class GameMaster : MonoBehaviour {
 	[Header("Dungeon settings")]
 	public int dungeonHeight = 5;
 	public int dungeonWidth = 5;
-	public int tileZLevel = 1;
-	[Range(1, 50)] public int dungeonSpaciousness = 1;
+    [Range(0f, 1f)] public float dungeonSpaciousness = 0.5f;
 
 	[Header("Door settings")]
 	[Range(1, 100)] public int doorSpawnChance = 10;
@@ -81,6 +83,7 @@ public class GameMaster : MonoBehaviour {
 	public int crosshairZLevel = -2;
 	public int vanityitemsZLevel = 0;
 	public int lightZLevel = -3;
+    public int tileZLevel = 1;
 
 	[Header("Enemy settings")]
 	public int defaultMaxEnemyCountPerDungeon = 15;
@@ -114,41 +117,14 @@ public class GameMaster : MonoBehaviour {
 		// hide GUIs
 		GUIManager.instance.HideGUI();
 		GUIManager.instance.HideDeathScreen();
-		GUIManager.instance.ShowMainmenu();
-
-		// disable aberration
-		Camera.main.GetComponent<CameraEffects>().DisableAberration();
+		GUIManager.instance.HideCharacterCreation();
+        GUIManager.instance.ShowMainMenu();
 
 		// create mainmenu scene.
 		CreateMainMenuScene();
 
 		// CONTINUES -> PLAY BUTTON OnClick
 		// --> StartNewGame()
-	}
-
-	public void OpenPathfindingTest() {
-		ResetEverything();
-
-		debugMode = true;
-
-		// game loop is running.
-		gamestate = GameState.Running;
-
-		// randomize tile set.
-		SpriteManager.instance.RandomizeTileSet();
-
-		// populate item lists.
-		PrefabManager.instance.PopulatePrefabLists();
-
-		// create level
-		MapReader.instance.GenerateDungeonFromImage(pathfindingTestLevel);
-
-		// update player line of sight
-		UpdatePlayerLos();
-
-		// update GUI
-		GUIManager.instance.UpdateAllElements();
-
 	}
 
 	public void CreateMainMenuScene() {
@@ -174,7 +150,7 @@ public class GameMaster : MonoBehaviour {
 		cm.ResetRotation();
 
 		// orthosize.
-		Camera.main.orthographicSize = (float) cm.maxZoom / cm.minZoom;
+        Camera.main.orthographicSize = cm.startZoom;
 
 		// reset dungeon level
 		dungeonLevel = 1;
@@ -217,10 +193,13 @@ public class GameMaster : MonoBehaviour {
 
 	private void GivePlayerStartItems(Player player, GameSettings.StartItem myItem) {
 		GameObject go = null;
+
 		switch(myItem) {
+
 		case GameSettings.StartItem.ExpMultScroll:
 			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.expScrollPrefab);
 			break;
+
 		case GameSettings.StartItem.FireballSpell:
 			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.fireballSpellPrefab);
 			break;
@@ -228,6 +207,14 @@ public class GameMaster : MonoBehaviour {
 		case GameSettings.StartItem.AttackScroll:
 			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.attackScrollPrefab);
 			break;
+
+        case GameSettings.StartItem.RejuvenationSpell:
+            go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.rejuvenationSpellPrefab);
+            break;
+
+        case GameSettings.StartItem.IceBlockSpell:
+            go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.iceBlockSpellPrefab);
+            break;
 
 		default:
 			break;
@@ -241,7 +228,7 @@ public class GameMaster : MonoBehaviour {
 	// From play button.
 	public void StartNewGame(GameSettings settings) {
 
-		// before anything just reset all.
+		// before doing anything just reset all.
 		ResetEverything();
 
 		// game loop is running.
@@ -278,9 +265,6 @@ public class GameMaster : MonoBehaviour {
 		GUIManager.instance.CreateOnGuiText("[LVL " + dungeonLevel + "]\n" + currentDungeonName);
 		GUIManager.instance.CreateJournalEntry("Welcome to the dungeon, " + settings.playername + ".", GUIManager.JournalType.System);
 		GUIManager.instance.UpdateAllElements();
-
-		// effect
-		Camera.main.GetComponent<CameraEffects>().StartBrightUp();
 	}
 
 	public void CreateNewRandomDungeonName() {
@@ -301,6 +285,7 @@ public class GameMaster : MonoBehaviour {
 		HandlePlayerTurn();
 		if(disableEnemyAI == false) HandleEnemyTurns();
 		HandleTraps();
+        HandleIceBlocks();
 		UpdatePlayerLos();
 
 		turnCount++;
@@ -323,6 +308,23 @@ public class GameMaster : MonoBehaviour {
 		// -> run this sequence.
 		HandlePlayerDeath();
 	}
+
+    private void HandleIceBlocks()
+    {
+
+        GameObject[] tiles =  DungeonGenerator.instance.GetTiles().ToArray();
+
+        for (int i = tiles.Length - 1; i >= 0; i--)
+        {
+
+            GameObject g = tiles[i];
+
+            if (g.GetComponent<IceBlock>() != null)
+            {
+                g.GetComponent<IceBlock>().Tick();
+            }
+        }
+    }
 
 	private void HandlePlayerDeath() {
 
@@ -426,9 +428,6 @@ public class GameMaster : MonoBehaviour {
 
 	public void ExitDungeon() {
 
-		// camera effect.
-		Camera.main.GetComponent<CameraEffects>().StartBrightUp();
-
 		// stop all coroutines!
 		PrefabManager.instance.GetPlayerInstance().GetComponent<Player>().StopCoroutines();
 
@@ -483,25 +482,32 @@ public class GameMaster : MonoBehaviour {
 						// damage whoever is on the tile.
 						if(t.actor != null) {
 
-							// set bleed effect.
-							if(trapsCauseBleedEffect) {
-								
-								// create effect
-								StatusEffect bleed = StatusEffect.CreateEffect(
-									StatusEffect.EffectType.Bleeding, trapDoTDamage, trapDoTDuration);
+                            // flying enemies dodge traps.
+                            if (t.actor.GetComponent<Actor>().canFly == false)
+                            {
 
-								// add effect to the actor.
-								t.actor.GetComponent<Actor>().AddStatusEffect(bleed);
+                                // set bleed effect.
+                                if (trapsCauseBleedEffect)
+                                {
 
-								// gui stuff
-								GUIManager.instance.CreatePopUpEntry("BLEEDING", t.position, GUIManager.PopUpType.Damage);
-								GUIManager.instance.CreateJournalEntry(
-									t.actor.GetComponent<Actor>().actorName + " started to bleed.",
-									GUIManager.JournalType.Status);
-							}
+                                    // create effect
+                                    StatusEffect bleed = StatusEffect.CreateEffect(
+                                        StatusEffect.EffectType.Bleeding, trapDoTDamage, trapDoTDuration);
 
-							// initial damage
-							t.actor.GetComponent<Health>().TakeDamageSimple(trapInitialDamage);
+                                    // add effect to the actor.
+                                    t.actor.GetComponent<Actor>().AddStatusEffect(bleed);
+
+                                    // gui stuff
+                                    GUIManager.instance.CreatePopUpEntry("BLEEDING", t.position, GUIManager.PopUpType.Damage);
+                                    GUIManager.instance.CreateJournalEntry(
+                                        t.actor.GetComponent<Actor>().actorName + " started to bleed.",
+                                        GUIManager.JournalType.Status);
+                                }
+
+                                // initial damage
+                                t.actor.GetComponent<Health>().TakeDamageSimple(trapInitialDamage);
+
+                            }
 
 						}
 
@@ -532,11 +538,18 @@ public class GameMaster : MonoBehaviour {
 			if(e.isActive) {
 
 				// this can cause bleed effect,
-				// and there fore it can kill the enemy.
+				// and therefore it can kill the enemy.
+                // --> have to be handled before deciding next step.
 				HandleStatusEffects(e);
 
-				// so we need to check is dead here.
-				if(e.GetComponent<Health>().isDead == false || e.GetComponent<Actor>().myNextState != Actor.NextMoveState.Stunned) {
+                if (e.myNextState == Actor.NextMoveState.Stunned)
+                {
+                    GUIManager.instance.CreatePopUpEntry("Stunned", e.position, GUIManager.PopUpType.Other);
+                    continue;
+                }
+
+				// if the enemy is dead or it's stunned
+				if(e.GetComponent<Health>().isDead == false) { 
 					e.DecideNextStep();
 				}
 			}
@@ -627,6 +640,10 @@ public class GameMaster : MonoBehaviour {
                 actor.GetComponent<Health>().TakeDamageSimple(e.amount);
                 break;
 
+           case StatusEffect.EffectType.Invulnerable:
+                actor.GetComponent<Health>().invulnerable = true;
+                break;
+
 			default:
 				Debug.LogError("Can't find such status effect at GameMaster.HandleStatusEffects().");
 				break;
@@ -644,17 +661,20 @@ public class GameMaster : MonoBehaviour {
 				actor.RemoveStatusEffect(e);
 
 				// remove effects.
-				if(actor.GetComponent<Player>() != null) {
 					
-					if(e.type == StatusEffect.EffectType.ExpMultiplier) {
-						actor.GetComponent<Player>().buffedExpMultiplier -= e.amount / 10f;
-					} else if(e.type == StatusEffect.EffectType.Armor) {
-						actor.GetComponent<Actor>().buffedArmor -= e.amount;
-					} else if(e.type == StatusEffect.EffectType.Attack) {
-						actor.GetComponent<Actor>().buffedDamage -= e.amount;
-					}
-
-				}
+				if(e.type == StatusEffect.EffectType.ExpMultiplier) {
+					actor.GetComponent<Player>().buffedExpMultiplier -= e.amount / 10f;
+				} else if(e.type == StatusEffect.EffectType.Armor) {
+					actor.GetComponent<Actor>().buffedArmor -= e.amount;
+				} else if(e.type == StatusEffect.EffectType.Attack) {
+					actor.GetComponent<Actor>().buffedDamage -= e.amount;
+				} else if(e.type == StatusEffect.EffectType.Invulnerable) {
+                    actor.GetComponent<Health>().invulnerable = false;
+                }
+                else if (e.type == StatusEffect.EffectType.Stun)
+                {
+                    actor.myNextState = Actor.NextMoveState.Move;
+                }
 			}
 		}
 	}

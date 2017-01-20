@@ -23,11 +23,22 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject slimeBluePrefab;
 	public GameObject slimePurplePrefab;
 	public GameObject slimeGreenPrefab;
+    public GameObject slimeSmallPrefab;
 	public GameObject eyePrefab;
 	public GameObject tinyPrefab;
 	public GameObject berzerkerPrefab;
 	public GameObject flyingSkullPrefab;
 	public GameObject tentaclePurplePrefab;
+    public GameObject drybonesGreyPrefab;
+    public GameObject drybonesRedPrefab;
+    public GameObject foresterBluePrefab;
+    public GameObject foresterGreenPrefab;
+    public GameObject miniShroomRedPrefab;
+    public GameObject miniShroomGreenPrefab;
+    public GameObject miniShroomBluePrefab;
+    public GameObject shroomBluePrefab;
+    public GameObject shroomGreenPrefab;
+    public GameObject shroomRedPrefab;
 
 	[Header("Bosses")]
 	public GameObject slimeKingPrefab;
@@ -71,6 +82,7 @@ public class PrefabManager : MonoBehaviour {
 	[Header("Spells")]
 	public GameObject fireballSpellPrefab;
 	public GameObject rejuvenationSpellPrefab;
+    public GameObject iceBlockSpellPrefab;
 
 	[Header("Containers")]
 	public GameObject chestGoldenPrefab;
@@ -107,20 +119,36 @@ public class PrefabManager : MonoBehaviour {
 	public void PopulatePrefabLists() {
 
 		// enemies
-		listOfEnemies.Add(impPrefab);
+		// -> slimes
 		listOfEnemies.Add(slimeBluePrefab);
 		listOfEnemies.Add(slimeGreenPrefab);
 		listOfEnemies.Add(slimePurplePrefab);
+        listOfEnemies.Add(slimeSmallPrefab);
+        // -> hell thingsies
+        listOfEnemies.Add(impPrefab);
 		listOfEnemies.Add(tinyPrefab);
 		listOfEnemies.Add(berzerkerPrefab);
 		listOfEnemies.Add(eyePrefab);
 		listOfEnemies.Add(flyingSkullPrefab);
 		listOfEnemies.Add(tentaclePurplePrefab);
+        listOfEnemies.Add(drybonesGreyPrefab);
+        listOfEnemies.Add(drybonesRedPrefab);
+        // -> Forest
+        listOfEnemies.Add(foresterBluePrefab);
+        listOfEnemies.Add(foresterGreenPrefab);
+        listOfEnemies.Add(miniShroomRedPrefab);
+        listOfEnemies.Add(miniShroomGreenPrefab);
+        listOfEnemies.Add(miniShroomBluePrefab);
+        listOfEnemies.Add(shroomBluePrefab);
+        listOfEnemies.Add(shroomGreenPrefab);
+        listOfEnemies.Add(shroomRedPrefab);
 
         // specific enemy types
+        // slimes
         listOfSlimes.Add(slimeBluePrefab);
         listOfSlimes.Add(slimeGreenPrefab);
         listOfSlimes.Add(slimePurplePrefab);
+        listOfSlimes.Add(slimeSmallPrefab);
 
 		// armors
 		listOfArmors.Add(woodenArmorPrefab);
@@ -152,6 +180,7 @@ public class PrefabManager : MonoBehaviour {
 		// spells
 		listOfSpells.Add(fireballSpellPrefab);
 		listOfSpells.Add(rejuvenationSpellPrefab);
+        listOfSpells.Add(iceBlockSpellPrefab);
 
 		// scrolls
 		listOfScrolls.Add(expScrollPrefab);

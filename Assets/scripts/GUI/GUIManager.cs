@@ -11,11 +11,12 @@ public class GUIManager : MonoBehaviour {
 	public static GUIManager instance;
 
 	[Header("Canvases")]
-	public GameObject mainGUI;
-	public GameObject mainmenuGUI;
+	public GameObject gameGUI;
+	public GameObject characterCreationGUI;
 	public GameObject deathScreenGUI;
+    public GameObject mainmenuGUI;
 
-	[Header("mainGUI elements")]
+	[Header("gameGUI elements")]
 	public GameObject journalList;
 	public GameObject statusBar;
 	public GameObject itemInfo;
@@ -35,6 +36,7 @@ public class GUIManager : MonoBehaviour {
 	public GameObject spellCooldownStatus;
 	public GameObject expBarStatus;
 	public GameObject expBarText;
+    public GameObject playerLevelStatus;
 
 	[Header("TileInfo elements")]
 	public GameObject tileInfoText;
@@ -75,20 +77,20 @@ public class GUIManager : MonoBehaviour {
 		obj.GetComponent<CanvasGroup>().interactable = true;
 	}
 
-	public void HideGUI() { Hide(mainGUI); }
-	public void ShowGUI() { Show(mainGUI); }
+	public void HideGUI() { Hide(gameGUI); }
+	public void ShowGUI() { Show(gameGUI); }
 
-	public void HideMainmenu() {
+	public void HideCharacterCreation() {
 		// enable aberration
-		Camera.main.GetComponent<CameraEffects>().EnableAberration();
-		Hide(mainmenuGUI); 
+		Hide(characterCreationGUI); 
 	}
 
-	public void ShowMainmenu() { 
-		// disable aberration
-		Camera.main.GetComponent<CameraEffects>().DisableAberration();
-		Show(mainmenuGUI); 
+	public void ShowCharacterCreation() { 
+		Show(characterCreationGUI); 
 	}
+
+    public void HideMainMenu() { Hide(mainmenuGUI); }
+    public void ShowMainMenu() { Show(mainmenuGUI); }
 
 	public void HideDeathScreen() { Hide(deathScreenGUI); }
 	public void ShowDeathScreen() { Show(deathScreenGUI); }
@@ -100,6 +102,17 @@ public class GUIManager : MonoBehaviour {
 	public void ClearTileInfo() {
 		tileInfoText.GetComponent<Text>().text = "";
 	}
+
+    public void StartTutorial()
+    {
+        
+
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
 
 	public void UpdateDeathScreen() {
 
@@ -164,6 +177,7 @@ public class GUIManager : MonoBehaviour {
 		UpdateElement(spellStatus);
 		UpdateElement(spellCooldownStatus);
 		UpdateElement(expBarText);
+        UpdateElement(playerLevelStatus);
 	}
 
 	/// <summary>
@@ -279,6 +293,11 @@ public class GUIManager : MonoBehaviour {
             SpriteManager.SpriteType.GUIStatusBurning);
             break;
 
+        case StatusEffect.EffectType.Invulnerable:
+            inst.GetComponent<Image>().sprite = SpriteManager.instance.CreateTexture(
+            SpriteManager.SpriteType.GUIStatusInvulnerable);
+            break;
+
 		default:
 			Debug.LogError("Can't find sprite.");
 			break;
@@ -327,10 +346,10 @@ public class GUIManager : MonoBehaviour {
 
 		// change the parents so the text is in front of background.
 		if(background != null) {
-			background.transform.SetParent(mainGUI.transform);
+			background.transform.SetParent(gameGUI.transform);
 			obj.transform.SetParent(background.transform);
 		} else {
-			obj.transform.SetParent(mainGUI.transform);
+			obj.transform.SetParent(gameGUI.transform);
 		}
 
 		// scale the object down.
@@ -472,7 +491,7 @@ public class GUIManager : MonoBehaviour {
 				Spell spell = item.GetComponent<Spell>();
 
 				tileInformation += "\n<size=16>Type: " + spell.spellType + "\nCooldown: " + spell.cooldown +
-					"\nDMG: " + spell.damageOrHealAmount + "</size>";
+					"\nDMG: " + spell.directDamage + "</size>";
 
 			} else if(item.GetComponent<UseItem>() != null) {
 
@@ -643,6 +662,12 @@ public class GUIManager : MonoBehaviour {
 
 			break;
 		
+            case GUIElementScript.Element.PlayerLevel:
+
+            obj.GetComponentInChildren<Text>().text = "Level " + playerActor.GetComponent<Experience>().currentLevel;
+
+            break;
+
 		default:
 			Debug.LogError("Can't find GUIElementScript.Element!");
 			break;

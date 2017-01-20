@@ -88,6 +88,9 @@
      <Compile Include="Assets\scripts\Managers\GameMaster.cs" />
      <Compile Include="Assets\scripts\Managers\ItemDropController.cs" />
      <Compile Include="Assets\scripts\Managers\MapReader.cs" />
+     <Compile Include="Assets\scripts\Managers\MaterialManager.cs" />
+     <Compile Include="Assets\scripts\Managers\Maze scripts\DefaultMaze.cs" />
+     <Compile Include="Assets\scripts\Managers\Maze scripts\SimpleMazeBuilder.cs" />
      <Compile Include="Assets\scripts\Managers\MouseController.cs" />
      <Compile Include="Assets\scripts\Managers\PrefabManager.cs" />
      <Compile Include="Assets\scripts\Managers\SpriteManager.cs" />
@@ -95,6 +98,7 @@
      <Compile Include="Assets\scripts\Pathfinding\AStar.cs" />
      <Compile Include="Assets\scripts\Pathfinding\Pathfinding.cs" />
      <Compile Include="Assets\scripts\Tile\Door.cs" />
+     <Compile Include="Assets\scripts\Tile\IceBlock.cs" />
      <Compile Include="Assets\scripts\Tile\Node.cs" />
      <Compile Include="Assets\scripts\Tile\Tile.cs" />
      <Compile Include="Assets\scripts\Tile\Trap.cs" />

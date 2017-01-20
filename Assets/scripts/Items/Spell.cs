@@ -14,7 +14,8 @@ public class Spell : Item {
     public bool isAOE = false;
     public AOEType myAOEType;
     [Range(1, 10)] public int aoeSize = 1;
-    public int damageOrHealAmount = 2;
+    public int directDamage = 2;
+    public int statusDamage = 1;
 	public int statusDuration = 5;
 
 	[HideInInspector] public int currentCooldown = 0;
@@ -57,7 +58,7 @@ public class Spell : Item {
 			CastFireBall(di);
 			break;
 		case SpellType.IceWall:
-			CastIceWall(di);
+            CastIceWall(di);
 			break;
 		case SpellType.Rejuvenation:
 			CastRejuvenation(di);
@@ -140,18 +141,26 @@ public class Spell : Item {
         return aoeTiles.ToArray();
     }
 
-	private void CastRejuvenation(DamageInfo info) {
-		if(info.targetTile.actor != null) {
+    private StatusEffect DecideStatusEffect(SpellType type)
+    {
 
-			StatusEffect effect = StatusEffect.CreateEffect(
-				StatusEffect.EffectType.Healing,
-				damageOrHealAmount, statusDuration);
-			
-			info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(effect);
-		}
-	}
+        StatusEffect effect = null;
 
-	private void CastFireBall(DamageInfo info) {
+        switch (type)
+            {
+                case SpellType.Rejuvenation:
+                    effect = StatusEffect.CreateEffect(StatusEffect.EffectType.Healing, statusDamage, statusDuration);
+                    break;
+                case SpellType.FireBall:
+                    effect = StatusEffect.CreateEffect(StatusEffect.EffectType.Burning, statusDamage, statusDuration);
+                    break;
+                default:
+                    break;
+            }
+        return effect;
+    }
+
+    private void CastAOE(DamageInfo info, SpellType type) {
 
         // Calculate the tiels that are affected by the spell. 
         GameObject[] aoe = CalculateAOE(info);
@@ -162,28 +171,101 @@ public class Spell : Item {
             return;
         }
 
-        // apply things to the tiles.
+        // loop through all of the tiles.
         foreach (GameObject g in aoe)
         {
             if (g == null) continue;
+
             Tile t = g.GetComponent<Tile>();
+
             if (t.actor != null)
             {
 
-                // Leave a burning DOT.
-                StatusEffect burn = StatusEffect.CreateEffect(StatusEffect.EffectType.Burning, 1, 5);
-                t.actor.GetComponent<Actor>().AddStatusEffect(burn);
+                DamageInfo di = new DamageInfo();
+                di.damageDealer = owner;
+                di.targetTile = t;
 
-                // Take direct damage.
-                t.actor.GetComponent<Health>().TakeDamage(damageOrHealAmount, false, info.damageDealer);
+                // cast it on a tile.
+                CastSingleTarget(di, type);
 
             }
+        }
+
+
+    }
+
+    private void CastSingleTarget(DamageInfo info, SpellType type)
+    {
+        if (info.targetTile.actor != null)
+        {
+
+            StatusEffect effect = null;
+
+            // decide which effect.
+            effect = DecideStatusEffect(type);
+
+            // apply effect.
+            info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(effect);
+
+            // decide direct damage.
+            switch (type)
+            {
+                case SpellType.FireBall:
+                    info.targetTile.actor.GetComponent<Health>().TakeDamage(directDamage, false, info.damageDealer);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+    }
+
+	private void CastRejuvenation(DamageInfo info) {
+        if (isAOE)
+        {
+            CastAOE(info, SpellType.Rejuvenation);
+        }
+        else
+        {
+            CastSingleTarget(info, SpellType.Rejuvenation);
+        }
+	}
+
+	private void CastFireBall(DamageInfo info) {
+        if (isAOE)
+        {
+            CastAOE(info, SpellType.FireBall);
+        }
+        else
+        {
+            CastSingleTarget(info, SpellType.FireBall);
         }
 	}
 
 	private void CastIceWall(DamageInfo info) {
-		// TODO
-		Debug.LogError("NOT YET IMPLEMENTED!");
+        if (isAOE)
+        {
+            Debug.LogError("NOT YET IMPLEMENTED!");
+        }
+        else
+        {
+            // create script and it to the tile object.
+            IceBlock ib = info.targetTile.gameObject.AddComponent<IceBlock>();
+            ib.CreateIceBlock(statusDuration, info.targetTile.position, info.targetTile.myType);
+
+            // stun target.
+            // set it to be invulnerable.
+            if (info.targetTile.actor != null)
+            {
+                StatusEffect eff = StatusEffect.CreateEffect(StatusEffect.EffectType.Stun, 0, statusDuration);
+                info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(eff);
+
+                eff = StatusEffect.CreateEffect(StatusEffect.EffectType.Invulnerable, 0, statusDuration);
+                info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(eff);
+
+            }
+
+        }
 	}
 
 

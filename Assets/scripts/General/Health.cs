@@ -7,6 +7,7 @@ public class Health : MonoBehaviour {
 	public int currentHealth = 0;
 	public int maxHealth = 100;
 	public bool isDead = false;
+    public bool invulnerable = false;
 
 	[HideInInspector] public GameObject lastDmgDealer = null;
 
@@ -22,11 +23,29 @@ public class Health : MonoBehaviour {
 	/// <param name="isCrit">If set to <c>true</c> is crit.</param>
 	public void TakeDamage(int amount, bool isCrit, GameObject dmgDealer) {
 
+        if (invulnerable)
+        {
+            GUIManager.instance.CreatePopUpEntry("Invulnerable!",
+                GetComponent<Actor>().position, GUIManager.PopUpType.Other);
+            return;
+        }
+
 		// update what hit us last.
 		lastDmgDealer = dmgDealer;
 
 		// save amount to different variable.
 		int actualDmg = amount;
+
+        // if it was an enemy that the player hit.
+        // enemy should aggro the player.
+        if (GetComponent<Enemy>() != null)
+        {
+            if (lastDmgDealer.GetComponent<Player>() != null)
+            {
+                GetComponent<Enemy>().targetPosition = lastDmgDealer.GetComponent<Actor>().position;
+                GetComponent<Enemy>().isActive = true;
+            }
+        }
 
 		// Damage is reduced by:
 		// 1. current armor rating
@@ -94,6 +113,13 @@ public class Health : MonoBehaviour {
 	/// </summary>
 	/// <param name="amount">Amount.</param>
 	public void TakeDamageSimple(int amount) {
+
+        if (invulnerable)
+        {
+            GUIManager.instance.CreatePopUpEntry("Invulnerable!",
+                GetComponent<Actor>().position, GUIManager.PopUpType.Other);
+            return;
+        }
 
 		currentHealth -= amount;
 
