@@ -1,36 +1,28 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Managers\MouseController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Managers\Maze scripts\RoomMaze.cs">
     <Files>
-      <File FileName="Assets\scripts\Managers\MouseController.cs" Line="144" Column="38" />
-      <File FileName="Assets\scripts\GUI\GuiHoverElement.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Items\Scroll.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Items\Potion.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Items\UseItem.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Data\StatusEffect.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Data\Experience.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Managers\DungeonGenerator.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Health.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Items\Spell.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Inventory.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Managers\ItemDropController.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Managers\MouseController.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Actors\Player.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Actors\Actor.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\General\SpriteLoader.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Managers\Maze scripts\SimpleMazeBuilder.cs" Line="111" Column="10" />
+      <File FileName="Assets\scripts\General\Health.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\Managers\PrefabManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Managers\MapReader.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Tile\Tile.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Tile\Node.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Pathfinding.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Actors\Player.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\Actors\Actor.cs" Line="175" Column="41" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\Maze scripts\RoomMaze.cs" Line="46" Column="3" />
       <File FileName="Assets\scripts\GUI\GUIManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\Managers\GameMaster.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\Actors\Enemy.cs" Line="26" Column="25" NotebookId="1" />
-      <File FileName="Assets\scripts\Effects\CameraEffects.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\GameMaster.cs" Line="318" Column="3" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\DungeonGenerator.cs" Line="705" Column="55" NotebookId="1" />
+      <File FileName="Assets\scripts\Actors\Enemy.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Managers\SpriteManager.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Managers\CameraManager.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Data\GameSettings.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\GUI\PlayButton.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Items\Item.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\AStar.cs" Line="127" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Items\VanityItem.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Effects\LightFlicker.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\GUI\GuiHoverElement.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\General\Losv2.cs" Line="1" Column="1" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

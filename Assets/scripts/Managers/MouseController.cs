@@ -44,8 +44,13 @@ public class MouseController : MonoBehaviour {
 				HandleClick();
 				Utilities();
 			} else {
-				HideCursor();
+				chosenTile = null;
+				crosshairInst.GetComponent<Crosshair>().HideCursor();
 			}
+		} else if(GameMaster.instance.gamestate == GameMaster.GameState.WaitingTurn) { 
+			// Dont allow clicks.
+			Highlight();
+			Utilities();
 		} else if(GameMaster.instance.gamestate == GameMaster.GameState.Paused) {
 
 			// Handles unpause mechanism.
@@ -84,7 +89,7 @@ public class MouseController : MonoBehaviour {
 				// pickup
 				if(chosenTile.actor != null) {
 					if(chosenTile.actor.GetComponent<Player>() != null) {
-						MultiUseKey(player);
+						player.HandleMultiUseKey();
 						return;
 					}
 				}
@@ -145,13 +150,17 @@ public class MouseController : MonoBehaviour {
 
 							// if we can see an enemy
 							// cancel out.
-							foreach(GameObject g in DungeonGenerator.instance.GetTilesAroundPosition(nextStep.position, 1)) {
-								Tile tile = g.GetComponent<Tile>();
+							if(GameMaster.instance.stopPathFindingNearEnemies) {
+								foreach(GameObject g in DungeonGenerator.instance.GetTilesAroundPosition(nextStep.position, 
+									GameMaster.instance.enemyAggroRange)) {
 
-								if(tile.actor != null) {
-									if(tile.actor.GetComponent<Enemy>() != null) {
-										finished = true;
-										break;
+									Tile tile = g.GetComponent<Tile>();
+
+									if(tile.actor != null) {
+										if(tile.actor.GetComponent<Enemy>() != null) {
+											finished = true;
+											break;
+										}
 									}
 								}
 							}
@@ -215,8 +224,6 @@ public class MouseController : MonoBehaviour {
 		}
 	}
 
-	private void MultiUseKey(Player player) { player.HandleMultiUseKey(); }
-
 	private void Utilities() {
 		// zoom
 		if(Input.mouseScrollDelta.y > 0f) {
@@ -224,20 +231,6 @@ public class MouseController : MonoBehaviour {
 		} else if(Input.mouseScrollDelta.y < 0f) {
 			CameraManager.instance.ZoomOut();
 		}
-	}
-
-	private void HideCursor() {
-		chosenTile = null;
-		crosshairInst.GetComponent<SpriteRenderer>().color = Color.clear;
-	}
-
-	private void ShowCursor() { crosshairInst.GetComponent<SpriteRenderer>().color = Color.white; }
-
-	private void MoveCursor(Tile tile) {
-		ShowCursor();
-		chosenTile = tile;
-		crosshairInst.transform.position = tile.position;
-		GUIManager.instance.ShowTileInfo(tile);
 	}
 
     private void ResetHighlighedArea()
@@ -355,21 +348,22 @@ public class MouseController : MonoBehaviour {
 		if(hit) {
 			if(hit.transform.GetComponent<Tile>() != null) {
 				Tile tile = hit.transform.GetComponent<Tile>();
+
 				if(GameMaster.instance.debugMode) {
-					MoveCursor(tile);
+					chosenTile = tile;
+					crosshairInst.GetComponent<Crosshair>().MoveCursor(tile);
 				} else {
 
                     if (myState == State.CastSpell)
                     {
 
                         // move the cursor.
-                        MoveCursor(tile);
+						chosenTile = tile;
+						crosshairInst.GetComponent<Crosshair>().MoveCursor(tile);
 
-                        if (tile.isVisible)
-                        {
+                        if (tile.isVisible) {
 
-                            if (currentSpell.isAOE)
-                            {
+                            if (currentSpell.isAOE) {
 
                                 // create helper object.
                                 Spell.DamageInfo di = new Spell.DamageInfo();
@@ -383,50 +377,44 @@ public class MouseController : MonoBehaviour {
                                 if (aoe == null) return;
 
                                 // if we are not hovering on top of a valid tile, then return.
-                                if (validTiles.Contains(di.targetTile) == false) return;
+								if (validTiles.Contains(di.targetTile)) {
+									
+									// set new highlight area of the spell!
+									foreach (GameObject g in aoe) {
 
-                                // --> otherwise draw the area.
+										// out of bounds.
+										if (g == null) continue;
 
-                                // set new highlight area of the spell!
-                                foreach (GameObject g in aoe)
-                                {
-                                    // out of bounds.
-                                    if (g == null) continue;
+										Tile _tile = g.GetComponent<Tile>();
 
-                                    Tile _tile = g.GetComponent<Tile>();
-                                    if (_tile.isVisible)
-                                    {
-                                        g.GetComponentInChildren<SpriteRenderer>().color = Color.red;
-                                    }
-                                }
-                            }
-                            else
-                            {
+										if (_tile.isVisible) g.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+									}
+								}
+                            } else {
 
                                 if (validTiles.Contains(tile) == false) return;
                                 tile.GetComponentInChildren<SpriteRenderer>().color = Color.red;
-
                             }
                         }
                     }
-                    else if (myState == State.Normal)
-                    {
-                        if (tile.isVisible || tile.isDiscovered)
-                        {
-                            MoveCursor(tile);
+                    else if (myState == State.Normal) {
+                        if (tile.isVisible || tile.isDiscovered) {
+							chosenTile = tile;
+							crosshairInst.GetComponent<Crosshair>().MoveCursor(tile);
                         }
-                        else if (tile.isVisible == false && tile.isDiscovered == false)
-                        {
-                            HideCursor();
+                        else if (tile.isVisible == false && tile.isDiscovered == false) {
+							chosenTile = null;
+							crosshairInst.GetComponent<Crosshair>().HideCursor();
                         }
                     }
-
 				}
 			} else {
-				HideCursor();
+				chosenTile = null;
+				crosshairInst.GetComponent<Crosshair>().HideCursor();
 			}
 		} else {
-			HideCursor();
+			chosenTile = null;
+			crosshairInst.GetComponent<Crosshair>().HideCursor();
 		}
 	}
 }

@@ -6,7 +6,7 @@ public class DungeonVanityManager : MonoBehaviour {
 
 	public static DungeonVanityManager instance;
 
-	public enum VanityItem { Candle, Lantern, Skull, Cactus }
+	public enum VanityItem { Candle, Lantern, Skull }
 
 	[Header("Settings")]
 	public bool spawnVanityItems = true;
@@ -18,7 +18,6 @@ public class DungeonVanityManager : MonoBehaviour {
 	public GameObject skull01Prefab;
 	public GameObject lantern01Prefab;
 	public GameObject burntCandlePrefab;
-	public GameObject cactus01Prefab;
 
 	private GameObject parentGo;
 	private List<GameObject> InstantiatedVanityItems = new List<GameObject>();
@@ -43,9 +42,10 @@ public class DungeonVanityManager : MonoBehaviour {
 		case VanityItem.Skull:
 			vanityItemPrefab = skull01Prefab;
 			break;
-		case VanityItem.Cactus:
-			//vanityItemPrefab = cactus01Prefab;
-            return;
+
+		default:
+			Debug.LogError("No such item.");
+			break;
 		}
 	
 		GameObject inst = (GameObject) Instantiate(vanityItemPrefab);
@@ -63,7 +63,6 @@ public class DungeonVanityManager : MonoBehaviour {
 		DungeonGenerator.instance.GetTileAtPos(pos).GetComponent<Tile>().vanityItem = inst;
 
 		InstantiatedVanityItems.Add(inst);
-
 	}
 
 	public void RemoveVanityItems() {

@@ -7,7 +7,7 @@ public class GameMaster : MonoBehaviour {
 	public static GameMaster instance;
 
 	public enum MovementMode { Player, Crosshair }
-	public enum GameState { Running, Paused, InMainMenu }
+	public enum GameState { Running, Paused, InMainMenu, WaitingTurn }
 
 	[HideInInspector] public int turnCount = 0;
 	[HideInInspector] public int enemyCount = 0;
@@ -23,9 +23,11 @@ public class GameMaster : MonoBehaviour {
 	[Header("Pathfinding settings")]
 	public bool allowPathfinding = true;
 	public bool allowPathfindInvisibleTiles = true;
+	public bool stopPathFindingNearEnemies = true;
 
 	[Header("Movement settings")]
 	public bool allowSmoothMovement = true;
+	public bool allowSmoothAttack = true;
 
 	[Header("Debugging")]
 	public bool disableEnemyAI = true;
@@ -34,6 +36,9 @@ public class GameMaster : MonoBehaviour {
     public SpriteManager.TileSet forcedTileSet = SpriteManager.TileSet.Concrete;
 
 	[Header("General settings")]
+	public float turnEndTime = 0.5f;
+	public bool drawGrid = true;
+	public Color GridTint;
 	public bool spawnEnemies = false;
     public bool enemiesBlockLoS = true;
     [Range(1, 10)] public int enemyAggroRange = 3;
@@ -104,9 +109,9 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	private void UpdatePlayerLos() {
-		//PrefabManager.instance.GetPlayerInstance().GetComponent<LineOfSightManager>().CalculateLoS();
         PrefabManager.instance.GetPlayerInstance().GetComponent<Losv2>().CalculateLoS();
 		DungeonGenerator.instance.UpdateTileColorVisibility();
+		DungeonGenerator.instance.CreateGrid();
 	}
 
 	// PROGRAM START
@@ -280,14 +285,43 @@ public class GameMaster : MonoBehaviour {
 		currentDungeonName = prefixes[Random.Range(0, prefixes.Length)] + " " + places[Random.Range(0, places.Length)];
 	}
 
-	public void EndTurn() {
-		
-		HandlePlayerTurn();
-		if(disableEnemyAI == false) HandleEnemyTurns();
-		HandleTraps();
-        HandleIceBlocks();
-		UpdatePlayerLos();
+	private IEnumerator WaitAfterPlayerTurn(float time) {
+		float currentTime = 0f;
 
+		while(currentTime < time) {
+			currentTime += Time.deltaTime;
+			yield return null;
+		}
+
+		if(disableEnemyAI == false) HandleEnemyTurns();
+		else HandleRestEndTurn();
+	}
+
+	private IEnumerator WaitAfterEnemyTurn(float time, Enemy enemy, bool isLastEnemy = false) {
+
+		Debug.Log("enemy start turn");
+
+		float currentTime = 0f;
+
+		while(currentTime < time) {
+			currentTime += Time.deltaTime;
+			yield return null;
+		}
+
+		enemy.DecideNextStep();
+
+		if(isLastEnemy) {
+			HandleRestEndTurn();
+		}
+
+		Debug.Log("enemy end turn.");
+	}
+
+	private void HandleRestEndTurn() {
+
+		Debug.Log("rest start");
+
+		HandleIceBlocks();
 		turnCount++;
 
 		// update status elements GUI
@@ -304,9 +338,25 @@ public class GameMaster : MonoBehaviour {
 		// update player info
 		GUIManager.instance.UpdateAllElements();
 
+		// has to be before HandlePlayerDeath,
+		// because it can change the gamestate too.
+		gamestate = GameState.Running;
+
 		// Check if player is dead.
 		// -> run this sequence.
 		HandlePlayerDeath();
+
+		Debug.Log("rest end");
+	}
+
+	// call this first...
+	// if will handle rest.
+	public void EndTurn() {
+		gamestate = GameState.WaitingTurn;
+		HandlePlayerTurn();
+		UpdatePlayerLos();
+		HandleTraps();
+		StartCoroutine(WaitAfterPlayerTurn(turnEndTime));
 	}
 
     private void HandleIceBlocks()
@@ -363,7 +413,7 @@ public class GameMaster : MonoBehaviour {
             MapReader.instance.GenerateDungeonFromImage(slimeKingThroneLevel);
 
             // name
-            currentDungeonName = "Royal slime's throne room";
+            currentDungeonName = "Royal Slime's Throne Room";
 
             return true;
 
@@ -382,7 +432,7 @@ public class GameMaster : MonoBehaviour {
                 MapReader.instance.GenerateDungeonFromImage(shopLevel);
 
                 // name
-                currentDungeonName = "Shopaholic's dream";
+                currentDungeonName = "Item Shop";
 
                 return true;
 
@@ -398,7 +448,7 @@ public class GameMaster : MonoBehaviour {
                 // create shop
                 MapReader.instance.GenerateDungeonFromImage(mobCabinetlevel01);
 
-                currentDungeonName = "It's not a trap.";
+                currentDungeonName = "Challenge";
 
                 return true;
             }
@@ -530,27 +580,47 @@ public class GameMaster : MonoBehaviour {
 
 	private void HandleEnemyTurns() {
 
+		Queue<GameObject> activeEnemies = new Queue<GameObject>();
         GameObject[] enemies = PrefabManager.instance.GetEnemyInstances().ToArray();
 
-        // looping backwards makes possible to instantiate new enemies at runtime.
-        for(int i = enemies.Length - 1; i >= 0; i-- ) {
-			Enemy e = enemies[i].GetComponent<Enemy>();
-			if(e.isActive) {
+		// get only the active enemies.
+		foreach(GameObject enemy in enemies) {
+			if(enemy.GetComponent<Enemy>().isActive) {
+				activeEnemies.Enqueue(enemy);
+			}
+		}
 
-				// this can cause bleed effect,
-				// and therefore it can kill the enemy.
-                // --> have to be handled before deciding next step.
-				HandleStatusEffects(e);
+		// if there are no enemies then just return immediately.
+		if(activeEnemies.Count == 0) {
+			HandleRestEndTurn();
+		} else {
 
-                if (e.myNextState == Actor.NextMoveState.Stunned)
-                {
-                    GUIManager.instance.CreatePopUpEntry("Stunned", e.position, GUIManager.PopUpType.Other);
-                    continue;
-                }
+			int loopCount = 0;
 
-				// if the enemy is dead or it's stunned
-				if(e.GetComponent<Health>().isDead == false) { 
-					e.DecideNextStep();
+			while(activeEnemies.Count > 0) {
+
+				loopCount ++;
+
+				GameObject enemyGo = activeEnemies.Dequeue();
+				Enemy enemy = enemyGo.GetComponent<Enemy>();
+
+				HandleStatusEffects(enemy);
+
+				if (enemy.myNextState == Actor.NextMoveState.Stunned)
+				{
+					GUIManager.instance.CreatePopUpEntry("Stunned", enemy.position, GUIManager.PopUpType.Other);
+
+					if(activeEnemies.Count == 0) {
+						HandleRestEndTurn();
+					}
+
+				} else {
+
+					if(activeEnemies.Count == 0) {
+						StartCoroutine(WaitAfterEnemyTurn(turnEndTime * loopCount, enemy, true));
+					} else {
+						StartCoroutine(WaitAfterEnemyTurn(turnEndTime * loopCount, enemy));
+					}
 				}
 			}
 		}

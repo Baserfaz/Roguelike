@@ -224,6 +224,10 @@ public class PrefabManager : MonoBehaviour {
 		if(inv.currentWeapon != null) inv.currentWeapon.GetComponent<Item>().owner = null;
 	}
 
+	public void RemoveEnemyFromInstanceList(GameObject enemy) {
+		enemyInstances.Remove(enemy);
+	}
+
 	public void RemoveEnemies() {
 		foreach(GameObject enemy in enemyInstances) {
 			Destroy(enemy);

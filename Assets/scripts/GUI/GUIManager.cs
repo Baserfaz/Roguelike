@@ -80,14 +80,8 @@ public class GUIManager : MonoBehaviour {
 	public void HideGUI() { Hide(gameGUI); }
 	public void ShowGUI() { Show(gameGUI); }
 
-	public void HideCharacterCreation() {
-		// enable aberration
-		Hide(characterCreationGUI); 
-	}
-
-	public void ShowCharacterCreation() { 
-		Show(characterCreationGUI); 
-	}
+	public void HideCharacterCreation() { Hide(characterCreationGUI); }
+	public void ShowCharacterCreation() { Show(characterCreationGUI); }
 
     public void HideMainMenu() { Hide(mainmenuGUI); }
     public void ShowMainMenu() { Show(mainmenuGUI); }
@@ -103,16 +97,11 @@ public class GUIManager : MonoBehaviour {
 		tileInfoText.GetComponent<Text>().text = "";
 	}
 
-    public void StartTutorial()
-    {
-        
-
+    public void StartTutorial() {
+		Debug.LogError("NOT YET IMPLEMENTED!");
     }
 
-    public void ExitGame()
-    {
-        Application.Quit();
-    }
+    public void ExitGame() { Application.Quit(); }
 
 	public void UpdateDeathScreen() {
 
@@ -423,6 +412,8 @@ public class GUIManager : MonoBehaviour {
 		return obj;
 	}
 
+	// show the tile info in an information box
+	// when we are hovering on top of a tile.
 	public void ShowTileInfo(Tile tile) {
 
 		if(currentActiveTile != null) {
@@ -436,13 +427,13 @@ public class GUIManager : MonoBehaviour {
 		bool isPlayer = false;
 
 		// check if the tile has player on it.
-		// -> show item information beneath.
 		if(tile.actor != null) {
 			if(tile.actor.GetComponent<Player>() != null) {
 				isPlayer = true;
 			}
 		}
 
+		// enemy on a tile.
 		if(tile.actor != null && isPlayer == false) {
 
 			// there is an actor on the tile.

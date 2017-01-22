@@ -224,6 +224,9 @@ public class Health : MonoBehaviour {
             // deactivate enemy script.
 			GetComponent<Enemy>().isActive = false;
 
+			// remove actor from list of instantiated actors.
+			PrefabManager.instance.RemoveEnemyFromInstanceList(this.gameObject);
+
 			// deactivate actor
 			gameObject.SetActive(false);
 

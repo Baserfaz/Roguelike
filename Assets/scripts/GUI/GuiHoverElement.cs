@@ -10,79 +10,127 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
 	public void OnPointerEnter(PointerEventData data) {
 
+		// if we are casting spell
+		// then we want to disable hover.
         if (MouseController.instance.GetState() == MouseController.State.CastSpell) return;
 
+		// change state to hovering on gui 
+		// -> can't click tiles under the gui element.
         MouseController.instance.ChangeState(MouseController.State.OnGui);
 
+		// get the gui item info script.
 		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
 
+		// set the alpha value to fully lit.
 		gii.SetCanvasGroupAlpha(1f);
 
-		if(hoverTextobj == null) {
-			hoverTextobj = (GameObject) Instantiate(GUIManager.instance.hoverTextPrefab);
+		// if we dont have a hover text instantiated yet..
+		// -> instantiate the text
+		if(hoverTextobj == null) hoverTextobj = (GameObject) Instantiate(GUIManager.instance.hoverTextPrefab);
 
-			if(gii.myEffect != null) {
+		// show text.
+		hoverTextobj.GetComponent<CanvasGroup>().alpha = 1f;
 
-				hoverTextobj.GetComponent<Text>().text =
-					"<size=\"32\">[Effect]: " + gii.myEffect.type.ToString() + "</size>";
-				
-			} else if(gii.myItem != null) {
+		// which element we are currently
+		// hovering on.
+		// -> set the correct text.
+		if(gii.myEffect != null) {
 
-				if(gii.myItem.GetComponent<Spell>() != null) { 
+			hoverTextobj.GetComponent<Text>().text =
+				"<size=\"32\">[Effect]: " + gii.myEffect.type.ToString() + "</size>" +
+				"\nAmount: " + gii.myEffect.amount + 
+				"\nDuration: " + gii.myEffect.duration;
+			
+		} else if(gii.myItem != null) {
 
-					hoverTextobj.GetComponent<Text>().text = 
-						"<size=\"32\">[Spell]: " +
-						gii.myItem.GetComponent<Spell>().spellType.ToString() +
-						"</size>" + "\n" + gii.myItem.GetComponent<Spell>().itemDescription;
+			if(gii.myItem.GetComponent<Spell>() != null) { 
 
-				} else {
-
-					hoverTextobj.GetComponent<Text>().text =
-						"<size=\"32\">[Item]: " + gii.myItem.GetComponent<Item>().itemName + "</size>" +
-						"\n" + gii.myItem.GetComponent<Item>().itemDescription;
-					
-				}
+				hoverTextobj.GetComponent<Text>().text = 
+					"<size=\"32\">[Spell]: " +
+					gii.myItem.GetComponent<Spell>().spellType.ToString() +
+					"</size>" + "\n" + gii.myItem.GetComponent<Spell>().itemDescription;
 
 			} else {
-				// we dont have anything
 
-				switch(gii.myType) {
-				case GUIItemInfo.ElementType.SpellSlot:
-					hoverTextobj.GetComponent<Text>().text = "<size=\"32\">[Empty Spell Slot]</size>";
-					break;
-
-				case GUIItemInfo.ElementType.ItemSlot:
-					hoverTextobj.GetComponent<Text>().text = "<size=\"32\">[Empty Item Slot]</size>";
-					break;
-
-				case GUIItemInfo.ElementType.EffectSlot:
-					hoverTextobj.GetComponent<Text>().text = "<size=\"32\">[Empty Effect Slot]</size>";
-					break;
-				}
+				hoverTextobj.GetComponent<Text>().text =
+					"<size=\"32\">[Item]: " + gii.myItem.GetComponent<Item>().itemName + "</size>" +
+					"\n" + gii.myItem.GetComponent<Item>().itemDescription;
+				
 			}
 
-			hoverTextobj.transform.SetParent(GUIManager.instance.gameGUI.transform);
-			hoverTextobj.transform.position = Input.mousePosition;
+		} else {
+			
+			// we dont have anything
+			switch(gii.myType) {
+			case GUIItemInfo.ElementType.SpellSlot:
+				hoverTextobj.GetComponent<Text>().text = "<size=\"32\">[Empty Spell Slot]</size>";
+				break;
+
+			case GUIItemInfo.ElementType.ItemSlot:
+				hoverTextobj.GetComponent<Text>().text = "<size=\"32\">[Empty Item Slot]</size>";
+				break;
+
+			case GUIItemInfo.ElementType.EffectSlot:
+				hoverTextobj.GetComponent<Text>().text = "<size=\"32\">[Empty Effect Slot]</size>";
+				break;
+			}
 		}
+
+		// parent the text to canvas.
+		hoverTextobj.transform.SetParent(GUIManager.instance.gameGUI.transform);
+
+		// calculate the correct position
+		// -> if on the right side of the screen, then move text left.
+		// -> if on the left side of the screen, then move thext right.
+		Vector2 mousePos = Input.mousePosition;
+		Vector2 offset = Vector2.zero;
+
+		// modify by using x-axel
+		if(mousePos.x > Screen.width/2f) {
+			offset = new Vector2(200f, 0f);
+		}
+
+		// modify by using y-axel.
+		if(mousePos.y > Screen.height/2f) {
+			offset += new Vector2(0f, 100f);
+		} else {
+			offset -= new Vector2(0f, 100f);
+		}
+
+		// set the position.
+		hoverTextobj.transform.position = mousePos - offset;
 	}
 
 	public void OnPointerExit(PointerEventData data) {
+		
+		// change the state back to normal state.
+		if(MouseController.instance.GetState() == MouseController.State.OnGui) {
+			MouseController.instance.ChangeState(MouseController.State.Normal);
+		}
 
-        if(MouseController.instance.GetState() == MouseController.State.OnGui) MouseController.instance.ChangeState(MouseController.State.Normal);
-
+		// get reference
 		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
+
+		// set the alpha back to starting value.
 		gii.ResetCanvasGroupAlpha();
-		Destroy(hoverTextobj);
+
+		// dont destroy the gameobject
+		// -> modify its alpha value.
+		hoverTextobj.GetComponent<CanvasGroup>().alpha = 0f;
+
 	}
 
 	public void OnPointerClick(PointerEventData data) {
 
-        if (data.button == PointerEventData.InputButton.Right || data.button == PointerEventData.InputButton.Middle) return;
+		// only accept mouse left click.
+        if (data.button == PointerEventData.InputButton.Right ||
+			data.button == PointerEventData.InputButton.Middle) return;
 
+		// get reference
 		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
-
 		Player player = PrefabManager.instance.GetPlayerInstance().GetComponent<Player>();
 
+		// which one we are clicking on.
 		switch(gii.myType) {
 		case GUIItemInfo.ElementType.ItemSlot:
 
@@ -93,8 +141,8 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 					useItem.GetComponent<UseItem>().Use();
 				}
 			}
-
 			break;
+
 		case GUIItemInfo.ElementType.SpellSlot:
 	
 			// mouse state to cast spell.
@@ -103,8 +151,8 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 				MouseController.instance.ChangeState(MouseController.State.CastSpell);
 				MouseController.instance.ChangeCrosshairSprite(CrosshairManager.instance.crosshairSpell);
 			}
-
 			break;
+
 		default:
 			break;
 		}

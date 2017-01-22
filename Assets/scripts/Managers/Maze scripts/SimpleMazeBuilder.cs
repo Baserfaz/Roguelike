@@ -113,9 +113,11 @@ public class SimpleMazeBuilder {
         // how much floor are there?
         maxFloorAmount = Mathf.FloorToInt(wallCount * GameMaster.instance.dungeonSpaciousness);
 
-        // create first tile from a random wall tile.
-        currentTile = GetRandomTile(width, height, Tile.TileType.Wall);
-        CreateFloor();
+		// create first tile from a random wall tile.
+		while(visited.Count == 0) {
+        	currentTile = GetRandomTile(width, height, Tile.TileType.Wall);
+        	CreateFloor();
+		}
 
         // Create floor here
         while (floorCount < maxFloorAmount)

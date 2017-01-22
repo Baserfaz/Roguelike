@@ -236,8 +236,24 @@ public class Losv2 : MonoBehaviour {
                 if (tile.actor.GetComponent<Enemy>() != null)
                 {
                     Enemy enemy = tile.actor.GetComponent<Enemy>();
-                    enemy.targetPosition = startTile.position;
-                    enemy.isActive = true;
+
+					if(enemy.isActive) {
+
+						// only update the targetPosition.
+						enemy.targetPosition = startTile.position;
+
+					} else {
+
+						// this is the first time this enemy is
+						// activated ("aggroed").
+
+						enemy.targetPosition = startTile.position;
+						enemy.isActive = true;
+
+						// create GUI pop up about this event.
+						GUIManager.instance.CreatePopUpEntry("<color=#FF0000>Aggro</color>",
+							enemy.position, GUIManager.PopUpType.Other);
+					}
                 }
             }
         }

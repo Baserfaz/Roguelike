@@ -187,8 +187,7 @@ public class Enemy : Actor {
         // TODO:
         // 1. normal monsters can have abilities too!
 
-        if (GetComponent<Boss>() != null)
-        {
+        if (GetComponent<Boss>() != null) {
 
             // Basic boss AI.
             // 1. tries to use all abilities first
@@ -209,9 +208,7 @@ public class Enemy : Actor {
             // reduce cooldowns.
             boss.ReduceCooldownAllAbilities();
 
-        }
-        else
-        {
+        } else {
             GameObject bestTile = PathFindNextTile();
             if (bestTile != null) moveTargetPosition = bestTile.GetComponent<Tile>().position;
             else myNextState = NextMoveState.Pass;

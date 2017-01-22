@@ -700,8 +700,10 @@ public class DungeonGenerator : MonoBehaviour {
 
 
         // We can use different kinds of maze builder scripts here.
-        //DefaultMaze.Generate(dungeonHeight, dungeonWidth);
-        SimpleMazeBuilder.Generate(dungeonHeight, dungeonWidth);
+        
+		//DefaultMaze.Generate(dungeonHeight, dungeonWidth);
+        //SimpleMazeBuilder.Generate(dungeonHeight, dungeonWidth);
+		RoomMaze.Generate(dungeonWidth,dungeonHeight);
 
 		// Modify existing tiles.
 		GenerateExit();
@@ -712,5 +714,29 @@ public class DungeonGenerator : MonoBehaviour {
 		// Create items.
 		DungeonItemManager.instance.SpawnItems();
 		DungeonVanityManager.instance.SpawnVanityItems();
+	}
+
+	public void CreateGrid() {
+
+		if(GameMaster.instance.drawGrid == false) return;
+
+		foreach(GameObject g in tiles) {
+			Tile tile = g.GetComponent<Tile>();
+
+			if(tile.myType != Tile.TileType.OuterWall && (tile.isVisible || tile.isDiscovered) && tile.myType == Tile.TileType.Floor) {
+
+				// every even row
+				if(tile.position.y % 2 == 0) {
+					if(tile.position.x % 2 == 1) {
+						tile.GetComponentInChildren<SpriteRenderer>().color = GameMaster.instance.GridTint;
+					}
+					// every odd row 
+				} else {
+					if(tile.position.x % 2 == 0) {
+						tile.GetComponentInChildren<SpriteRenderer>().color = GameMaster.instance.GridTint;
+					}
+				}
+			}
+		}
 	}
 }

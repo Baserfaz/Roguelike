@@ -17,7 +17,9 @@ public class CameraManager : MonoBehaviour {
 
 	void Update () {
 
-		if(GameMaster.instance.gamestate == GameMaster.GameState.Running) {
+		if(GameMaster.instance.gamestate == GameMaster.GameState.Running || GameMaster.instance.gamestate == GameMaster.GameState.WaitingTurn) {
+
+			// when the game is running.
 
 			if(GameMaster.instance.movementMode == GameMaster.MovementMode.Player) {
 				if(PrefabManager.instance.GetPlayerInstance() != null) {
@@ -37,10 +39,7 @@ public class CameraManager : MonoBehaviour {
 		} else if(GameMaster.instance.gamestate == GameMaster.GameState.InMainMenu) {
 			
 			// in main menu
-
 			CenterCameraToDungeon();
-			//BounceCamera();
-
 			transform.Rotate(0f, 0f, 6f * Time.deltaTime);
 		}
 	}

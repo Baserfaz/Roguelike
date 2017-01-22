@@ -72,11 +72,50 @@ public class Actor : MonoBehaviour {
 		myStatusEffects.Remove(e);
 	}
 
+    private IEnumerator AttackSmooth(Vector2 target, Vector2 startpos)
+    {
+
+        float currentTime = 0f;
+        float maxTime = 0.15f;
+
+        Vector2 startPos = startpos;
+		Vector2 endPos = (target - startpos).normalized * 0.5f + startPos;
+
+		// In
+        while (currentTime < maxTime)
+        {
+            currentTime += Time.deltaTime;
+            transform.position = Vector3.Lerp(transform.position, endPos, currentTime / maxTime);
+            yield return null;
+        }
+        
+        currentTime = 0f;
+
+		// out
+        while (currentTime < maxTime)
+        {
+            currentTime += Time.deltaTime;
+            transform.position = Vector3.Lerp(endPos, startpos, currentTime / maxTime);
+            yield return null;
+        }
+
+		// force position here.
+        transform.position = startPos;
+    }
+
 	public void Attack() {
+
 		bool crit = false;
 		int totalDamage = defaultDamage + buffedDamage;
 
+		// target reference
 		GameObject target = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>().actor;
+
+		// smooth attack "animation"
+		if(GameMaster.instance.allowSmoothAttack) {
+        	StopAllCoroutines();
+        	StartCoroutine(AttackSmooth((Vector2)target.transform.position, position));
+		}
 
 		// calculate weapon damage
 		if(GetComponent<Inventory>() != null) {
