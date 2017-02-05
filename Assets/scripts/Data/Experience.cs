@@ -51,6 +51,10 @@ public class Experience : MonoBehaviour {
 		// heal the player to full.
 		h.HealDamage(h.maxHealth + 1);
 
+
+		// sound effect
+		SoundManager.instance.PlaySound(SoundManager.Sound.LvlUp);
+
 	}
 
 	public void AddExp(int amount) {

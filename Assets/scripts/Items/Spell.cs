@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Spell : Item {
 
-	public enum SpellType { FireBall, IceWall, Rejuvenation }
+	public enum SpellType { FireBall, IceWall, Rejuvenation, LightningBolt }
     public enum AOEType { Cross, Box, Line }
 
 	[Header("Spell specific settings.")]
@@ -24,8 +24,6 @@ public class Spell : Item {
 		public GameObject damageDealer;
 		public Tile targetTile;
 	}
-
-	//void Start() { ResetCooldown(); }
 
 	public void ResetCooldown() {
 		// after casting, the turn ends so cooldown is automatically -> cooldown - 1.
@@ -63,7 +61,14 @@ public class Spell : Item {
 		case SpellType.Rejuvenation:
 			CastRejuvenation(di);
 			break;
+		case SpellType.LightningBolt:
+			CastLightningBolt(di);
+			break;
 		}
+
+		// sound effect
+		SoundManager.instance.PlaySound(SoundManager.Sound.CastSpell);
+
 	}
 
     public GameObject[] CalculateAOE(DamageInfo di)
@@ -141,19 +146,20 @@ public class Spell : Item {
         return aoeTiles.ToArray();
     }
 
-    private StatusEffect DecideStatusEffect(SpellType type)
-    {
+    private StatusEffect DecideStatusEffect(SpellType type) {
 
         StatusEffect effect = null;
 
-        switch (type)
-            {
+        switch (type) {
                 case SpellType.Rejuvenation:
                     effect = StatusEffect.CreateEffect(StatusEffect.EffectType.Healing, statusDamage, statusDuration);
                     break;
                 case SpellType.FireBall:
                     effect = StatusEffect.CreateEffect(StatusEffect.EffectType.Burning, statusDamage, statusDuration);
                     break;
+				case SpellType.LightningBolt:
+
+					break;
                 default:
                     break;
             }
@@ -178,8 +184,7 @@ public class Spell : Item {
 
             Tile t = g.GetComponent<Tile>();
 
-            if (t.actor != null)
-            {
+            if (t.actor != null) {
 
                 DamageInfo di = new DamageInfo();
                 di.damageDealer = owner;
@@ -187,17 +192,32 @@ public class Spell : Item {
 
                 // cast it on a tile.
                 CastSingleTarget(di, type);
-
             }
+			// create visual effects here
+			CreateVisualEffect(type, t);
         }
-
-
     }
 
-    private void CastSingleTarget(DamageInfo info, SpellType type)
-    {
-        if (info.targetTile.actor != null)
-        {
+	private void CreateVisualEffect(SpellType type, Tile t) {
+
+		GameObject visEffec = null;
+
+		switch(type) {
+		case SpellType.FireBall:
+			visEffec = (GameObject) Instantiate(PrefabManager.instance.flameAnimationPrefab);
+			break;
+		case SpellType.LightningBolt:
+			visEffec = (GameObject) Instantiate(PrefabManager.instance.lightningBoltAnimationPrefab);
+			break;
+		default:
+			break;
+		}
+
+		if(visEffec != null) visEffec.transform.position = new Vector3(t.position.x, t.position.y, GameMaster.instance.playerZLevel - 0.1f);
+	}
+
+    private void CastSingleTarget(DamageInfo info, SpellType type) {
+        if (info.targetTile.actor != null) {
 
             StatusEffect effect = null;
 
@@ -205,58 +225,62 @@ public class Spell : Item {
             effect = DecideStatusEffect(type);
 
             // apply effect.
-            info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(effect);
+			if(effect != null) info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(effect);
 
             // decide direct damage.
-            switch (type)
-            {
-                case SpellType.FireBall:
-                    info.targetTile.actor.GetComponent<Health>().TakeDamage(directDamage, false, info.damageDealer);
-                    break;
-                default:
-                    break;
+            switch (type) {
+            case SpellType.FireBall:
+                info.targetTile.actor.GetComponent<Health>().TakeDamage(directDamage,
+				false, info.damageDealer);
+				break;
+			case SpellType.LightningBolt:
+				info.targetTile.actor.GetComponent<Health>().TakeDamage(directDamage,
+				false, info.damageDealer);
+				break;
+             default:
+                break;
             }
-
         }
+
+		CreateVisualEffect(type, info.targetTile);
     }
 
 	private void CastRejuvenation(DamageInfo info) {
-        if (isAOE)
-        {
+        if (isAOE) {
             CastAOE(info, SpellType.Rejuvenation);
-        }
-        else
-        {
+        } else {
             CastSingleTarget(info, SpellType.Rejuvenation);
         }
 	}
-
+		
 	private void CastFireBall(DamageInfo info) {
-        if (isAOE)
-        {
+
+        if (isAOE) {
             CastAOE(info, SpellType.FireBall);
-        }
-        else
-        {
+        } else {
             CastSingleTarget(info, SpellType.FireBall);
         }
 	}
 
+	private void CastLightningBolt(DamageInfo info) {
+		if (isAOE) {
+			CastAOE(info, SpellType.LightningBolt);
+		} else {
+			CastSingleTarget(info, SpellType.LightningBolt);
+		}
+	}
+
 	private void CastIceWall(DamageInfo info) {
-        if (isAOE)
-        {
+        if (isAOE) {
             Debug.LogError("NOT YET IMPLEMENTED!");
-        }
-        else
-        {
+        } else {
             // create script and it to the tile object.
             IceBlock ib = info.targetTile.gameObject.AddComponent<IceBlock>();
             ib.CreateIceBlock(statusDuration, info.targetTile.position, info.targetTile.myType);
 
             // stun target.
             // set it to be invulnerable.
-            if (info.targetTile.actor != null)
-            {
+            if (info.targetTile.actor != null) {
                 StatusEffect eff = StatusEffect.CreateEffect(StatusEffect.EffectType.Stun, 0, statusDuration);
                 info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(eff);
 
@@ -264,9 +288,6 @@ public class Spell : Item {
                 info.targetTile.actor.GetComponent<Actor>().AddStatusEffect(eff);
 
             }
-
         }
 	}
-
-
 }

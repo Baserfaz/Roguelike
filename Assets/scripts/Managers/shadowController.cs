@@ -7,18 +7,48 @@ public class shadowController : MonoBehaviour {
 	private GameObject shadowGo;
 	private Color startColor;
 	private Vector3 offset = new Vector3(0f, -0.25f, 0f);
-	private Vector3 scale = new Vector3(0.75f, 0.75f, 1f);
 
-	public void Hide() { shadowGo.GetComponent<SpriteRenderer>().color = Color.clear; }
-	public void Show() { shadowGo.GetComponent<SpriteRenderer>().color = startColor; }
-	public void Move() { shadowGo.transform.position = new Vector3(transform.position.x + offset.x, transform.position.y + offset.y, transform.position.z + 0.1f); }
+	public void Hide() { 
+		if (shadowGo != null) {
+			shadowGo.GetComponent<SpriteRenderer> ().color = Color.clear; 
+		} else {
+			InstantiateShadow ();
+			Hide ();
+		}
+	}
 
-	void Awake() {
-		shadowGo = (GameObject) Instantiate(PrefabManager.instance.blobShadow);
-		startColor = shadowGo.GetComponent<SpriteRenderer>().color;
-		shadowGo.transform.localScale = scale;
-		Move();
-		shadowGo.transform.SetParent(this.transform);
-		shadowGo.name = "Shadow";
+	public void Show() {
+		if (shadowGo != null) {
+			shadowGo.GetComponent<SpriteRenderer> ().color = startColor; 
+		} else {
+			InstantiateShadow ();
+			Show ();
+		}
+	}
+
+	public void Move() {
+		if (shadowGo != null) {
+			shadowGo.transform.position = new Vector3 (
+				transform.position.x + offset.x, transform.position.y + offset.y, transform.position.z + 0.1f);
+		}
+	}
+
+	private void InstantiateShadow() {
+		startColor = new Color (0f, 0f, 0f, 0.25f);
+
+		shadowGo = new GameObject ("Shadow");
+		shadowGo.transform.SetParent (this.transform);
+		SpriteRenderer sr = shadowGo.AddComponent<SpriteRenderer> ();
+		sr.sprite = transform.GetChild (0).GetComponent<SpriteRenderer> ().sprite;
+		sr.material = MaterialManager.instance.mySpriteMaterial;
+		sr.color = startColor;
+		sr.flipY = true;
+		shadowGo.transform.localScale = transform.GetChild (0).transform.localScale;
+		shadowGo.transform.localPosition = new Vector2 (0f, -0.5f);
+
+		if(GetComponent<Gold>() != null || GetComponent<Weapon>() != null) {
+			sr.flipX = true;
+		}
+
 	}
 }

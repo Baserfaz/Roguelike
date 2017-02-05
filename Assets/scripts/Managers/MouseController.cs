@@ -183,6 +183,9 @@ public class MouseController : MonoBehaviour {
 
 		} else if(myState == State.CastSpell) {
 			if(Input.GetMouseButtonDown(0)) {
+
+				// if there is no tile that is chosen.
+				// -> return.
 				if(chosenTile == null) return;
 
                 // check if we actually clicked on a valid tile.
@@ -210,16 +213,18 @@ public class MouseController : MonoBehaviour {
 				// change our crosshair to normal sprite.
 				ChangeCrosshairSprite(CrosshairManager.instance.crosshairNormal);
 
-                // Always reset the highlighted area after casting/cancelling.
+                // Always reset the highlighted area after casting.
                 ResetHighlighedArea();
+				DungeonGenerator.instance.CreateGrid ();
 
 			} else if(Input.GetMouseButtonDown(1)) {
 				
 				myState = State.Normal;
 				ChangeCrosshairSprite(CrosshairManager.instance.crosshairNormal);
 
-                // Always reset the highlighted area after casting/cancelling.
+                // Always reset the highlighted area after cancelling.
                 ResetHighlighedArea();
+				DungeonGenerator.instance.CreateGrid ();
 			}
 		}
 	}
@@ -233,11 +238,9 @@ public class MouseController : MonoBehaviour {
 		}
 	}
 
-    private void ResetHighlighedArea()
-    {
+    private void ResetHighlighedArea() {
         // reset highlighted area.
-        foreach (GameObject g in DungeonGenerator.instance.GetTiles())
-        {
+        foreach (GameObject g in DungeonGenerator.instance.GetTiles()) {
             Tile t = g.GetComponent<Tile>();
             if (t.isVisible) g.GetComponentInChildren<SpriteRenderer>().color = Color.white;
         }
@@ -309,17 +312,14 @@ public class MouseController : MonoBehaviour {
         return range;
     }
 
-    private void DrawSpellRange(List<Tile> range)
-    {
-        foreach (Tile t in range)
-        {
+    private void DrawSpellRange(List<Tile> range) {
+        foreach (Tile t in range) {
+			
             // out of bounds.
             if (t == null) continue;
 
-            if (t.isVisible)
-            {
-                t.GetComponentInChildren<SpriteRenderer>().color = Color.green;
-            }
+			// color the tile.
+            if (t.isVisible) t.GetComponentInChildren<SpriteRenderer>().color = Color.green;
         }
     }
 
@@ -337,6 +337,7 @@ public class MouseController : MonoBehaviour {
 
             // reset highlighted area.
             ResetHighlighedArea();
+			DungeonGenerator.instance.CreateGrid ();
 
             // get the tiles that are valid.
             validTiles = GetSpellRange(currentSpell, playerInst.GetComponent<Player>());

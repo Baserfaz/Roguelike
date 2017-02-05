@@ -39,6 +39,9 @@ public class PrefabManager : MonoBehaviour {
     public GameObject shroomBluePrefab;
     public GameObject shroomGreenPrefab;
     public GameObject shroomRedPrefab;
+	public GameObject skeletonWhitePrefab;
+	public GameObject skeletonBluePrefab;
+	public GameObject skeletonGreyPrefab;
 
 	[Header("Bosses")]
 	public GameObject slimeKingPrefab;
@@ -46,6 +49,14 @@ public class PrefabManager : MonoBehaviour {
 	[Header("Other prefabs")]
 	public GameObject blobShadow;
 	public GameObject lightCircle;
+
+	[Header("Particle systems")]
+	public GameObject healParticlePrefab;
+	public GameObject skullParticlePrefab;
+
+	[Header("Spell animations")]
+	public GameObject flameAnimationPrefab;
+	public GameObject lightningBoltAnimationPrefab;
 
 	[Header("Item prefabs")]
 	[Header("Armor")]
@@ -83,6 +94,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject fireballSpellPrefab;
 	public GameObject rejuvenationSpellPrefab;
     public GameObject iceBlockSpellPrefab;
+	public GameObject lightningboltSpellPrefab;
 
 	[Header("Containers")]
 	public GameObject chestGoldenPrefab;
@@ -100,6 +112,7 @@ public class PrefabManager : MonoBehaviour {
 	// list of enemy prefabs.
 	private List<GameObject> listOfEnemies = new List<GameObject>();
     private List<GameObject> listOfSlimes = new List<GameObject>();
+	private List<GameObject> listofSkeletons = new List<GameObject>();
 
 	void Awake() { instance = this; }
 	public GameObject GetPlayerInstance() { return playerInstance; }
@@ -114,6 +127,7 @@ public class PrefabManager : MonoBehaviour {
 		listOfEnemies.Clear();
 		listOfScrolls.Clear();
         listOfSlimes.Clear();
+		listofSkeletons.Clear();
 	}
 
 	public void PopulatePrefabLists() {
@@ -142,6 +156,10 @@ public class PrefabManager : MonoBehaviour {
         listOfEnemies.Add(shroomBluePrefab);
         listOfEnemies.Add(shroomGreenPrefab);
         listOfEnemies.Add(shroomRedPrefab);
+		// -> skeletons
+		listOfEnemies.Add(skeletonWhitePrefab);
+		listOfEnemies.Add(skeletonBluePrefab);
+		listOfEnemies.Add(skeletonGreyPrefab);
 
         // specific enemy types
         // slimes
@@ -149,6 +167,11 @@ public class PrefabManager : MonoBehaviour {
         listOfSlimes.Add(slimeGreenPrefab);
         listOfSlimes.Add(slimePurplePrefab);
         listOfSlimes.Add(slimeSmallPrefab);
+
+		// skeletons
+		listofSkeletons.Add(skeletonWhitePrefab);
+		listofSkeletons.Add(skeletonBluePrefab);
+		listofSkeletons.Add(skeletonGreyPrefab);
 
 		// armors
 		listOfArmors.Add(woodenArmorPrefab);
@@ -181,6 +204,7 @@ public class PrefabManager : MonoBehaviour {
 		listOfSpells.Add(fireballSpellPrefab);
 		listOfSpells.Add(rejuvenationSpellPrefab);
         listOfSpells.Add(iceBlockSpellPrefab);
+		listOfSpells.Add(lightningboltSpellPrefab);
 
 		// scrolls
 		listOfScrolls.Add(expScrollPrefab);
@@ -246,6 +270,7 @@ public class PrefabManager : MonoBehaviour {
 				Destroy(item);
 			}
 		}
+
 		itemInstances.Clear();
 	}
 
@@ -415,7 +440,7 @@ public class PrefabManager : MonoBehaviour {
 		// instantiate object.
 		instObj = (GameObject) Instantiate(prefab);
 
-		// creates item that takes money before picking up.
+		// creates item that takes money before it can be picked up.
 		if(isShopItem) {
 			instObj.GetComponent<Item>().myState = Item.State.Shop;
 		}
@@ -500,7 +525,7 @@ public class PrefabManager : MonoBehaviour {
 		}
 
 		// instantiate.
-		for(int i = 0; i < count; i++) {InstantiateEnemyRandomPos(); }
+		for(int i = 0; i < count; i++) { InstantiateEnemyRandomPos(); }
 	}
 
 	public GameObject InstantiatePlayer(string pname, bool simpleInstantiate = false) {
@@ -522,6 +547,10 @@ public class PrefabManager : MonoBehaviour {
 		Tile tile = tileGo.GetComponent<Tile>();
 
 		tile.actor = playerInstance;
+
+		if (tile.item != null) {
+			playerInstance.GetComponent<Player>().PickUpItem(tile.item);
+		}
 
 		return playerInstance;
 	}

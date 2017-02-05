@@ -17,7 +17,7 @@ public class DefaultMaze {
 				}
 					
 				// create walls.
-				int rand = Random.Range(1, 11); // spaciourness 11
+				int rand = Random.Range(1, Mathf.FloorToInt(GameMaster.instance.dungeonSpaciousness * 10f)); 
 				if(x % rand == 0 || y % rand == 0) {
                     DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Wall);
 					continue;
@@ -27,9 +27,5 @@ public class DefaultMaze {
                 DungeonGenerator.instance.CreateTile(x, y, Tile.TileType.Floor);
 			}
 		}
-
-
     }
-
-
 }

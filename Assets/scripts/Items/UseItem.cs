@@ -45,8 +45,6 @@ public class UseItem : Item {
 					amount,
 					effect.effectDuration);
 
-				//owner.GetComponent<Actor>().AddStatusEffect(myEffect);
-
 				GUIManager.instance.CreatePopUpEntry("+Armor",
 					owner.GetComponent<Actor>().position,
 					GUIManager.PopUpType.Other);
@@ -61,8 +59,6 @@ public class UseItem : Item {
 					StatusEffect.EffectType.Attack,
 					amount,
 					effect.effectDuration);
-
-				//owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
 
 				GUIManager.instance.CreatePopUpEntry("+Attack",
 					owner.GetComponent<Actor>().position,
@@ -88,10 +84,8 @@ public class UseItem : Item {
 					Random.Range(effect.minAmount, effect.maxAmount),
 					effect.effectDuration);
 
-				//owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
-
 				// Update GUI
-				GUIManager.instance.CreatePopUpEntry("HoT", owner.GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
+				GUIManager.instance.CreatePopUpEntry("Healing", owner.GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
 				GUIManager.instance.CreateJournalEntry(owner.GetComponent<Actor>().actorName + " started healing.", GUIManager.JournalType.Status);
 
 				break;
@@ -102,8 +96,6 @@ public class UseItem : Item {
 					StatusEffect.EffectType.Bleeding,
 					Random.Range(effect.minAmount, effect.maxAmount),
 					effect.effectDuration);
-
-				//owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
 
 				// Update GUI
 				GUIManager.instance.CreatePopUpEntry("DoT", owner.GetComponent<Actor>().position, GUIManager.PopUpType.Heal);
@@ -120,8 +112,6 @@ public class UseItem : Item {
 					effect.minAmount,
 					effect.effectDuration);
 
-				//owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
-
 				GUIManager.instance.CreatePopUpEntry("ExpMult",
 					owner.GetComponent<Actor>().position,
 					GUIManager.PopUpType.Other);
@@ -134,8 +124,6 @@ public class UseItem : Item {
 					StatusEffect.EffectType.Stun,
 					Random.Range(effect.minAmount, effect.maxAmount),
 					effect.effectDuration);
-
-				//owner.GetComponent<Actor>().myStatusEffects.Add(myEffect);
 
 				GUIManager.instance.CreatePopUpEntry("Stun",
 					owner.GetComponent<Actor>().position,
@@ -154,6 +142,10 @@ public class UseItem : Item {
 		owner.GetComponent<Inventory>().currentUseItem = null;
 		DestroyItem();
 		GUIManager.instance.UpdateAllElements();
+
+		// sound effect
+		SoundManager.instance.PlaySound(SoundManager.Sound.useItem);
+
 	}
 
 }

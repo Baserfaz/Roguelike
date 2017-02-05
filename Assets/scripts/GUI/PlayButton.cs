@@ -39,6 +39,9 @@ public class PlayButton : MonoBehaviour {
         case 4:
             startitem = GameSettings.StartItem.IceBlockSpell;
             break;
+		case 5:
+			startitem = GameSettings.StartItem.LightningBoltSpell;
+			break;
 
 		default:
 			startitem = GameSettings.StartItem.None;

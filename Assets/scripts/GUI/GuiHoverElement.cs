@@ -21,11 +21,8 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 		// get the gui item info script.
 		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
 
-		// set the alpha value to fully lit.
-		gii.SetCanvasGroupAlpha(1f);
-
 		// if we dont have a hover text instantiated yet..
-		// -> instantiate the text
+		// -> instantgiate the text
 		if(hoverTextobj == null) hoverTextobj = (GameObject) Instantiate(GUIManager.instance.hoverTextPrefab);
 
 		// show text.
@@ -108,16 +105,9 @@ public class GuiHoverElement : MonoBehaviour, IPointerEnterHandler, IPointerExit
 			MouseController.instance.ChangeState(MouseController.State.Normal);
 		}
 
-		// get reference
-		GUIItemInfo gii = data.pointerEnter.transform.parent.GetComponentInParent<GUIItemInfo>();
-
-		// set the alpha back to starting value.
-		gii.ResetCanvasGroupAlpha();
-
 		// dont destroy the gameobject
 		// -> modify its alpha value.
 		hoverTextobj.GetComponent<CanvasGroup>().alpha = 0f;
-
 	}
 
 	public void OnPointerClick(PointerEventData data) {

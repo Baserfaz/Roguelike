@@ -219,6 +219,7 @@ public class DungeonGenerator : MonoBehaviour {
 		GameObject tileGo = GetTileAtPos(pos);
 		Tile tile = tileGo.GetComponent<Tile>();
 		tile.vanityItem = vanityItem;
+		vanityItem.transform.position = new Vector3(pos.x, pos.y, GameMaster.instance.vanityitemsZLevel);
 	}
 
 	public void UpdateTileItem(Vector2 pos, GameObject item) {
@@ -545,9 +546,6 @@ public class DungeonGenerator : MonoBehaviour {
 
 			currentTile.SetStartColor(overallTint);
 		}
-
-
-        //CalculateSpecialTileSprites();
 	}
 
 	public void GenerateExit() {
@@ -703,13 +701,18 @@ public class DungeonGenerator : MonoBehaviour {
         
 		//DefaultMaze.Generate(dungeonHeight, dungeonWidth);
         //SimpleMazeBuilder.Generate(dungeonHeight, dungeonWidth);
-		RoomMaze.Generate(dungeonWidth,dungeonHeight);
+		//RoomMaze.Generate(dungeonWidth,dungeonHeight);
+		CorridorToRoom.Generate(dungeonHeight, dungeonWidth);
 
 		// Modify existing tiles.
 		GenerateExit();
 		GenerateTraps();
 		CalculateWallTileSprites();
-		GenerateDoors();
+
+		// generate doors only after calculating
+		// the wall sprites!
+
+		//GenerateDoors();
 
 		// Create items.
 		DungeonItemManager.instance.SpawnItems();

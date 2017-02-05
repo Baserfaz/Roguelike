@@ -65,7 +65,8 @@ public class SpriteManager : MonoBehaviour {
 		PotionOrange, PotionBigRed, PotionPurple,
 		GoldNugget, GoldPile, 
 		Blood01, Skull01, Candle01, Lantern01,
-		HammerRed, ScepterBlue, ScepterRed
+		HammerRed, ScepterBlue, ScepterRed,
+		Fireball, SkeletonBlue, SkeletonWhite, SkeletonGrey
 	}
 
 	private Color32[] pixels;
@@ -861,6 +862,22 @@ public class SpriteManager : MonoBehaviour {
 		case SpriteType.slimeKing:
 			rowNumber = 8 + (GetTileCountHeight() - spriteSheetTileCountStandard);
 			return ReadSpriteSheet(rowNumber, 13);
+
+		case SpriteType.Fireball:
+			rowNumber = 9 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(rowNumber, 2);
+
+		case SpriteType.SkeletonBlue:
+			rowNumber = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(rowNumber, 10);
+
+		case SpriteType.SkeletonWhite:
+			rowNumber = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(rowNumber, 11);
+
+		case SpriteType.SkeletonGrey:
+			rowNumber = 7 + (GetTileCountHeight() - spriteSheetTileCountStandard);
+			return ReadSpriteSheet(rowNumber, 12);
 
 		default:
 			Debug.LogError("No such sprite found.");

@@ -20,6 +20,16 @@ public class GUIManager : MonoBehaviour {
 	public GameObject journalList;
 	public GameObject statusBar;
 	public GameObject itemInfo;
+	public GameObject buttonsPanel;
+	public GameObject inventoryPanel;
+
+	[Header("Inventorypanel elements")]
+	public GameObject invItemList;
+	public GameObject invItemInfo;
+	public GameObject invPlayerArmorSlot;
+	public GameObject invPlayerWeaponSlot;
+	public GameObject invPlayerSpellSlot;
+	public GameObject invPlayerUseItemSlot;
 
 	[Header("Deathscreen elements")]
 	public GameObject playerNameText;
@@ -49,8 +59,10 @@ public class GUIManager : MonoBehaviour {
 	public GameObject healthBarPrefab;
 	public GameObject effectStatusPrefab;
 	public GameObject hoverTextPrefab;
+	public GameObject inventoryItemPrefab;
 
 	private int maxJournalEntries = 30;
+	private bool isInventoryOpen = false;
 
 	// These are for showing the tile information.
 	// shopGo -> when the player stands on a shop item.
@@ -58,10 +70,13 @@ public class GUIManager : MonoBehaviour {
 	[HideInInspector] public GameObject currentActiveShopGo = null;
 	[HideInInspector] public Tile currentActiveTile = null;
 
+	private GameObject chosenInventoryGuiItem = null;
+
 	// esc menu
 	[HideInInspector] public GameObject pauseTextGo = null;
 
 	private List<GameObject> listOfStatusElements = new List<GameObject>();
+	private List<GameObject> listOfItemsInInventoryGui = new List<GameObject>();
 
 	void Awake() { instance = this; }
 
@@ -77,6 +92,9 @@ public class GUIManager : MonoBehaviour {
 		obj.GetComponent<CanvasGroup>().interactable = true;
 	}
 
+	public bool getIsInventoryOpen() { return isInventoryOpen; }
+	public void setIsInventoryOpen(bool b) { isInventoryOpen = b; }
+
 	public void HideGUI() { Hide(gameGUI); }
 	public void ShowGUI() { Show(gameGUI); }
 
@@ -88,6 +106,9 @@ public class GUIManager : MonoBehaviour {
 
 	public void HideDeathScreen() { Hide(deathScreenGUI); }
 	public void ShowDeathScreen() { Show(deathScreenGUI); }
+
+	public void HideInventory() { Hide(inventoryPanel); }
+	public void ShowInventory() { Show(inventoryPanel); }
 
 	public void UpdateTileInfo(string a) {
 		tileInfoText.GetComponent<Text>().text = a;
@@ -102,6 +123,57 @@ public class GUIManager : MonoBehaviour {
     }
 
     public void ExitGame() { Application.Quit(); }
+
+	public void ChangeChosenInventoryGuiItem(GameObject item) {
+
+		// first reset the old item effects
+		ResetChosenEffectOnInvGuiItem();
+
+		// set new chosen item.
+		chosenInventoryGuiItem = item;
+	}
+
+	public void ResetChosenEffectOnInvGuiItem() {
+		if(chosenInventoryGuiItem != null) {
+			chosenInventoryGuiItem.GetComponent<InventoryGuiItem>().ResetChosenEffect();
+		}
+	}
+
+	public void RemoveItemFromInventoryListGui(GameObject item) {
+		listOfItemsInInventoryGui.Remove(item);
+	}
+
+	public void CreateInventoryListItems() {
+
+		// get the inventory
+		List<GameObject> inventory = PrefabManager.instance.GetPlayerInstance().
+			GetComponent<Inventory>().inventory;
+
+		// updates the inventory item LIST
+		foreach(GameObject item in inventory) {
+
+			// if the item is already in the list...
+			// skip over it. Because we don't remove and 
+			// populate the list when inv. gui is shown.
+			if(listOfItemsInInventoryGui.Contains(item)) continue;
+
+			// instantiate GUI element from prefab
+			GameObject inst = (GameObject) Instantiate(inventoryItemPrefab);
+
+			// set the real gameobject reference to the GUI item.
+			inst.GetComponent<InventoryGuiItem>().realItem = item;
+
+			// set the image & text
+			inst.transform.GetChild(0).GetComponent<Image>().sprite = item.GetComponentInChildren<SpriteRenderer>().sprite;
+			inst.GetComponentInChildren<Text>().text = item.GetComponent<Item>().itemName;
+
+			// set it's parent to GUI list
+			inst.transform.SetParent(invItemList.transform);
+
+			// add item to gui list.
+			listOfItemsInInventoryGui.Add(item);
+		}
+	}
 
 	public void UpdateDeathScreen() {
 

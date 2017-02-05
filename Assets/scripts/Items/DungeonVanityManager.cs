@@ -6,7 +6,7 @@ public class DungeonVanityManager : MonoBehaviour {
 
 	public static DungeonVanityManager instance;
 
-	public enum VanityItem { Candle, Lantern, Skull }
+	public enum VanityItem { Candle, Lantern, Skull, Blood }
 
 	[Header("Settings")]
 	public bool spawnVanityItems = true;
@@ -18,6 +18,7 @@ public class DungeonVanityManager : MonoBehaviour {
 	public GameObject skull01Prefab;
 	public GameObject lantern01Prefab;
 	public GameObject burntCandlePrefab;
+	public GameObject bloodPrefab;
 
 	private GameObject parentGo;
 	private List<GameObject> InstantiatedVanityItems = new List<GameObject>();
@@ -41,6 +42,9 @@ public class DungeonVanityManager : MonoBehaviour {
 			break;
 		case VanityItem.Skull:
 			vanityItemPrefab = skull01Prefab;
+			break;
+		case VanityItem.Blood:
+			vanityItemPrefab = bloodPrefab;
 			break;
 
 		default:
@@ -72,6 +76,12 @@ public class DungeonVanityManager : MonoBehaviour {
 		InstantiatedVanityItems.Clear();
 	}
 
+	private VanityItem RandomVanityItem() {
+		System.Array values = System.Enum.GetValues(typeof(VanityItem));
+		VanityItem item = (VanityItem) values.GetValue(Random.Range(0, values.Length));
+		return item;
+	}
+
 	public void SpawnVanityItems() {
 		if(spawnVanityItems) {
 
@@ -86,8 +96,11 @@ public class DungeonVanityManager : MonoBehaviour {
 
 					if(tile.vanityItem == null) {
 
-						System.Array values = System.Enum.GetValues(typeof(VanityItem));
-						VanityItem item = (VanityItem) values.GetValue(Random.Range(0, values.Length));
+						VanityItem item = RandomVanityItem();
+
+						while(item == VanityItem.Blood) {
+							item = RandomVanityItem();
+						}
 
 						SpawnVanityItem(item, tile.position);
 

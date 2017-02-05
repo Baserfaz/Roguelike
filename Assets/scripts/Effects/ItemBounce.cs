@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ItemBounce : MonoBehaviour {
 
-	private GameObject graphics;
+	private GameObject bounceObject;
 	private bool up = true;
 	private float currentTime = 0f;
 	private float timeBop = 0.75f;
 	private float bopSpeed = 0.0015f;
 
-	void Awake() { graphics = GetComponentInChildren<SpriteRenderer>().gameObject; }
+	void Awake() { bounceObject = this.gameObject; }
 
 	void Start() { currentTime = Random.Range(0f, timeBop); }
 
@@ -20,7 +20,7 @@ public class ItemBounce : MonoBehaviour {
 
 	private void Bounce() {
 		currentTime += Time.deltaTime * 0.7f;
-		Transform current = graphics.transform;
+		Transform current = bounceObject.transform;
 
 		if(up) {
 			current.position += Vector3.up * bopSpeed;

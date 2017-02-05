@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GameSettings {
 
-	public enum StartItem { AttackScroll, ExpMultScroll, FireballSpell, RejuvenationSpell, IceBlockSpell, None };
+	public enum StartItem { AttackScroll, ExpMultScroll, FireballSpell,
+		RejuvenationSpell, IceBlockSpell, None, LightningBoltSpell };
 
 	public string playername = "";
 	public StartItem myItem = StartItem.None;

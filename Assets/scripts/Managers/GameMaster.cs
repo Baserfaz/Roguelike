@@ -77,7 +77,7 @@ public class GameMaster : MonoBehaviour {
 
 	[Header("Special level chance to spawn")]
 	[Range(1, 100)] public int ShopChance = 10;
-	[Range(1, 100)] public int mobCabinet01Chance = 15;
+	[Range(1, 100)] public int specialRoomChance = 15;
     [Range(1, 100)] public int bossRoomChance = 5;
 
 	[Header("Z-levels")]
@@ -96,12 +96,15 @@ public class GameMaster : MonoBehaviour {
 
 	[Header("Special Levels")]
 	public Texture2D shopLevel;
-	public Texture2D mobCabinetlevel01;
-	public Texture2D pathfindingTestLevel;
+	public Texture2D monsterRoom;
     public Texture2D slimeKingThroneLevel;
+	public Texture2D maze01Level;
+	public Texture2D maze02Level;
 
 	private bool wasLastLevelSpecial = false;
 	private bool debugModeRealValue = false;
+
+	private List<Texture2D> specialLevels = new List<Texture2D> ();
 
 	void Awake() { 
 		instance = this;
@@ -109,9 +112,11 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	private void UpdatePlayerLos() {
-        PrefabManager.instance.GetPlayerInstance().GetComponent<Losv2>().CalculateLoS();
-		DungeonGenerator.instance.UpdateTileColorVisibility();
-		DungeonGenerator.instance.CreateGrid();
+		if(PrefabManager.instance.GetPlayerInstance() != null) {
+			PrefabManager.instance.GetPlayerInstance ().GetComponent<Losv2> ().CalculateLoS ();
+			DungeonGenerator.instance.UpdateTileColorVisibility ();
+			DungeonGenerator.instance.CreateGrid();
+		}
 	}
 
 	// PROGRAM START
@@ -123,7 +128,12 @@ public class GameMaster : MonoBehaviour {
 		GUIManager.instance.HideGUI();
 		GUIManager.instance.HideDeathScreen();
 		GUIManager.instance.HideCharacterCreation();
-        GUIManager.instance.ShowMainMenu();
+
+		// hide inventory
+		GUIManager.instance.HideInventory();
+
+		// show main menu
+		GUIManager.instance.ShowMainMenu();
 
 		// create mainmenu scene.
 		CreateMainMenuScene();
@@ -138,6 +148,12 @@ public class GameMaster : MonoBehaviour {
 		SpriteManager.instance.RandomizeTileSet();
 		PrefabManager.instance.PopulatePrefabLists();
 		StartDungeonCreationProcess();
+	}
+
+	private void CreateSpecialRoomList() {
+		specialLevels.Add (monsterRoom);
+		specialLevels.Add (maze01Level);
+		specialLevels.Add (maze02Level);
 	}
 
 	public void ResetEverything() {
@@ -220,7 +236,9 @@ public class GameMaster : MonoBehaviour {
         case GameSettings.StartItem.IceBlockSpell:
             go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.iceBlockSpellPrefab);
             break;
-
+		case GameSettings.StartItem.LightningBoltSpell:
+			go = PrefabManager.instance.InstantiateItem(PrefabManager.instance.lightningboltSpellPrefab);
+			break;
 		default:
 			break;
 		}
@@ -238,6 +256,9 @@ public class GameMaster : MonoBehaviour {
 
 		// game loop is running.
 		gamestate = GameState.Running;
+
+		// create special room list
+		CreateSpecialRoomList();
 
 		// randomize tile set.
 		SpriteManager.instance.RandomizeTileSet();
@@ -299,8 +320,6 @@ public class GameMaster : MonoBehaviour {
 
 	private IEnumerator WaitAfterEnemyTurn(float time, Enemy enemy, bool isLastEnemy = false) {
 
-		Debug.Log("enemy start turn");
-
 		float currentTime = 0f;
 
 		while(currentTime < time) {
@@ -308,18 +327,22 @@ public class GameMaster : MonoBehaviour {
 			yield return null;
 		}
 
-		enemy.DecideNextStep();
+		if(enemy != null && enemy.isActive) {
+			enemy.DecideNextStep();
+		}
 
 		if(isLastEnemy) {
 			HandleRestEndTurn();
 		}
-
-		Debug.Log("enemy end turn.");
 	}
 
 	private void HandleRestEndTurn() {
 
-		Debug.Log("rest start");
+		//traps
+		HandleTraps();
+
+		// update player line of sight
+		UpdatePlayerLos();
 
 		HandleIceBlocks();
 		turnCount++;
@@ -345,8 +368,6 @@ public class GameMaster : MonoBehaviour {
 		// Check if player is dead.
 		// -> run this sequence.
 		HandlePlayerDeath();
-
-		Debug.Log("rest end");
 	}
 
 	// call this first...
@@ -355,7 +376,6 @@ public class GameMaster : MonoBehaviour {
 		gamestate = GameState.WaitingTurn;
 		HandlePlayerTurn();
 		UpdatePlayerLos();
-		HandleTraps();
 		StartCoroutine(WaitAfterPlayerTurn(turnEndTime));
 	}
 
@@ -387,9 +407,6 @@ public class GameMaster : MonoBehaviour {
 			GUIManager.instance.HideGUI();
 			GUIManager.instance.ShowDeathScreen();
 
-			// reset game
-			ResetEverything();
-
 			// set the game loop to main menu
 			gamestate = GameState.InMainMenu;
 		}
@@ -397,9 +414,13 @@ public class GameMaster : MonoBehaviour {
 
 	private bool TryGetSpecialLevel() {
 
+		/* Hierarchy:
+		 * 1. Boss room
+		 * 2. Shop
+		 * 3. Other special rooms.
+		 */
 
-        if (Random.Range(0, 100) > 100 - bossRoomChance)
-        {
+        if (Random.Range(0, 100) > 100 - bossRoomChance) {
 
             // TODO:
             // 1. multiple boss rooms.
@@ -409,7 +430,7 @@ public class GameMaster : MonoBehaviour {
             // change tileset to use slime tileset
             SpriteManager.instance.currentTileSet = SpriteManager.TileSet.Shop;
 
-            // create shop
+            // create dungeon
             MapReader.instance.GenerateDungeonFromImage(slimeKingThroneLevel);
 
             // name
@@ -417,11 +438,7 @@ public class GameMaster : MonoBehaviour {
 
             return true;
 
-        }
-        else
-        {
-            if (Random.Range(0, 100) > 100 - ShopChance)
-            {
+        } else if (Random.Range(0, 100) > 100 - ShopChance) {
 
                 wasLastLevelSpecial = true;
 
@@ -436,22 +453,22 @@ public class GameMaster : MonoBehaviour {
 
                 return true;
 
-            }
-            else if (Random.Range(0, 100) > 100 - mobCabinet01Chance)
-            {
+        } else if (Random.Range(0, 100) > 100 - specialRoomChance) {
 
-                wasLastLevelSpecial = true;
+            wasLastLevelSpecial = true;
 
-                // randomize tileset
-                SpriteManager.instance.RandomizeTileSet();
+            // randomize tileset
+            SpriteManager.instance.RandomizeTileSet();
 
-                // create shop
-                MapReader.instance.GenerateDungeonFromImage(mobCabinetlevel01);
+			// get a special room
+			Texture2D specialRoom = specialLevels[Random.Range(0, specialLevels.Count)];
 
-                currentDungeonName = "Challenge";
+            // create shop
+			MapReader.instance.GenerateDungeonFromImage(specialRoom);
 
-                return true;
-            }
+			currentDungeonName = "Special room #" + Random.Range(2561, 9999);
+
+            return true;
         }
 
 		return false;
@@ -479,7 +496,7 @@ public class GameMaster : MonoBehaviour {
 	public void ExitDungeon() {
 
 		// stop all coroutines!
-		PrefabManager.instance.GetPlayerInstance().GetComponent<Player>().StopCoroutines();
+		PrefabManager.instance.GetPlayerInstance().GetComponent<Player>().StopAllCoroutines();
 
 		// increement level
 		dungeonLevel++;
@@ -766,6 +783,9 @@ public class GameMaster : MonoBehaviour {
 			player.Attack();
 		} else if(player.myNextState == Player.NextMoveState.Pass) {
 			// do nothing.
+
+			// play sound effect
+			//SoundManager.instance.PlaySound(SoundManager.Sound.Pass);
 		}
 	}
 }

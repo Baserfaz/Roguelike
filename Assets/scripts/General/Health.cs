@@ -23,12 +23,16 @@ public class Health : MonoBehaviour {
 	/// <param name="isCrit">If set to <c>true</c> is crit.</param>
 	public void TakeDamage(int amount, bool isCrit, GameObject dmgDealer) {
 
-        if (invulnerable)
-        {
+        if (invulnerable) {
             GUIManager.instance.CreatePopUpEntry("Invulnerable!",
                 GetComponent<Actor>().position, GUIManager.PopUpType.Other);
             return;
         }
+
+		// screenshake!
+		if (GetComponent<Player> () != null) {
+			Camera.main.GetComponent<ScreenShake> ().StartShake ();
+		}
 
 		// update what hit us last.
 		lastDmgDealer = dmgDealer;
@@ -38,10 +42,8 @@ public class Health : MonoBehaviour {
 
         // if it was an enemy that the player hit.
         // enemy should aggro the player.
-        if (GetComponent<Enemy>() != null)
-        {
-            if (lastDmgDealer.GetComponent<Player>() != null)
-            {
+        if (GetComponent<Enemy>() != null) {
+            if (lastDmgDealer.GetComponent<Player>() != null) {
                 GetComponent<Enemy>().targetPosition = lastDmgDealer.GetComponent<Actor>().position;
                 GetComponent<Enemy>().isActive = true;
             }
@@ -102,9 +104,17 @@ public class Health : MonoBehaviour {
 			GetComponent<HealthBar>().UpdateHPBar();
 		}
 
-		if(currentHealth <= 0) {
+		// check if dead
+		if (currentHealth <= 0) {
 			currentHealth = 0;
-			Die();
+			Die ();
+		} else {
+			// effects if not dead.
+			GetComponent<SpriteColorEffect>().StartPulseRed();
+
+			// sound effects
+			SoundManager.instance.PlaySound(SoundManager.Sound.Hurt);
+
 		}
 	}
 
@@ -136,9 +146,16 @@ public class Health : MonoBehaviour {
 			GetComponent<HealthBar>().UpdateHPBar();
 		}
 
-		if(currentHealth <= 0) {
+		if (currentHealth <= 0) {
 			currentHealth = 0;
-			Die();
+			Die ();
+		} else {
+			// effects if not dead.
+			GetComponent<SpriteColorEffect>().StartPulseRed();
+
+			// sound effects
+			SoundManager.instance.PlaySound(SoundManager.Sound.Hurt);
+
 		}
 	}
 
@@ -175,6 +192,13 @@ public class Health : MonoBehaviour {
 				GUIManager.JournalType.Combat);
 		}
 
+		// sound effects
+		SoundManager.instance.PlaySound(SoundManager.Sound.Heal);
+
+		// visual effects
+		GameObject healParticles = (GameObject) Instantiate(PrefabManager.instance.healParticlePrefab);
+		healParticles.transform.position = new Vector3(transform.position.x, transform.position.y,
+			transform.position.z - 0.1f);
 	}
 
 	private void Die() {
@@ -189,28 +213,24 @@ public class Health : MonoBehaviour {
 			GetComponent<HealthBar>().Hide();
 		}
 
-		// if its enemy.. drop loot.
+		// Do things to enemy actors.
 		if(GetComponent<Enemy>() != null) {
 
 			// player gains experience.
 			PrefabManager.instance.GetPlayerInstance().GetComponent<Experience>().AddExp(GetComponent<Actor>().expAmount);
 
+			// deactivate enemy script.
+			GetComponent<Enemy>().isActive = false;
+
             // check if the enemy can even drop items.
-            if (GetComponent<Enemy>().canDropItems)
-            {
+            if (GetComponent<Enemy>().canDropItems) {
                 // get target tile.
                 GameObject targetTile = DungeonGenerator.instance.GetTileAtPos(GetComponent<Actor>().position);
 
                 // drop item under the 
-                if (targetTile.GetComponent<Tile>().item == null)
-                {
-
+                if (targetTile.GetComponent<Tile>().item == null) {
                     ItemDropController.instance.DropItem(targetTile.GetComponent<Tile>().position);
-
-                }
-                else
-                {
-
+                } else {
                     // if tile has an item already.
                     // -> calculate new position.
                     targetTile = DungeonGenerator.instance.GetFirstFreeTileNearPosition(GetComponent<Actor>().position);
@@ -220,18 +240,27 @@ public class Health : MonoBehaviour {
                     }
                 }
             }
+		}
 
-            // deactivate enemy script.
-			GetComponent<Enemy>().isActive = false;
+		// remove actor from list of instantiated actors.
+		PrefabManager.instance.RemoveEnemyFromInstanceList(this.gameObject);
 
-			// remove actor from list of instantiated actors.
-			PrefabManager.instance.RemoveEnemyFromInstanceList(this.gameObject);
+		// stop all coroutines!
+		GetComponent<Actor>().StopAllCoroutines();
 
-			// deactivate actor
-			gameObject.SetActive(false);
+		// create blood stain
+		DungeonVanityManager.instance.SpawnVanityItem(DungeonVanityManager.VanityItem.Blood,
+			GetComponent<Actor>().position);
 
-            // create GUI element.
-			GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " died.", GUIManager.JournalType.Combat);
-		} 
+        // create GUI element.
+		GUIManager.instance.CreateJournalEntry(GetComponent<Actor>().actorName + " died.",
+			GUIManager.JournalType.Combat);
+
+		// create visual effects
+		GameObject skull = (GameObject)Instantiate(PrefabManager.instance.skullParticlePrefab);
+		skull.transform.position = this.transform.position;
+
+		// Destroy actor
+		Destroy(gameObject);
 	}
 }

@@ -72,14 +72,21 @@ public class Actor : MonoBehaviour {
 		myStatusEffects.Remove(e);
 	}
 
-    private IEnumerator AttackSmooth(Vector2 target, Vector2 startpos)
-    {
+    private IEnumerator AttackSmooth(Vector2 target, Vector2 _startpos) {
 
         float currentTime = 0f;
         float maxTime = 0.15f;
 
-        Vector2 startPos = startpos;
-		Vector2 endPos = (target - startpos).normalized * 0.5f + startPos;
+		Vector3 startPos = Vector3.zero;
+		Vector3 endPos = (target - _startpos).normalized * 0.5f + _startpos;
+
+		if(GetComponent<Player>() != null) {
+			startPos = new Vector3(_startpos.x, _startpos.y, GameMaster.instance.playerZLevel);
+			endPos = new Vector3(endPos.x, endPos.y, GameMaster.instance.playerZLevel);
+		} else {
+			startPos = new Vector3(_startpos.x, _startpos.y, GameMaster.instance.enemyZLevel);
+			endPos = new Vector3(endPos.x, endPos.y, GameMaster.instance.enemyZLevel);
+		}
 
 		// In
         while (currentTime < maxTime)
@@ -95,12 +102,12 @@ public class Actor : MonoBehaviour {
         while (currentTime < maxTime)
         {
             currentTime += Time.deltaTime;
-            transform.position = Vector3.Lerp(endPos, startpos, currentTime / maxTime);
+            transform.position = Vector3.Lerp(endPos, startPos, currentTime / maxTime);
             yield return null;
         }
 
 		// force position here.
-        transform.position = startPos;
+		transform.position = startPos;
     }
 
 	public void Attack() {
@@ -129,6 +136,10 @@ public class Actor : MonoBehaviour {
 		if(Random.Range(0, 100) > 100 - defaultMissChance) {
 			GUIManager.instance.CreatePopUpEntry("MISS", target.GetComponent<Actor>().position, GUIManager.PopUpType.Miss);
 			GUIManager.instance.CreateJournalEntry(actorName + " missed.", GUIManager.JournalType.Combat);
+
+			// sound effect
+			SoundManager.instance.PlaySound(SoundManager.Sound.Miss);
+
 			return;
 		}
 
@@ -152,6 +163,9 @@ public class Actor : MonoBehaviour {
 			if(GameMaster.instance.attacksSubtractDefaultArmor) target.GetComponent<Actor>().defaultArmor --;
 		}
 
+		// play sound effects
+		SoundManager.instance.PlaySound(SoundManager.Sound.Attack);
+
 	}
 
 	private IEnumerator MoveCharacterSmooth(Vector3 target) {
@@ -170,10 +184,23 @@ public class Actor : MonoBehaviour {
 		transform.position = target;
 	}
 
-	public void StopCoroutines() { StopAllCoroutines(); }
-
 	public void Move() {
-		
+
+		// check here if the tile we are about to move
+		// has a chest on it.
+		// -> open it.
+		if(GetComponent<Player>() != null) {
+			Tile t = DungeonGenerator.instance.GetTileAtPos(moveTargetPosition).GetComponent<Tile>();
+			if(t.item != null) {
+				if(t.item.GetComponent<Item>().myState == Item.State.Free) {
+					if(t.item.GetComponent<Container>() != null) {
+						t.item.GetComponent<Container>().Open();
+						return;
+					}
+				}
+			}
+		}
+
 		// first reset the tile actor field.
 		DungeonGenerator.instance.UpdateTileActor(position, null);
 
@@ -217,6 +244,10 @@ public class Actor : MonoBehaviour {
 
 		// update next tile's actor field.
 		DungeonGenerator.instance.UpdateTileActor(moveTargetPosition, this.gameObject);
+
+		// play sound effect
+		SoundManager.instance.PlaySound(SoundManager.Sound.MoveActor);
+
 	}
 
 

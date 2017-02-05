@@ -40,6 +40,10 @@ public class Container : Item {
 
 		// Update the sprite.
 		updateGraphics();
+
+		// play sound effect
+		SoundManager.instance.PlaySound(SoundManager.Sound.OpenChest);
+
 	}
 
 	private void updateGraphics() {

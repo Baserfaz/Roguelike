@@ -94,7 +94,7 @@ public class Player : Actor {
 		} else if(Input.GetKeyDown(KeyCode.Keypad5)) {
 
 			// keypad5 is the general key for (in this order)
-			// 1. picking up items / open chest.
+			// 1. picking up items
 			// 2. exiting level
 			// 3. passing turn
 
@@ -181,44 +181,42 @@ public class Player : Actor {
 
 		if(tile.item != null) {
 
-			// if the item is a chest
-			// -> open it.
-			if(tile.item.GetComponent<Container>() != null) {
+			if(tile.item.GetComponent<Item>().myState == Item.State.Free) {
 
-				tile.item.GetComponent<Container>().Open();
+				// pick the item up
+
+				PickUpItem(tile.item);
 				GameMaster.instance.EndTurn();
 
-			} else {
-				if(tile.item.GetComponent<Item>().myState == Item.State.Free) {
+			} else if(tile.item.GetComponent<Item>().myState == Item.State.Shop) {
 
-					// pick the item up
+				Item item = tile.item.GetComponent<Item>();
 
-					PickUpItem(tile.item);
-					GameMaster.instance.EndTurn();
+				// buy item.
+				if(GetComponent<Inventory>().currentGold >= item.shopPrice) {
 
-				} else if(tile.item.GetComponent<Item>().myState == Item.State.Shop) {
+					// sound effect
+					SoundManager.instance.PlaySound(SoundManager.Sound.BuyItem);
 
-					Item item = tile.item.GetComponent<Item>();
+					// destroy guitext.
+					Destroy(GUIManager.instance.currentActiveShopGo);
 
-					// buy item.
-					if(GetComponent<Inventory>().currentGold >= item.shopPrice) {
+					GetComponent<Inventory>().currentGold -= item.shopPrice;
+					item.myState = Item.State.Free;
+					//PickUpItem(tile.item);
 
-						// destroy guitext.
-						Destroy(GUIManager.instance.currentActiveShopGo);
+				} else {
 
-						GetComponent<Inventory>().currentGold -= item.shopPrice;
-						item.myState = Item.State.Free;
-						PickUpItem(tile.item);
+					// not enough money.
+					GUIManager.instance.CreatePopUpEntry("Not enough money", position, GUIManager.PopUpType.Other);
+					GUIManager.instance.CreateJournalEntry("Not enough money to buy " + item.itemName, GUIManager.JournalType.Item);
 
-					} else {
+					// sound effects
+					SoundManager.instance.PlaySound(SoundManager.Sound.Error);
 
-						// not enough money.
-						GUIManager.instance.CreatePopUpEntry("Not enough money", position, GUIManager.PopUpType.Other);
-						GUIManager.instance.CreateJournalEntry("Not enough money to buy " + item.itemName, GUIManager.JournalType.Item);
-
-					}
 				}
 			}
+			
 		} else if(tile.myType == Tile.TileType.Exit) {
 			myNextState = NextMoveState.Pass;
 			GameMaster.instance.ExitDungeon();
@@ -258,20 +256,10 @@ public class Player : Actor {
 			GameObject spell = GetComponent<Inventory>().currentSpell;
 
 			if(spell.GetComponent<Spell>().currentCooldown == 0) {
-
-
-                // check if the spell is iceblock -> can't cast on tile which has an actor on it.
-                /*if (spell.GetComponent<Spell>().spellType == Spell.SpellType.IceWall)
-                {
-                    if (tile.actor != null)
-                    {
-                        GUIManager.instance.CreatePopUpEntry("Tile is occupied!", position, GUIManager.PopUpType.Other);
-                        return;
-                    }
-                }*/
-
+				
                 // cast the spell.
 				spell.GetComponent<Spell>().Cast(moveTargetPosition, this.gameObject);
+
 
                 // handle GUI.
 				GUIManager.instance.CreatePopUpEntry(spell.GetComponent<Item>().itemName, position, GUIManager.PopUpType.Other);

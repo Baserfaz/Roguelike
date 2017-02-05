@@ -16,7 +16,7 @@ public class Door : MonoBehaviour {
 			GetComponentInChildren<SpriteRenderer>().sprite = SpriteManager.instance.CreateTexture(SpriteManager.SpriteType.DoorVerticalOpen);
 		}
 
+		// sound effects
+		SoundManager.instance.PlaySound(SoundManager.Sound.OpenDoor);
 	}
-
-
 }

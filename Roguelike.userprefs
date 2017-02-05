@@ -1,28 +1,56 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Managers\Maze scripts\RoomMaze.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\GUI\InventoryGuiItem.cs">
     <Files>
-      <File FileName="Assets\scripts\Managers\MouseController.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Actors\Player.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Managers\MouseController.cs" Line="24" Column="35" />
+      <File FileName="Assets\scripts\Actors\Player.cs" Line="176" Column="3" />
       <File FileName="Assets\scripts\Actors\Actor.cs" Line="1" Column="1" />
       <File FileName="Assets\scripts\General\SpriteLoader.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Managers\Maze scripts\SimpleMazeBuilder.cs" Line="111" Column="10" />
-      <File FileName="Assets\scripts\General\Health.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Managers\PrefabManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\scripts\Managers\Maze scripts\RoomMaze.cs" Line="46" Column="3" />
-      <File FileName="Assets\scripts\GUI\GUIManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\Managers\GameMaster.cs" Line="318" Column="3" NotebookId="1" />
-      <File FileName="Assets\scripts\Managers\DungeonGenerator.cs" Line="705" Column="55" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\Maze scripts\SimpleMazeBuilder.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\General\Health.cs" Line="232" Column="51" />
+      <File FileName="Assets\scripts\Managers\PrefabManager.cs" Line="341" Column="2" />
+      <File FileName="Assets\scripts\Effects\ItemBounce.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Effects\SpriteColorEffect.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Managers\shadowController.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\General\Inventory.cs" Line="72" Column="3" />
+      <File FileName="Assets\scripts\Managers\ItemDropController.cs" Line="35" Column="41" />
+      <File FileName="Assets\scripts\Items\Spell.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Items\Container.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Managers\Maze scripts\CorridorToRoom.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Items\UseItem.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Managers\GameMaster.cs" Line="119" Column="4" />
+      <File FileName="Assets\scripts\Data\Experience.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Tile\Door.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\GUI\VolumeButton.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\GUI\GuiHoverElement.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\GUI\InventoryButton.cs" Line="20" Column="15" />
+      <File FileName="Assets\scripts\GUI\InventoryGuiItem.cs" Line="23" Column="3" />
+      <File FileName="Assets\scripts\GUI\CrosshairManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\GUI\GUIManager.cs" Line="32" Column="41" />
+      <File FileName="Assets\scripts\Managers\DungeonGenerator.cs" Line="141" Column="2" />
       <File FileName="Assets\scripts\Actors\Enemy.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Managers\SpriteManager.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Managers\CameraManager.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Data\GameSettings.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\GUI\PlayButton.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\Items\Item.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Items\Item.cs" Line="27" Column="9" NotebookId="1" />
       <File FileName="Assets\scripts\Items\VanityItem.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\Effects\LightFlicker.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets\scripts\GUI\GuiHoverElement.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets\scripts\General\Losv2.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Effects\ScreenShake.cs" Line="8" Column="2" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\Maze scripts\DefaultMaze.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\SoundManager.cs" Line="127" Column="9" NotebookId="1" />
+      <File FileName="Assets\scripts\Managers\DungeonItemManager.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Items\DungeonVanityManager.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\GUI\GUIItemInfo.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\GUI\EffectsOnHoverGUI.cs" Line="28" Column="30" NotebookId="1" />
+      <File FileName="Assets\scripts\Effects\SpriteAnimator.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="..\..\Unity Projects\Extremely Original Roguelite\Assets\scripts\effects\Candle.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\General\Projectile.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\Effects\BasicParticleSystem.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets\scripts\GUI\HideInventoryButton.cs" Line="11" Column="3" NotebookId="1" />
+      <File FileName="Assets\scripts\GUI\DropItemButton.cs" Line="40" Column="2" NotebookId="1" />
+      <File FileName="Assets\scripts\GUI\GuiItemAction.cs" Line="36" Column="4" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

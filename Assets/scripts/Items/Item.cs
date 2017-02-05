@@ -23,7 +23,7 @@ public class Item : MonoBehaviour {
 	public State myState = State.Free;
 	public Vector2 position;
 
-	[HideInInspector] public GameObject owner;
+	public GameObject owner = null;
 	[HideInInspector] public Color startColor;
 
 	protected void DestroyItem() { 
@@ -32,7 +32,7 @@ public class Item : MonoBehaviour {
 	}
 
 	public void HideItem() { 
-		GetComponentInChildren<SpriteRenderer>().color = Color.clear; 
+		GetComponentInChildren<SpriteRenderer>().color = Color.clear;
 		if(GetComponent<shadowController>() != null) GetComponent<shadowController>().Hide();
 	}
 	public void ShowItem() {

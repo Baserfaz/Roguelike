@@ -39,8 +39,8 @@ public class CameraManager : MonoBehaviour {
 		} else if(GameMaster.instance.gamestate == GameMaster.GameState.InMainMenu) {
 			
 			// in main menu
-			CenterCameraToDungeon();
-			transform.Rotate(0f, 0f, 6f * Time.deltaTime);
+			//CenterCameraToDungeon();
+			//transform.Rotate(0f, 0f, 6f * Time.deltaTime);
 		}
 	}
 
